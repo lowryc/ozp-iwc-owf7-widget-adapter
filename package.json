@@ -1,0 +1,14 @@
+{
+  "author": "Ozone Developers",
+  "name": "ozp-iwc-owf7-widget-adapter",
+  "version": "0.0.1",
+	"repository": "https://github.com/ozone-development/ozp-iwc-owf7-widget-adapter",
+  "devDependencies": {
+  	"grunt" : "0.4.x",
+		"grunt-contrib-uglify": "*",
+		"grunt-contrib-concat": "*",
+		"grunt-jsdoc": "*",
+		"grunt-contrib-watch": "*",
+		"grunt-contrib-connect": "*"
+  }
+}

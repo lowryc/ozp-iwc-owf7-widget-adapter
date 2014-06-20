@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OWF7 Widget</title>
+		<style media="screen" type="text/css">
+			html,body {
+				height: 100%;
+				width: 100%;
+				margin: 0px;
+				padding: 0px;
+				border: 0px;
+			}
+		</style>
+		<script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
+		<script type="text/javascript" src="js/owf-widget-debug.js"></script>
+		<script>
+			Ozone.eventing.Widget.widgetRelayURL = 'js/rpc_relay.uncompressed.html';
+			owfdojo.config.dojoBlankHtmlUrl="js/dojo-1.5.0-windowname-only/dojo/resources/blank.html";
+		</script>
+		<script type="text/javascript" src="js/testWidget.js"></script>
+  </head>
+  <body>
+		<h1 id="header">Hello, I'm a page!</h1>
+  </body>
+</html>

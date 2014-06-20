@@ -1,0 +1,71 @@
+**** Eventing ****
+'pubsub'
+
+**** Intents ****
+'_intents'
+'_intents_receive'
+
+**** Launcher ****
+_WIDGET_LAUNCHER_CHANNEL
+
+**** WidgetProxy ****
+WIDGET_READY_SERVICE_NAME = '_widgetReady'
+GET_WIDGET_READY_SERVICE_NAME = '_getWidgetReady'
+
+**** Log ****
+'Ozone.log'
+
+**** Widget State ****
+"container_init" -- widget calls on this to start
+"after_container_init" -- container responds on this
+'_WIDGET_STATE_CHANNEL_' + instanceId --- /js/eventing/Widget.js:207 to send widget state events to container 
+
+**************************************************************
+* Low Priority
+**************************************************************
+**** WidgetProxy Direct Messaging ****
+"DIRECT_MESSAGE"
+'DIRECT_MESSAGEL_CLIENT'
+
+**** WidgetProxy RPC ****
+"GET_FUNCTIONS"
+"LIST_WIDGETS"
+"register_functions"
+
+"FUNCTION_CALL"
+"FUNCTION_CALL_RESULT"
+"FUNCTION_CALL_CLIENT"
+"FUNCTION_CALL_RESULT_CLIENT"
+
+**** Chrome ****
+Ozone._WidgetChromeChannel
+_focus_widget_window -- tells the widget to do window.focus
+
+
+**************************************************************
+* Will not port
+**************************************************************
+
+**** Drag and Drop****
+'_fake_mouse_move'
+'_fake_mouse_out'
+'_fake_mouse_up'
+
+**** Key Eventing ****
+"_widget_iframe_ready" -- used to indicate that the widget can hijack the hotkeys
+"_key_eventing" -- used to catch the OWF hotkeys
+
+**** Marketplace ****
+_ADD_WIDGET_CHANNEL
+
+**************************************************************
+* Unused
+**************************************************************
+
+
+
+**** WidgetProxy -- doesn't seem to be used, anywhere ****
+"ADD_EVENT"
+"CALL_EVENT"
+"CLOSE_EVENT"
+"EVENT_CLIENT" -- channel that widgets get the event on
