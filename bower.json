@@ -1,0 +1,24 @@
+{
+  "name": "ozp-iwc-owf7-widget-adapter",
+  "main": [
+    "dist/owf7adapter.html"
+  ],
+  "version": "0.1.0",
+  "homepage": "https://github.com/ozone-development/ozp-iwc-owf7-widget-adapter",
+  "authors": [
+    "Ozone Developers"
+  ],
+  "description": "Provides a wrapper around OWF7 compatible widgets that uses the IWC bus for communication.",
+  "license": "Apache-2.0",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ],
+  "devDependencies": {
+    "ozp-iwc": "ozone-development/ozp-iwc#master"
+  },
+  "dependencies": {}
+}

@@ -1,14 +1,21 @@
 {
-  "author": "Ozone Developers",
-  "name": "ozp-iwc-owf7-widget-adapter",
-  "version": "0.0.1",
-	"repository": "https://github.com/ozone-development/ozp-iwc-owf7-widget-adapter",
-  "devDependencies": {
-  	"grunt" : "0.4.x",
-		"grunt-contrib-uglify": "*",
-		"grunt-contrib-concat": "*",
-		"grunt-jsdoc": "*",
-		"grunt-contrib-watch": "*",
-		"grunt-contrib-connect": "*"
-  }
+    "author": "Ozone Developers",
+    "name": "ozp-iwc-owf7-widget-adapter",
+    "version": "0.0.1",
+    "repository": "https://github.com/ozone-development/ozp-iwc-owf7-widget-adapter",
+    "devDependencies": {
+        "grunt": "0.4.x",
+        "grunt-concat-sourcemap": "*",
+        "grunt-contrib-clean": "*",
+        "grunt-contrib-connect": "git+https://github.com/gruntjs/grunt-contrib-connect",
+        "grunt-contrib-copy": "*",
+        "grunt-contrib-jshint": "*",
+        "grunt-contrib-uglify": "*",
+        "grunt-contrib-watch": "*",
+        "grunt-contrib-yuidoc": "^0.5.2",
+        "grunt-bump": "0.0.6",
+        "grunt-jsdoc": "*",
+        "jshint-stylish": "*",
+        "load-grunt-tasks": "~0.6.0"
+    }
 }

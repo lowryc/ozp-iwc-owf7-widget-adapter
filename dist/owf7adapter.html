@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OWF7 Adapter</title>
+		<style media="screen" type="text/css">
+			html,body,iframe {
+				height: 100%;
+				width: 100%;
+				margin: 0px;
+				padding: 0px;
+				border: 0px;
+			}
+		</style>
+        <script type="text/javascript">
+            var ozpIwc = ozpIwc || {};
+            ozpIwc.apiRootUrl="api";
+            ozpIwc.acceptPostMessageParticipants=false;
+        </script>
+  </head>
+  <body>
+		<iframe id="widgetFrame" sandbox="allow-scripts allow-same-origin">
+		</iframe>
+		<script type="text/javascript" src="js/ozpIwc-bus.js"></script>
+		<script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>  </body>
+</html>

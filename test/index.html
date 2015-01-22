@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script type="text/javascript">
+            var redirectTo = window.location.protocol + "//" + window.location.hostname 
+                + ":16000/owf7adapter.html?url=" 
+                + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/tests.html");
+            document.write("Redirecting to " +redirectTo+"<br><hr>");
+            location.replace(redirectTo);
+        </script>
+    </head>
+    <body>
+        Redirecting to run the tests inside the adapter...
+    </body>
+</html>

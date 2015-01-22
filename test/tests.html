@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Integration Tests</title>
+
+    <link rel="shortcut icon" type="image/png" href="/lib/jasmine-2.0.0/jasmine_favicon.png">
+    <link rel="stylesheet" type="text/css" href="/lib/jasmine-2.0.0/jasmine.css">
+
+    <script type="text/javascript" src="/lib/jasmine-2.0.0/jasmine.js"></script>
+    <script type="text/javascript" src="/lib/jasmine-2.0.0/jasmine-html.js"></script>
+
+    <script type="text/javascript" src="/js/ozpIwc-client.js"></script>
+    <script type="text/javascript" src="/lib/owf7/owf-widget-debug.js"></script>
+    <script>
+        Ozone.eventing.Widget.widgetRelayURL = '/lib/owf7/rpc_relay.uncompressed.html';
+        owfdojo.config.dojoBlankHtmlUrl="/lib/owf7/dojo-1.5.0-windowname-only/dojo/resources/blank.html";
+    </script>
+    <script type="text/javascript" src="/lib/owfJasmineBoot.js"></script>
+
+    <script type="text/javascript">
+        //jasmine.DEFAULT_TIMEOUT_INTERVAL=10000;
+    </script>
+
+    <script type="text/javascript" src="specs/basicConnectionSpec.js"></script>
+    <script type="text/javascript" src="specs/eventingSpec.js"></script>
+    
+  </head>
+<body>
+    <a href="localhost:16000/debugger.html">Debugger...</a><br>
+	<script src="//localhost:35729/livereload.js"></script>
+</body>
+</html>
