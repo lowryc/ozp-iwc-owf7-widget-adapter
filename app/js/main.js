@@ -1,10 +1,10 @@
 var params=ozpIwc.util.parseQueryParams();
-var client=new ozpIwc.InternalParticipant();
-ozpIwc.defaultRouter.registerParticipant(client);
 
-var adapter=new ozpIwc.Owf7ParticipantListener({
+
+var adapter=new ozpIwc.Owf7ParticipantListener();
+adapter.addWidget({
     "url": params.url,
-    "iframe": document.getElementById("widgetFrame"),
-    "client": client
+    "iframe": document.getElementById("widgetFrame")
 });
 
+console.log("Adapter: ",adapter.participants);

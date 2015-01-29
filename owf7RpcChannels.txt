@@ -69,3 +69,8 @@ _ADD_WIDGET_CHANNEL
 "CALL_EVENT"
 "CLOSE_EVENT"
 "EVENT_CLIENT" -- channel that widgets get the event on
+
+**************************************************************
+* Unused
+**************************************************************
+
