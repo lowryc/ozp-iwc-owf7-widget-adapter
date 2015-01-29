@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drag Tests</title>
+
+    <script type="text/javascript" src="/js/ozpIwc-client.js"></script>
+    <script type="text/javascript" src="/lib/owf7/owf-widget-debug.js"></script>
+    <script type="text/javascript" src="/lib/owf7/jquery-2.1.0.min.js"></script>
+    <link href="/lib/owf7/dragAndDrop.css" rel="stylesheet" type="text/css">
+    <script>
+        Ozone.eventing.Widget.widgetRelayURL = '/lib/owf7/rpc_relay.uncompressed.html';
+        owfdojo.config.dojoBlankHtmlUrl="/lib/owf7/dojo-1.5.0-windowname-only/dojo/resources/blank.html";
+    </script>
+
+    <script type="text/javascript">
+        OWF.ready(function() {
+            $('#drag').mousedown(function() {
+                OWF.DragAndDrop.startDrag({
+                    dragDropLabel: "Drag Label",
+                    dragDropData: "Drop Data"
+                });
+            });            
+        });        
+    </script>
+
+  </head>
+<body>
+    <p id="drag" style="border: 1px solid black;">Drag this text to the other window!</p>
+    
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drop Tests</title>
+
+    <script type="text/javascript" src="/js/ozpIwc-client.js"></script>
+    <script type="text/javascript" src="/lib/owf7/owf-widget-debug.js"></script>
+    <script type="text/javascript" src="/lib/owf7/jquery-2.1.0.min.js"></script>
+    <link href="/lib/owf7/dragAndDrop.css" rel="stylesheet" type="text/css">
+
+    <script>
+        Ozone.eventing.Widget.widgetRelayURL = '/lib/owf7/rpc_relay.uncompressed.html';
+        owfdojo.config.dojoBlankHtmlUrl="/lib/owf7/dojo-1.5.0-windowname-only/dojo/resources/blank.html";
+    </script>
+
+    <script type="text/javascript">
+        OWF.ready(function() {
+            var dragging=true;
+            OWF.DragAndDrop.onDragStart(function() {
+              dragging = true;
+              $('#drop').css('border','5px solid red');
+            });
+            OWF.DragAndDrop.onDragStop(function() {
+             dragging = false;
+              $('#drop').css('border','1px solid black');
+           });
+            OWF.DragAndDrop.onDrop(function(msg) {
+                $('#drop').text("Dropped "+msg);
+        }, this);
+            $('#drop').mouseover(function() {
+              if(dragging) {
+                OWF.DragAndDrop.setDropEnabled(true);
+              }
+            }).mouseout(function() {
+              if (cmp.dragging) {
+                OWF.DragAndDrop.setDropEnabled(false);
+              }
+            });
+
+        });        
+    </script>
+
+  </head>
+<body>
+    <div id="drop" style="border: 1px solid black; height: 100px; width: 100%;">Drop here!</div>
+    
+</body>
+</html>
