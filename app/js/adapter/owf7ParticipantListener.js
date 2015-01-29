@@ -102,9 +102,10 @@ ozpIwc.Owf7ParticipantListener=function(config) {
      * _fake_mouse_move is needed for drag and drop.  The container code is at
      * @see reference\js\dd\WidgetDragAndDropContainer.js:52
      */
-//    gadgets.rpc.register('_fake_mouse_move',function() {
-//		// @see @see reference\js\dd\WidgetDragAndDropContainer.js:52
-//	});
+    gadgets.rpc.register('_fake_mouse_move',function(msg) {
+		// @see @see reference\js\dd\WidgetDragAndDropContainer.js:52
+        getParticipant(this.f);
+	});
 
 
 //	gadgets.rpc.register('_widget_iframe_ready',function() {
@@ -162,7 +163,7 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
   config.client=new ozpIwc.InternalParticipant();
   ozpIwc.defaultRouter.registerParticipant(config.client);
   config.guid="eb5435cf-4021-4f2a-ba69-dde451d12551"; // FIXME: generate
-  config.instanceId="666f46bf-d8da-27c4-b907-f4a3a9e58c75"; // FIXME: generate
+  config.instanceId=config.client.address; // FIXME: generate
   config.rpcId=gadgets.json.stringify({id:config.instanceId});
   this.participants[config.rpcId]=new ozpIwc.Owf7Participant(config);
 };

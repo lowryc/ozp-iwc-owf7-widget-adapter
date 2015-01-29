@@ -1771,6 +1771,11 @@ ozpIwc.Owf7Participant.prototype.initIframe=function() {
     this.iframe.setAttribute("src",this.widgetParams.url+this.widgetQuery);
     this.iframe.setAttribute("id",this.rpcId);
 };
+ozpIwc.Owf7Participant.prototype.pubsubChannel=function(channel) {
+    return "/owf-legacy/eventing/"+channel;
+};
+
+
 ozpIwc.Owf7Participant.prototype.onContainerInit=function(sender,message) {
     // The container sends params, but the widget JS ignores them
     if ((window.name === "undefined") || (window.name === "")) {
@@ -1795,6 +1800,9 @@ ozpIwc.Owf7Participant.prototype.onContainerInit=function(sender,message) {
 };
     
 ozpIwc.Owf7Participant.prototype.onPublish=function(command, channel, message, dest) {
+    if(this["hookPublish"+channel]) {
+        this["hookPublish"+channel].call(this,command,channel,message,dest);
+    }
     this.client.send({
         "dst": "data.api",
         "resource": "/owf-legacy/eventing/" + channel,
@@ -1802,15 +1810,24 @@ ozpIwc.Owf7Participant.prototype.onPublish=function(command, channel, message, d
         "entity": message
     });
 };
+
+
 ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message, dest) {
     var self=this;
     this.subscriptions[channel]=true;
     this.client.send({
         "dst": "data.api",
-        "resource": "/owf-legacy/eventing/" + channel,
+        "resource": this.pubsubChannel(channel),
         "action": "watch"
     },function(packet,unregister) {
         if(packet.response !== "changed") return;
+        if(self["hookReceive"+channel]) {
+            console.log("Calling hook for " + channel);
+           self["hookReceive"+channel].call(self,packet);
+        }
+        if(channel.contains("_drag")) {
+            console.log("Received " + channel + ": ",packet.entity.newValue);
+        }
         if(self.subscriptions[channel]) { 
             // from shindig/pubsub_router.js:77    
             //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
@@ -1844,6 +1861,60 @@ ozpIwc.Owf7Participant.prototype.onLaunchWidget=function(sender,msg,rpc) {
       unregister();
     });
 };
+ozpIwc.Owf7Participant.prototype.hookPublish_dragSendData=function(command,channel,message,dest) {
+    console.log("dragSendData set to ",message);
+    this.dragData=message;
+};
+
+ozpIwc.Owf7Participant.prototype.hookPublish_dragStart=function(command,channel,message,dest) {
+    console.log("Hooking drag start");
+    var self=this;
+    this.client.send({
+        "dst": "data.api",
+        "resource": this.pubsubChannel("_dragStopInWidget"),
+        "action": "watch"
+    },function(packet,unregister) {
+        console.log("DragStopInWidget got ", packet);
+        if(packet.response!=="changed") return;
+        if(packet.entity.newValue === self.rpcId) {
+            console.log("Ignoring our own canceled drop");
+            return;
+        }
+        console.log("Setting dragData of ",self.dragData.dragDropData);
+        self.client.send({
+            "dst": "data.api",
+            "action": "set",
+            "resource": self.pubsubChannel("_dropReceiveData"),
+            "entity" : self.dragData.dragDropData
+        },function(p,unregister) {
+            console.log("Setting ",self.pubsubChannel("_dropReceiveData")," returned ",p);
+            unregister();
+        });
+        self.client.send({
+            "dst": "data.api",
+            "action": "set",
+            "resource": self.pubsubChannel("_dragStopInContainer"),
+            "entity" : Date.now()
+        });
+
+        unregister();
+    });
+};
+ozpIwc.Owf7Participant.prototype.hookReceive_dragStart=function(packet) {
+    console.log("Watching "+ this.pubsubChannel("_dropReceiveData"));
+    var self=this;
+    this.client.send({
+        "dst": "data.api",
+        "resource": this.pubsubChannel("_dropReceiveData"),
+        "action": "watch"
+    },function(packet,unregister) {
+        if(packet.response !== "changed") return;
+        console.log("Received drop data",packet.entity.newValue);
+        gadgets.rpc.call(self.rpcId, "_dropReceiveData", packet.entity.newValue,null);
+        unregister();
+    });
+};
+
 (function() {
     var absolutePath = function(href) {
         var link = document.createElement("a");
@@ -1948,9 +2019,10 @@ ozpIwc.Owf7ParticipantListener=function(config) {
      * _fake_mouse_move is needed for drag and drop.  The container code is at
      * @see reference\js\dd\WidgetDragAndDropContainer.js:52
      */
-//    gadgets.rpc.register('_fake_mouse_move',function() {
-//		// @see @see reference\js\dd\WidgetDragAndDropContainer.js:52
-//	});
+    gadgets.rpc.register('_fake_mouse_move',function(msg) {
+		// @see @see reference\js\dd\WidgetDragAndDropContainer.js:52
+        getParticipant(this.f);
+	});
 
 
 //	gadgets.rpc.register('_widget_iframe_ready',function() {
@@ -2008,7 +2080,7 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
   config.client=new ozpIwc.InternalParticipant();
   ozpIwc.defaultRouter.registerParticipant(config.client);
   config.guid="eb5435cf-4021-4f2a-ba69-dde451d12551"; // FIXME: generate
-  config.instanceId="666f46bf-d8da-27c4-b907-f4a3a9e58c75"; // FIXME: generate
+  config.instanceId=config.client.address; // FIXME: generate
   config.rpcId=gadgets.json.stringify({id:config.instanceId});
   this.participants[config.rpcId]=new ozpIwc.Owf7Participant(config);
 };

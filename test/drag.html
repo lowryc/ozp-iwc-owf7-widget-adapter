@@ -14,18 +14,34 @@
 
     <script type="text/javascript">
         OWF.ready(function() {
-            $('#drag').mousedown(function() {
+            $('#drag').mousedown(function(e) {
                 OWF.DragAndDrop.startDrag({
-                    dragDropLabel: "Drag Label",
-                    dragDropData: "Drop Data"
+                    dragDropLabel: "Drag Label " + Date.now(),
+                    dragDropData: "Drop Data "+ Date.now()
                 });
-            });            
+                e.preventDefault();
+                e.stopPropagation();
+            }).mouseup(function() {
+              $('#status').text("Mouse up!");  
+            });
+            var dragging=false;
+            OWF.DragAndDrop.onDragStart(function(msg) {
+              dragging = true;
+              $('#status').text("Started dragging "+msg);
+            });
+            OWF.DragAndDrop.onDragStop(function(msg) {
+                dragging = false;
+                $('#status').text("Stopped dragging "+msg);        
+            });
+            OWF.DragAndDrop.onDrop(function(msg) {
+                $('#status').text("Dropped "+msg);
+            });
         });        
     </script>
 
   </head>
 <body>
     <p id="drag" style="border: 1px solid black;">Drag this text to the other window!</p>
-    
+    <p id="status"></p>
 </body>
 </html>

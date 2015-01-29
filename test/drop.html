@@ -15,34 +15,43 @@
 
     <script type="text/javascript">
         OWF.ready(function() {
-            var dragging=true;
-            OWF.DragAndDrop.onDragStart(function() {
+            var dragging=false;
+            
+            OWF.DragAndDrop.onDragStart(function(msg) {
               dragging = true;
+              $('#drop').text("Started dragging "+msg);        
+            });
+            OWF.DragAndDrop.onDragStop(function(msg) {
+                dragging = false;
+                console.log("Stopped dragging ",arguments);
+                $('#drop').text("Stopped dragging ",JSON.stringify(arguments));        
               $('#drop').css('border','5px solid red');
             });
-            OWF.DragAndDrop.onDragStop(function() {
-             dragging = false;
-              $('#drop').css('border','1px solid black');
-           });
             OWF.DragAndDrop.onDrop(function(msg) {
                 $('#drop').text("Dropped "+msg);
-        }, this);
+            });
+            
+            
             $('#drop').mouseover(function() {
               if(dragging) {
+                $('#status').text("Drop Enabled!");
                 OWF.DragAndDrop.setDropEnabled(true);
               }
             }).mouseout(function() {
-              if (cmp.dragging) {
+              if (dragging) {
+                $('#status').text("Drop Disabled!");
                 OWF.DragAndDrop.setDropEnabled(false);
+                $('#drop').css('border','1px solid black');
               }
+            }).mouseup(function() {
+                $('#status').text("Mouse up!");
             });
-
         });        
     </script>
 
   </head>
 <body>
     <div id="drop" style="border: 1px solid black; height: 100px; width: 100%;">Drop here!</div>
-    
+    <pre id="status"></pre>
 </body>
 </html>
