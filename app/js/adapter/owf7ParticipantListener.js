@@ -23,7 +23,7 @@ ozpIwc.Owf7ParticipantListener=function(config) {
     var rpcString=function(rpc) {
 		return "[service:" + rpc.s + ",from:" + rpc.f + "]:" + JSON.stringify(rpc.a);
 	};
-	console.log("Registering RPC hooks");
+//	console.log("Registering RPC hooks");
 	gadgets.rpc.registerDefault(function() {
 		console.log("Unknown rpc " + rpcString(this));
 	});
@@ -42,7 +42,6 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 	 * @see js/eventing/Container.js:104 for the actual rpc.register
 	 */
 	gadgets.rpc.register('container_init',function(sender,message) {
-        console.log("Connecting from a new recipient: "+ sender + " with message: ",message);
         getParticipant(this.f).onContainerInit(sender,message);
 	});
 	
@@ -72,30 +71,8 @@ ozpIwc.Owf7ParticipantListener=function(config) {
                 break;
         }
 	});
-	gadgets.rpc.register('_widget_iframe_ready',function() {
-		// @see js/components/keys/KeyEventing.js
-	});
-	
-	/**
-	 * @see js\state\WidgetStateContainer.js:35
-	 */
-//	gadgets.rpc.register('_WIDGET_STATE_CHANNEL_'+this.widgetParams.id,function() {
-//		
-//	});
-//
-//	// Intents API
-//	
-//	// used for both handling and invoking intents
-//	// @see js/intents/WidgetIntentsContainer.js:32 for reference
-//	gadgets.rpc.register('_intents',function(senderId, intent, data, destIds) {
-//	});
-//	
-//	// used by widgets to register an intent
-//	// @see js/intents/WidgetIntentsContainer.js:85 for reference
-//	gadgets.rpc.register('_intents_receive',function(intent, destWidgetId) {
-//	});
-//
-// Launcher API
+    
+    // Launcher API
 // The handling of the rpc event is in WidgetLauncherContainer
 // @see js/launcher/WidgetLauncherContainer.js:22, 36
 // msg: {
@@ -115,12 +92,46 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 // WidgetIframeComponent actually creates the iframe tag.
 // @see js\components\widget\WidgetIframeComponent.js:15
 	gadgets.rpc.register('_WIDGET_LAUNCHER_CHANNEL',function(sender, msg) {
-        // if guid, look up by guid
-        // otherwise, look up by universalName
-        var widgetResource="/applications/blah/blah";
-        // ignore title, titleRegex, and launchOnlyIfClosed
-        var data="";
+        var p=getParticipant(this.f);
+        p.onLaunchWidget(sender,msg,this);
 	});
+    
+
+	
+    /**
+     * _fake_mouse_move is needed for drag and drop.  The container code is at
+     * @see reference\js\dd\WidgetDragAndDropContainer.js:52
+     */
+//    gadgets.rpc.register('_fake_mouse_move',function() {
+//		// @see @see reference\js\dd\WidgetDragAndDropContainer.js:52
+//	});
+
+
+//	gadgets.rpc.register('_widget_iframe_ready',function() {
+//		// @see js/components/keys/KeyEventing.js
+//	});
+
+
+	/**
+	 * @see js\state\WidgetStateContainer.js:35
+	 */
+//	gadgets.rpc.register('_WIDGET_STATE_CHANNEL_'+this.widgetParams.id,function() {
+//		
+//	});
+//
+//	// Intents API
+//	
+//	// used for both handling and invoking intents
+//	// @see js/intents/WidgetIntentsContainer.js:32 for reference
+//	gadgets.rpc.register('_intents',function(senderId, intent, data, destIds) {
+//	});
+//	
+//	// used by widgets to register an intent
+//	// @see js/intents/WidgetIntentsContainer.js:85 for reference
+//	gadgets.rpc.register('_intents_receive',function(intent, destWidgetId) {
+//	});
+//
+
 //
 //	// WidgetProxy readiness
 //	// @see js/kernel/kernel-rpc-base.js:130

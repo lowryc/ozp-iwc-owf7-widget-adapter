@@ -1,0 +1,13 @@
+{
+    "_links": {
+        "self": {"href":"/api/profile/v1/exampleUser/application"},
+        "item": [
+            { "href": "/api/profile/v1/exampleUser/application/12345", "title": "Blue Bouncing Balls" },
+            { "href": "/api/profile/v1/exampleUser/application/23456", "title": "Green Bouncing Balls" },
+            { "href": "/api/profile/v1/exampleUser/application/34567", "title": "Red Bouncing Balls" },
+            { "href": "/api/profile/v1/exampleUser/application/45678", "title": "Orange Bouncing Balls" },
+            { "href": "/api/profile/v1/exampleUser/application/56789", "title": "Gridster Layout" },
+            { "href": "/api/profile/v1/exampleUser/application/67890", "title": "IWC Debugger" }
+        ]
+    }
+}

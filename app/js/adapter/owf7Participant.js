@@ -19,11 +19,35 @@ ozpIwc.Owf7Participant=function(config) {
     this.listener=config.listener;
     this.rpcId=config.rpcId;
     this.instanceId=config.instanceId;
-    
+    this.url=config.url;
+    this.widgetGuid=config.guid;
     // Do a lookup on these two at some point
     this.widgetQuery="?lang=en_US&owf=true&themeName=a_default&themeContrast=standard&themeFontSize=12";
     
     this.iframe=config.iframe;
+    this.launchData={};
+    var self=this;
+
+    if(config.launchDataResource) {
+        this.client.send({
+            dst: "intents.api",
+            resource: config.launchDataResource,
+            action: "get"
+        }, function (response, done) {
+            if (response.response === 'ok') {
+                self.launchData = response.entity.entity;
+            }
+            self.initIframe();
+            done();
+        });
+    } else {
+        this.initIframe();
+    }
+
+  
+};
+ozpIwc.Owf7Participant.prototype.initIframe=function() {
+      
 	// these get turned into the iframes name attribute
 	// Refer to js/eventing/container.js:272
 	this.widgetParams={
@@ -31,8 +55,8 @@ ozpIwc.Owf7Participant=function(config) {
 		"webContextPath":"/owf",
 		"preferenceLocation": this.listener.prefsUrl,
 		"relayUrl":  this.listener.rpcRelay, 
-		"url": config.url,
-		"guid": config.guid,
+		"url": this.url,
+		"guid": this.widgetGuid,
 		// fixed values
 		"layout":"desktop",
 		"containerVersion":"7.0.1-GA",
@@ -45,14 +69,13 @@ ozpIwc.Owf7Participant=function(config) {
 		},		
 		"version":1,
 		"locked":false,
-        "data": config.launchData
+        "data": this.launchData
 	};
 	this.subscriptions={};
 	this.iframe.setAttribute("name",JSON.stringify(this.widgetParams));
     this.iframe.setAttribute("src",this.widgetParams.url+this.widgetQuery);
     this.iframe.setAttribute("id",this.rpcId);
 };
-
 ozpIwc.Owf7Participant.prototype.onContainerInit=function(sender,message) {
     // The container sends params, but the widget JS ignores them
     if ((window.name === "undefined") || (window.name === "")) {
@@ -74,11 +97,9 @@ ozpIwc.Owf7Participant.prototype.onContainerInit=function(sender,message) {
     gadgets.rpc.setAuthToken(idString, 0);
     var jsonString = '{\"id\":\"' + window.name + '\"}';
     gadgets.rpc.call(idString, 'after_container_init', null, window.name, jsonString);
-    console.log("Registered ",idString," with relayUrl ",initMessage.relayUrl);
 };
     
 ozpIwc.Owf7Participant.prototype.onPublish=function(command, channel, message, dest) {
-    console.log("Publishing ",message," to ", channel);
     this.client.send({
         "dst": "data.api",
         "resource": "/owf-legacy/eventing/" + channel,
@@ -87,7 +108,6 @@ ozpIwc.Owf7Participant.prototype.onPublish=function(command, channel, message, d
     });
 };
 ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message, dest) {
-    console.log("Subscribing to ", channel);
     var self=this;
     this.subscriptions[channel]=true;
     this.client.send({
@@ -95,8 +115,8 @@ ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message,
         "resource": "/owf-legacy/eventing/" + channel,
         "action": "watch"
     },function(packet,unregister) {
+        if(packet.response !== "changed") return;
         if(self.subscriptions[channel]) { 
-            console.log("Got subscription for " +self.rpcId + " on "+ channel, packet.entity.newValue);
             // from shindig/pubsub_router.js:77    
             //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
             gadgets.rpc.call(self.rpcId, 'pubsub', null, channel, null, JSON.stringify(packet.entity.newValue));
@@ -106,6 +126,26 @@ ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message,
     });
 };
 ozpIwc.Owf7Participant.prototype.onUnsubscribe=function(command, channel, message, dest) {
-    console.log("Unsubscribing from ", channel);
     this.subscriptions[channel]=false;
+};
+
+
+ozpIwc.Owf7Participant.prototype.onLaunchWidget=function(sender,msg,rpc) {
+    msg=JSON.parse(msg);    
+    // ignore title, titleRegex, and launchOnlyIfClosed
+    this.client.send({
+        dst: "system.api",
+        resource: "/application/" + msg.guid,
+        action: "launch",
+        contentType: "text/plain",
+        entity: msg.data
+    },function(reply,unregister) {
+      //gadgets.rpc.call(rpc.f, '__cb', null, rpc.c, {
+      rpc.callback({
+        error: false,
+        newWidgetLaunched: true,
+        uniqueId: "unknown,not supported yet"
+      });
+      unregister();
+    });
 };

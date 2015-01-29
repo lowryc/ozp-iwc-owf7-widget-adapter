@@ -1,0 +1,38 @@
+{
+    "name" : "Launcher Test Widget",
+    "id": "94c734b0-cbbb-4caf-9cb8-29a3d45afc84",
+    "description" : "Launcher Test Widget",
+    "descriptionShort": "Launcher Test Widget",
+    "contentType": "application/vnd.ozp-application-v1+json",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [ ],
+    "icons" : {
+        "small": "http://localhost:16001/largeIcon.png",
+        "large": "http://localhost:16001/smallIcon.png",
+        "banner": "http://localhost:16001/smallIcon.png",
+        "featuredBanner": "http://localhost:16001/smallIcon.png"
+    },
+    "screenshots" : [
+        {
+            "href" : "http://localhost:16001/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "http://localhost:16000/owf7adapter.html?url=http%3A%2F%2Flocalhost%3A16001%2Flaunched.html"
+    },
+    "_links": {
+        "self" : { "href": "/api/profile/v1/exampleUser/application/12345"},
+        "describes" : { "href": "http://localhost:16000/owf7adapter.html?url=http%3A%2F%2Flocalhost%3A16001%2Flaunched.html"},
+        "ozp:iwcSelf" : {"href": "web+ozp://system.api/application/23456"}
+    }
+}

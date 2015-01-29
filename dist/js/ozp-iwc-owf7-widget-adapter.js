@@ -1542,7 +1542,6 @@ gadgets.rpc = function() {
         channelType = 'ifpc';
       }
 
-      console.log("Sending to widget on " + channelType + " at url " + relayUrl[targetId] + " with " + (typeof rpcData)+ "=", rpcData);
       //alert('channelType:'+channelType);
       switch (channelType) {
         case 'dpm': // use document.postMessage.
@@ -1715,11 +1714,35 @@ ozpIwc.Owf7Participant=function(config) {
     this.listener=config.listener;
     this.rpcId=config.rpcId;
     this.instanceId=config.instanceId;
-    
+    this.url=config.url;
+    this.widgetGuid=config.guid;
     // Do a lookup on these two at some point
     this.widgetQuery="?lang=en_US&owf=true&themeName=a_default&themeContrast=standard&themeFontSize=12";
     
     this.iframe=config.iframe;
+    this.launchData={};
+    var self=this;
+
+    if(config.launchDataResource) {
+        this.client.send({
+            dst: "intents.api",
+            resource: config.launchDataResource,
+            action: "get"
+        }, function (response, done) {
+            if (response.response === 'ok') {
+                self.launchData = response.entity.entity;
+            }
+            self.initIframe();
+            done();
+        });
+    } else {
+        this.initIframe();
+    }
+
+  
+};
+ozpIwc.Owf7Participant.prototype.initIframe=function() {
+      
 	// these get turned into the iframes name attribute
 	// Refer to js/eventing/container.js:272
 	this.widgetParams={
@@ -1727,8 +1750,8 @@ ozpIwc.Owf7Participant=function(config) {
 		"webContextPath":"/owf",
 		"preferenceLocation": this.listener.prefsUrl,
 		"relayUrl":  this.listener.rpcRelay, 
-		"url": config.url,
-		"guid": config.guid,
+		"url": this.url,
+		"guid": this.widgetGuid,
 		// fixed values
 		"layout":"desktop",
 		"containerVersion":"7.0.1-GA",
@@ -1741,14 +1764,13 @@ ozpIwc.Owf7Participant=function(config) {
 		},		
 		"version":1,
 		"locked":false,
-        "data": config.launchData
+        "data": this.launchData
 	};
 	this.subscriptions={};
 	this.iframe.setAttribute("name",JSON.stringify(this.widgetParams));
     this.iframe.setAttribute("src",this.widgetParams.url+this.widgetQuery);
     this.iframe.setAttribute("id",this.rpcId);
 };
-
 ozpIwc.Owf7Participant.prototype.onContainerInit=function(sender,message) {
     // The container sends params, but the widget JS ignores them
     if ((window.name === "undefined") || (window.name === "")) {
@@ -1770,11 +1792,9 @@ ozpIwc.Owf7Participant.prototype.onContainerInit=function(sender,message) {
     gadgets.rpc.setAuthToken(idString, 0);
     var jsonString = '{\"id\":\"' + window.name + '\"}';
     gadgets.rpc.call(idString, 'after_container_init', null, window.name, jsonString);
-    console.log("Registered ",idString," with relayUrl ",initMessage.relayUrl);
 };
     
 ozpIwc.Owf7Participant.prototype.onPublish=function(command, channel, message, dest) {
-    console.log("Publishing ",message," to ", channel);
     this.client.send({
         "dst": "data.api",
         "resource": "/owf-legacy/eventing/" + channel,
@@ -1783,7 +1803,6 @@ ozpIwc.Owf7Participant.prototype.onPublish=function(command, channel, message, d
     });
 };
 ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message, dest) {
-    console.log("Subscribing to ", channel);
     var self=this;
     this.subscriptions[channel]=true;
     this.client.send({
@@ -1791,8 +1810,8 @@ ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message,
         "resource": "/owf-legacy/eventing/" + channel,
         "action": "watch"
     },function(packet,unregister) {
+        if(packet.response !== "changed") return;
         if(self.subscriptions[channel]) { 
-            console.log("Got subscription for " +self.rpcId + " on "+ channel, packet.entity.newValue);
             // from shindig/pubsub_router.js:77    
             //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
             gadgets.rpc.call(self.rpcId, 'pubsub', null, channel, null, JSON.stringify(packet.entity.newValue));
@@ -1802,8 +1821,28 @@ ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message,
     });
 };
 ozpIwc.Owf7Participant.prototype.onUnsubscribe=function(command, channel, message, dest) {
-    console.log("Unsubscribing from ", channel);
     this.subscriptions[channel]=false;
+};
+
+
+ozpIwc.Owf7Participant.prototype.onLaunchWidget=function(sender,msg,rpc) {
+    msg=JSON.parse(msg);    
+    // ignore title, titleRegex, and launchOnlyIfClosed
+    this.client.send({
+        dst: "system.api",
+        resource: "/application/" + msg.guid,
+        action: "launch",
+        contentType: "text/plain",
+        entity: msg.data
+    },function(reply,unregister) {
+      //gadgets.rpc.call(rpc.f, '__cb', null, rpc.c, {
+      rpc.callback({
+        error: false,
+        newWidgetLaunched: true,
+        uniqueId: "unknown,not supported yet"
+      });
+      unregister();
+    });
 };
 (function() {
     var absolutePath = function(href) {
@@ -1830,7 +1869,7 @@ ozpIwc.Owf7ParticipantListener=function(config) {
     var rpcString=function(rpc) {
 		return "[service:" + rpc.s + ",from:" + rpc.f + "]:" + JSON.stringify(rpc.a);
 	};
-	console.log("Registering RPC hooks");
+//	console.log("Registering RPC hooks");
 	gadgets.rpc.registerDefault(function() {
 		console.log("Unknown rpc " + rpcString(this));
 	});
@@ -1849,7 +1888,6 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 	 * @see js/eventing/Container.js:104 for the actual rpc.register
 	 */
 	gadgets.rpc.register('container_init',function(sender,message) {
-        console.log("Connecting from a new recipient: "+ sender + " with message: ",message);
         getParticipant(this.f).onContainerInit(sender,message);
 	});
 	
@@ -1879,30 +1917,8 @@ ozpIwc.Owf7ParticipantListener=function(config) {
                 break;
         }
 	});
-	gadgets.rpc.register('_widget_iframe_ready',function() {
-		// @see js/components/keys/KeyEventing.js
-	});
-	
-	/**
-	 * @see js\state\WidgetStateContainer.js:35
-	 */
-//	gadgets.rpc.register('_WIDGET_STATE_CHANNEL_'+this.widgetParams.id,function() {
-//		
-//	});
-//
-//	// Intents API
-//	
-//	// used for both handling and invoking intents
-//	// @see js/intents/WidgetIntentsContainer.js:32 for reference
-//	gadgets.rpc.register('_intents',function(senderId, intent, data, destIds) {
-//	});
-//	
-//	// used by widgets to register an intent
-//	// @see js/intents/WidgetIntentsContainer.js:85 for reference
-//	gadgets.rpc.register('_intents_receive',function(intent, destWidgetId) {
-//	});
-//
-// Launcher API
+    
+    // Launcher API
 // The handling of the rpc event is in WidgetLauncherContainer
 // @see js/launcher/WidgetLauncherContainer.js:22, 36
 // msg: {
@@ -1922,12 +1938,46 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 // WidgetIframeComponent actually creates the iframe tag.
 // @see js\components\widget\WidgetIframeComponent.js:15
 	gadgets.rpc.register('_WIDGET_LAUNCHER_CHANNEL',function(sender, msg) {
-        // if guid, look up by guid
-        // otherwise, look up by universalName
-        var widgetResource="/applications/blah/blah";
-        // ignore title, titleRegex, and launchOnlyIfClosed
-        var data="";
+        var p=getParticipant(this.f);
+        p.onLaunchWidget(sender,msg,this);
 	});
+    
+
+	
+    /**
+     * _fake_mouse_move is needed for drag and drop.  The container code is at
+     * @see reference\js\dd\WidgetDragAndDropContainer.js:52
+     */
+//    gadgets.rpc.register('_fake_mouse_move',function() {
+//		// @see @see reference\js\dd\WidgetDragAndDropContainer.js:52
+//	});
+
+
+//	gadgets.rpc.register('_widget_iframe_ready',function() {
+//		// @see js/components/keys/KeyEventing.js
+//	});
+
+
+	/**
+	 * @see js\state\WidgetStateContainer.js:35
+	 */
+//	gadgets.rpc.register('_WIDGET_STATE_CHANNEL_'+this.widgetParams.id,function() {
+//		
+//	});
+//
+//	// Intents API
+//	
+//	// used for both handling and invoking intents
+//	// @see js/intents/WidgetIntentsContainer.js:32 for reference
+//	gadgets.rpc.register('_intents',function(senderId, intent, data, destIds) {
+//	});
+//	
+//	// used by widgets to register an intent
+//	// @see js/intents/WidgetIntentsContainer.js:85 for reference
+//	gadgets.rpc.register('_intents_receive',function(intent, destWidgetId) {
+//	});
+//
+
 //
 //	// WidgetProxy readiness
 //	// @see js/kernel/kernel-rpc-base.js:130
@@ -1966,14 +2016,17 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
 
 
 })();
-var params=ozpIwc.util.parseQueryParams();
-
-
 var adapter=new ozpIwc.Owf7ParticipantListener();
-adapter.addWidget({
-    "url": params.url,
-    "iframe": document.getElementById("widgetFrame")
-});
 
-console.log("Adapter: ",adapter.participants);
+(function() {
+    var params=ozpIwc.util.parseQueryParams();
+    var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
+
+    adapter.addWidget({
+        "url": params.url,
+        "iframe": document.getElementById("widgetFrame"),
+        "launchDataResource": windowNameParams["ozpIwc.inFlightIntent"]
+    });
+    console.log("Adapter: ",adapter.participants);
+})();
 //# sourceMappingURL=ozp-iwc-owf7-widget-adapter.js.map

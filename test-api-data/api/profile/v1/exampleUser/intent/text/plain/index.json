@@ -1,0 +1,28 @@
+{
+    "_links": {
+        "self" : { "href": "/api/profile/v1/exampleUser/intent/v1/text/plain" },
+        "curies": [{
+            "name": "ozp",
+            "href": "/api/profile/v1/exampleUser/intent/rels/{rel}",
+            "templated": true
+        }],
+        "item" : [
+            { "href": "/api/profile/v1/exampleUser/intent/text/plain/view"},
+            { "href": "/api/profile/v1/exampleUser/intent/text/plain/edit"}
+        ]
+    },
+    "type": "text/plain",
+    "contentType": "application/vnd.ozp-iwc-intent-type-v1+json",
+    "_embedded": {
+        "item": [{
+            "type": "text/plain",
+            "action": "share",
+            "contentType": "application/vnd.ozp-iwc-intent-definition-v1+json",
+            "icon": "http://example.com/view-text-plain.png",
+            "label": "Share plain text",
+            "_links": {
+                "self" : {"href": "/api/profile/v1/exampleUser/intent/text/plain/share"}
+            }
+        }]
+    }
+}

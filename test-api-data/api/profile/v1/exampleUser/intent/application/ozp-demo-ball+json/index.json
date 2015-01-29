@@ -1,0 +1,27 @@
+{
+    "_links": {
+        "self": { "href": "/api/profile/v1/exampleUser/intent/application/ozp-demo-ball+json"},
+        "curies": [{
+            "name": "ozp",
+            "href": "/api/profile/v1/exampleUser/intent/rels/{rel}",
+            "templated": true
+        }],
+        "item": [
+            { "href": "/api/profile/v1/exampleUser/intent/application/ozp-demo-ball+json/view"}
+        ]
+    },
+    "type": "application/ozp-demo-ball+json",
+    "contentType": "application/vnd.ozp-iwc-intent-type-v1+json",
+    "_embedded": {
+        "item": [{
+            "type": "application/ozp-demo-ball+json",
+            "action": "edit",
+            "contentType": "application/vnd.ozp-iwc-intent-definition-v1+json",
+            "icon": "http://example.com/view-text-plain.png",
+            "label": "Edit a bouncing ball",
+            "_links": {
+                "self" : { "href" : "/api/profile/v1/exampleUser/intent/application/ozp-demo-ball+json/edit"}
+            }
+        }]
+    }
+}

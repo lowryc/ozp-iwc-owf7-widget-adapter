@@ -1,0 +1,37 @@
+{
+    "name" : "Incident History",
+    "description" : "History of a given incident type.",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [{
+      "type": "application/incident+json",
+      "action": "view",
+      "icon": "/ozp-demo/incidentHistory/intentIcon.png",
+      "label": "View Incident History"
+    } ],
+    "icons" : {
+        "small": "/ozp-demo/incidentHistory/smallIcon.png",
+        "large": "/ozp-demo/incidentHistory/largeIcon.png"
+    },
+    "screenShots" : [
+        {
+            "href" : "/ozp-demo/incidentHistory/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "/ozp-demo/incidentHistory"
+    },
+    "_links": {
+        "self" : { "href": "/api/application/v1/incidentHistory"},
+        "describes" : {"href":"/ozp-demo/incidentHistory"}
+    }
+}

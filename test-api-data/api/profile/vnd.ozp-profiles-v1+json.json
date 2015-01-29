@@ -1,0 +1,91 @@
+{
+    "_embedded": {
+        "item": [
+            {
+                "_embedded": {
+                    "ozp:organization": {
+                        "_links": {
+                            "self": {
+                                "href": "https://localhost:8443/marketplace/api/agency/1"
+                            }
+                        },
+                        "icon": "https://localhost/",
+                        "id": 1,
+                        "title": "Agency 1"
+                    }
+                },
+                "_links": {
+                    "ozp:application-library": {
+                        "href": "https://localhost:8443/marketplace/api/profile/1/library"
+                    },
+                    "ozp:stewardship": {
+                        "href": "https://localhost:8443/marketplace/api/profile/1/stewarded-organizations"
+                    },
+                    "ozp:user-data": {
+                        "href":  "https://localhost:8443/marketplace/api/profile/1/data"
+                    },
+                    "self": {
+                        "href": "https://localhost:8443/marketplace/api/profile/1"
+                    }
+                },
+                "id": 1,
+                "bio": null,
+                "createdDate": "2014-09-18T18:59:27.795+0000",
+                "displayName": "Slackbot",
+                "email": "slackbot@nowhere.com",
+                "lastLogin": "2014-09-23T14:02:27.875+0000",
+                "highestRole": "USER",
+                "organizations": [
+                    {
+                        "id": 1
+                    }
+                ],
+                "username": "slackbot"
+            },
+            {
+                "_links": {
+                    "ozp:application-library": {
+                        "href": "https://localhost:8443/marketplace/api/profile/33/library"
+                    },
+                    "ozp:stewardship": {
+                        "href": "https://localhost:8443/marketplace/api/profile/33/stewarded-organizations"
+                    },
+                    "ozp:user-data": {
+                        "href":  "https://localhost:8443/marketplace/api/profile/33/data"
+                    },
+                    "self": {
+                        "href": "https://localhost:8443/marketplace/api/profile/33"
+                    }
+                },
+                "id": 2,
+                "bio": "",
+                "createdDate": "2014-09-22T19:09:36.256+0000",
+                "displayName": "System",
+                "email": "",
+                "lastLogin": "2014-09-22T19:09:36.181+0000",
+                "highestRole": "ADMIN",
+                "organizations": [],
+                "username": "System"
+            }
+        ]
+    },
+    "_links": {
+        "curies": {
+            "href": "http://ozoneplatform.org/docs/rels/{rel}",
+            "name": "ozp",
+            "templated": true
+        },
+        "item": [
+            {
+                "href": "https://localhost:8443/marketplace/api/profile/1"
+            },
+            {
+                "href": "https://localhost:8443/marketplace/api/profile/33"
+            }
+        ],
+        "self": {
+            "href": "https://localhost:8443/marketplace/api/profile"
+        }
+    },
+    "total": 2
+}

@@ -1,0 +1,37 @@
+{
+    "name" : "Filter Violation Information",
+    "description" : "Information about a web filtering violation",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [ {
+      "type": "application/filterViolations+json",
+      "action": "view",
+      "icon": "/ozp-demo/webViloationInfo/intentIcon.png",
+      "label": "View Violation Information"
+    }],
+    "icons" : {
+        "small": "/ozp-demo/webViolationInfo/smallIcon.png",
+        "large": "/ozp-demo/webViolationInfo/largeIcon.png"
+    },
+    "screenShots" : [
+        {
+            "href" : "/ozp-demo/webViolationInfo/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "/ozp-demo/webViolationInfo"
+    },
+    "_links": {
+        "self" : { "href": "/api/application/v1/webViolationInfo"},
+        "describes" : {"href":"/ozp-demo/webViolationInfo"}
+    }
+}

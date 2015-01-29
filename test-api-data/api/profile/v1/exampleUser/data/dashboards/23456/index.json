@@ -1,0 +1,227 @@
+{
+    "_links": {
+        "self": {
+            "href": "/api/profile/v1/exampleUser/data/dashboard/23456"
+        },
+        "ozp:iwcSelf": {
+            "href": "web+ozp://data.api/dashboard/23456"
+        }
+    },
+    "contentType": "application/vnd.ozp-data-object-v1+json",
+    "key": "dashboard/23456",
+    "entity": {
+        "name": "dashboards",
+        "user": "joebloe",
+        "currentDashboard": "0",
+        "dashboards": [
+            {
+                "name": "Junk",
+                "id": "0",
+                "layout": "grid",
+                "frames": [
+                    {
+                        "appId": "342f3680-18c9-11e4-8c21-0800200c9a66",
+                        "id": "3f9be9e5-5f85-45c7-afb7-42aa12952ab9",
+                        "gridLayout": {
+                            "row": 0,
+                            "col": 1,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 0,
+                            "top": 200,
+                            "left": 100,
+                            "width": 200,
+                            "height": 200
+                        }
+                    },
+                    {
+                        "appId": "d9d3b477-7c21-4cab-bd9f-771ee9379be4",
+                        "id": "e2d96928-874c-4f7d-a097-bb10816696a4",
+                        "gridLayout": {
+                            "row": 0,
+                            "col": 2,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 0,
+                            "top": 125,
+                            "left": 400,
+                            "width": 200,
+                            "height": 200
+                        }
+                    },
+                    {
+                        "appId": "c3d895d5-f332-4154-b963-c5dd63f8ca49",
+                        "id": "9c6a0a7a-e5e7-4823-887d-8f58bbbd41b6",
+                        "gridLayout": {
+                            "row": 1,
+                            "col": 1,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 1,
+                            "top": 300,
+                            "left": 200,
+                            "width": 200,
+                            "height": 200
+                        }
+                    },
+                    {
+                        "appId": "34bc3505-5dcc-4609-bcd6-c014d9f27ce5",
+                        "id": "2a27461e-7826-4535-9044-ea5481e361ad",
+                        "gridLayout": {
+                            "row": 1,
+                            "col": 2,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 1,
+                            "top": 250,
+                            "left": 500,
+                            "width": 200,
+                            "height": 200
+                        }
+                    },
+                    {
+                        "appId": "19179c15-4cbb-45af-9fde-c6b35a343424",
+                        "id": "d9475c4c-1aae-4e03-9ab4-8edee157d394",
+                        "gridLayout": {
+                            "row": 0,
+                            "col": 0,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 5,
+                            "top": 100,
+                            "left": 100,
+                            "width": 200,
+                            "height": 200
+                        }
+                    },
+                    {
+                        "appId": "bc6b3ac9-4f68-4d92-966d-f50170914997",
+                        "id": "d6485e05-7f89-4e84-8b8b-3e6d51933a30",
+                        "gridLayout": {
+                            "row": 0,
+                            "col": 0,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 0,
+                            "top": 100,
+                            "left": 100,
+                            "width": 200,
+                            "height": 200
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Other stuff",
+                "id": "1",
+                "layout": "desktop",
+                "frames": [
+                    {
+                        "appId": "342f3680-18c9-11e4-8c21-0800200c9a66",
+                        "id": "1caba47d-5bf0-4a98-8491-cee17c3fff41",
+                        "gridLayout": {
+                            "col": 1,
+                            "row": 1,
+                            "sizeX": 3,
+                            "sizeY": 3
+                        },
+                        "desktopLayout": {
+                            "zIndex": 0,
+                            "top": 125,
+                            "left": 200,
+                            "width": 300,
+                            "height": 300
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Bouncing Balls",
+                "id": "2",
+                "layout": "grid",
+                "frames": [
+                    {
+                        "appId": "998437ef-9191-4d57-91a7-6ab049361583",
+                        "id": "b8946056-dc1f-47e9-b99f-81aef8866a08",
+                        "gridLayout": {
+                            "col": 1,
+                            "row": 1,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 0,
+                            "top": 125,
+                            "left": 200,
+                            "width": 300,
+                            "height": 300
+                        }
+                    },
+                    {
+                        "appId": "3af849aa-dad0-4223-b15b-9da3b48d1845",
+                        "id": "bf23a226-6292-4fa7-9091-b6ed6901de3b",
+                        "gridLayout": {
+                            "col": 2,
+                            "row": 1,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 0,
+                            "top": 125,
+                            "left": 700,
+                            "width": 300,
+                            "height": 300
+                        }
+                    },
+                    {
+                        "appId": "e5f52929-3f00-4766-a820-f0452ff74572",
+                        "id": "e5b5e58b-729b-464b-bcd9-2bc0eabd7cad",
+                        "gridLayout": {
+                            "col": 1,
+                            "row": 1,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 0,
+                            "top": 500,
+                            "left": 200,
+                            "width": 300,
+                            "height": 300
+                        }
+                    },
+                    {
+                        "appId": "93eb7a1d-618c-4478-a59e-326eccbe86d5",
+                        "id": "f13dec5e-cd9a-467d-b1d4-63ca5d87ebfe",
+                        "gridLayout": {
+                            "col": 2,
+                            "row": 1,
+                            "sizeX": 1,
+                            "sizeY": 1
+                        },
+                        "desktopLayout": {
+                            "zIndex": 0,
+                            "top": 500,
+                            "left": 700,
+                            "width": 300,
+                            "height": 300
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

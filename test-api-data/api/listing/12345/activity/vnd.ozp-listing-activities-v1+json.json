@@ -1,0 +1,319 @@
+{
+    "total": 11,
+    "_links": {
+        "curies": {
+            "href": "http://ozoneplatform.org/docs/rels/{rel}",
+            "name": "ozp",
+            "templated": true
+        },
+        "self": {
+            "href": "https://localhost:8443/marketplace/api/listing/activity"
+        },
+        "via": {
+            "href": "https://localhost:8443/marketplace/api/listing/1"
+        }
+    },
+    "_embedded": {
+        "item": [{
+            "activityDate": "2014-10-28T17:14:56.473+0000",
+            "changeDetails": [{
+                "oldValue": null,
+                "newValue": "Test User 1",
+                "fieldName": "reviewOwner"
+            }],
+            "action": "REVIEW_DELETED",
+            "id": 226,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "activityDate": "2014-10-28T17:14:18.309+0000",
+            "changeDetails": [{
+                "oldValue": "no test eest",
+                "newValue": "no test est",
+                "fieldName": "Test User 1's Review"
+            }],
+            "action": "REVIEW_EDITED",
+            "id": 225,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "activityDate": "2014-10-28T17:11:21.333+0000",
+            "changeDetails": [{
+                "oldValue": "no test est",
+                "newValue": "no test eest",
+                "fieldName": "Test User 1's Review"
+            }],
+            "action": "REVIEW_EDITED",
+            "id": 194,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "activityDate": "2014-10-28T17:11:13.155+0000",
+            "changeDetails": [{
+                "oldValue": "no test est",
+                "newValue": "no test est",
+                "fieldName": "Test User 1's Review"
+            }],
+            "action": "REVIEW_EDITED",
+            "id": 193,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "activityDate": "2014-10-28T17:07:01.535+0000",
+            "changeDetails": [],
+            "action": "REVIEW_EDITED",
+            "id": 161,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "activityDate": "2014-10-28T16:11:54.201+0000",
+            "changeDetails": [],
+            "action": "APPROVED",
+            "id": 99,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "activityDate": "2014-10-28T16:11:45.101+0000",
+            "changeDetails": [],
+            "action": "SUBMITTED",
+            "id": 98,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "rejectionDescription": "test test test",
+            "activityDate": "2014-10-27T19:13:53.678+0000",
+            "changeDetails": [],
+            "action": "REJECTED",
+            "id": 65,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "activityDate": "2014-10-27T14:06:16.820+0000",
+            "changeDetails": [{
+                "oldValue": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum lectus faucibus ante dapibus commodo. Quisque egestas, eros sit amet dignissim sagittis, justo enim facilisis ante, et elementum ligula elit id nunc. Ut mollis enim nec arcu porta pulvinar. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In vitae nisl turpis. Sed congue at arcu eget feugiat. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis est sapien, posuere et lobortis ac, sodales et sapien.Sed auctor molestie velit, nec sollicitudin ipsum bibendum ut. Quisque ut congue lectus. Nunc commodo non arcu sit amet vestibulum. Sed et ligula vitae justo hendrerit cursus et eget augue. Sed ullamcorper magna at euismod cursus. Vivamus id ligula purus. Nulla dapibus rhoncus tristique. Duis efficitur eleifend justo at ullamcorper. Ut condimentum velit sit amet posuere facilisis. Vestibulum at nisi elit. Aliquam eget enim accumsan, dapibus magna quis, ultricies nunc. Donec imperdiet est lacus, nec blandit felis venenatis id.",
+                "newValue": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum lectus faucibus ante dapibus commodo. Quisque egestas, eros sit amet dignissim sagittis, justo enim facilisis ante, et elementum ligula elit id nunc. Ut mollis enim nec arcu porta pulvinar. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In vitae nisl turpis. Sed congue at arcu eget feugiat. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis est sapien, posuere et lobortis ac, sodales et sapien.Sed auctor molestie velit, nec sollicitudin ipsum bibendum ut. Quisque ut congue lectus. Nunc commodo non arcu sit amet vestibulum. Sed et ligula vitae justo aaa hendrerit cursus et eget augue. Sed ullamcorper magna at euismod cursus. Vivamus id ligula purus. Nulla dapibus rhoncus tristique. Duis efficitur eleifend justo at ullamcorper. Ut condimentum velit sit amet posuere facilisis. Vestibulum at nisi elit. Aliquam eget enim accumsan, dapibus magna quis, ultricies nunc. Donec imperdiet est lacus, nec blandit felis venenatis id.",
+                "fieldName": "description"
+            }, {
+                "oldValue": "Air Mail",
+                "newValue": "Air Mailer",
+                "fieldName": "title"
+            }],
+            "action": "MODIFIED",
+            "id": 34,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "activityDate": "2014-10-27T14:06:16.676+0000",
+            "changeDetails": [],
+            "action": "SUBMITTED",
+            "id": 33,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }, {
+            "activityDate": "2014-10-24T16:14:33.346+0000",
+            "changeDetails": [],
+            "action": "CREATED",
+            "id": 1,
+            "_links": {
+                "author": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                },
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                }
+            },
+            "_embedded": {
+                "author": {
+                    "displayName": "Test Admin 1",
+                    "username": "testAdmin1",
+                    "id": 2,
+                    "_links": {
+                        "self": {
+                            "href": "https://localhost:8443/marketplace/api/profile/2"
+                        }
+                    }
+                }
+            }
+        }]
+    }
+}

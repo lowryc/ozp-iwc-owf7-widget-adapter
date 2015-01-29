@@ -1,0 +1,37 @@
+{
+    "name" : "Server Status",
+    "description" : "Nagios page for a server",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [{
+      "type": "application/server+json",
+      "action": "view",
+      "icon": "/ozp-demo/serverStatus/intentIcon.png",
+      "label": "View Server Status"
+    } ],
+    "icons" : {
+        "small": "/ozp-demo/serverStatus/smallIcon.png",
+        "large": "/ozp-demo/serverStatus/largeIcon.png"
+    },
+    "screenShots" : [
+        {
+            "href" : "/ozp-demo/serverStatus/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "/ozp-demo/serverStatus"
+    },
+    "_links": {
+        "self" : { "href": "/api/application/v1/serverStatus"},
+        "describes" : {"href":"/ozp-demo/serverStatus"}
+    }
+}

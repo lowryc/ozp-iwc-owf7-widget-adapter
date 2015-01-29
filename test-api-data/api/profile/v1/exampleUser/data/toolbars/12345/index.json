@@ -1,0 +1,43 @@
+{
+    "_links": {
+        "self": {"href": "/api/data/v1/exampleUser/toolbars/12345"},
+        "ozp:iwcSelf": {"href": "web+ozp://data.api/toolbars/12345"}
+    },
+    "contentType": "application/vnd.ozp-data-object-v1+json",
+    "key": "toolbars/12345",
+    "entity":{
+        "toolbars": [
+            {
+                "buttons": [
+                    {
+                        "icon": "images/earth.png",
+                        "text": "Desktop",
+                        "elliptical": true,
+                        "index": 1,
+                        "url": "#/desktop"
+                    },
+                    {
+                        "icon": "images/home-icon.png",
+                        "text": "Grid",
+                        "elliptical": true,
+                        "index": 0,
+                        "url": "#/grid"
+                    }
+                ],
+                "location": "top"
+            },
+            {
+                "buttons": [
+                    {
+                        "icon": "images/broken-dvd-icon.png",
+                        "text": "Ozp Button 2",
+                        "elliptical": false,
+                        "index": 0,
+                        "url": "#"
+                    }
+                ],
+                "location": "bottom"
+            }
+        ]
+    }
+}

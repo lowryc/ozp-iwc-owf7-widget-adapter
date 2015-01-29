@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drop Tests</title>
+
+    <script type="text/javascript" src="/lib/owf7/owf-widget-debug.js"></script>
+    <script type="text/javascript" src="/lib/owf7/jquery-2.1.0.min.js"></script>
+    <link href="/lib/owf7/dragAndDrop.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="/js/ozpIwc-client.js"></script>
+
+    <script>
+        Ozone.eventing.Widget.widgetRelayURL = '/lib/owf7/rpc_relay.uncompressed.html';
+        owfdojo.config.dojoBlankHtmlUrl="/lib/owf7/dojo-1.5.0-windowname-only/dojo/resources/blank.html";
+    </script>
+
+    <script type="text/javascript">
+        var client=new ozpIwc.Client({peerUrl:"http://localhost:16000"});
+        OWF.ready(function() {
+            client.connect().then(function() {
+                $("#notice").text("Data: "+OWF.Launcher.getLaunchData());
+                return client.api('data.api').set("/owf-legacy-tests/launchData",{ 
+                    entity: OWF.Launcher.getLaunchData()
+                });                
+            }).then(function() {
+                $("#notice").append("\n\All done, close this window, now.");
+                window.close();
+            }).catch(function(error) {
+                $("#notice").text(JSON.stringify(error,null,2));
+            });
+        });
+    </script>
+
+  </head>
+<body>
+    <pre id="notice" style="border: 1px solid black; height: 100px; width: 100%;">Waiting for launchData...</pre>
+    
+</body>
+</html>

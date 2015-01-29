@@ -1,0 +1,40 @@
+{
+    "name" : "Debugger",
+    "id": "f084e827-ce8d-4f2c-97f8-13eba94ae889",
+    "description" : "The IWC Debugger",
+    "descriptionShort" : "The IWC Debugger",
+    "contentType": "application/vnd.ozp-application-v1+json",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [ ],
+    "icons" : {
+        "small": "http://localhost:13000/tools/debugger/smallIcon.png",
+        "large": "http://localhost:13000/tools/debugger/largeIcon.png",
+        "banner": "http://localhost:13000/tools/debugger/smallIcon.png",
+        "featuredBanner": "http://localhost:13000/tools/debugger/largeIcon.png"
+    },
+    "screenshots" : [
+        {
+            "href" : "http://localhost:13000/tools/debugger/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "http://localhost:15004/",
+        "test" : "http://test.localhost:15004/"
+    },
+    "_links": {
+        "self" : { "href": "/api/profile/v1/exampleUser/application/67890"},
+        "describes" : {"href":"http://localhost:13000/tools/debugger"},
+        "ozp:iwcSelf" : {"href": "web+ozp://system.api/application/67890"}
+
+    }
+}

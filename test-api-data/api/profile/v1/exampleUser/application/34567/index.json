@@ -1,0 +1,47 @@
+{
+    "name" : "Red Bouncing Ball",
+    "id": "bf9b3b6a-b7cb-4f65-8923-e371e9165e23",
+    "description" : "A red bouncing ball",
+    "descriptionShort" : "A red bouncing ball",
+    "contentType": "application/vnd.ozp-application-v1+json",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [
+        {
+            "type": "application/ozp-demo-ball+json",
+            "action": "view",
+            "icon": "http://localhost:15002/largeIcon.png",
+            "label": "Red Ball"
+        }
+    ],
+    "icons" : {
+        "small": "http://localhost:15002/largeIcon.png",
+        "large": "http://localhost:15002/smallIcon.png",
+        "banner": "http://localhost:15002/largeIcon.png",
+        "featuredBanner": "http://localhost:15002/smallIcon.png"
+    },
+    "screenshots" : [
+        {
+            "href" : "http://localhost:15002/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "http://localhost:15002/?color=red",
+        "test" : "http://test.localhost:15002/?color=red"
+    },
+    "_links": {
+        "self" : { "href": "/api/profile/v1/exampleUser/application/34567"},
+        "describes" : {"href": "http://localhost:15002/?color=red"},
+        "ozp:iwcSelf" : {"href": "web+ozp://system.api/application/34567"}
+
+    }
+}

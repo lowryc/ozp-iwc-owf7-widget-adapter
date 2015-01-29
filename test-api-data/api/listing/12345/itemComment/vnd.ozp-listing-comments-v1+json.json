@@ -1,0 +1,48 @@
+{
+    "_links": {
+        "curies": {
+            "href": "http://ozoneplatform.org/docs/rels/{rel}",
+            "name": "ozp",
+            "templated": true
+        },
+        "self": {
+            "href": "https://localhost:8443/marketplace/api/listing/1/itemComment"
+        },
+        "via": {
+            "href": "https://localhost:8443/marketplace/api/listing/1"
+        }
+    },
+    "_embedded": {
+        "item": [{
+            "rate": null,
+            "text": "blah blah",
+            "id": 129,
+            "_links": {
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                },
+                "self": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1/itemComment/129"
+                },
+                "via": {
+                    "href": "https://localhost:8443/marketplace/api/profile/33"
+                }
+            }
+        }, {
+            "rate": 3,
+            "text": "hello?",
+            "id": 33,
+            "_links": {
+                "ozp:application": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1"
+                },
+                "self": {
+                    "href": "https://localhost:8443/marketplace/api/listing/1/itemComment/33"
+                },
+                "via": {
+                    "href": "https://localhost:8443/marketplace/api/profile/2"
+                }
+            }
+        }]
+    }
+}

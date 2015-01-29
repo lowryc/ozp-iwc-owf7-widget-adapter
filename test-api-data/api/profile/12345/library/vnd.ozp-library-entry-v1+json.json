@@ -1,0 +1,42 @@
+{
+    "_embedded": {
+        "ozp:application": {
+            "_links": {
+                "describes": {
+                    "href": "https://localhost:8443/app5"
+                },
+                "self": {
+                    "href": "https://localhost:8443/marketplace/api/serviceItem/5"
+                }
+            },
+            "icons": {
+                "banner": "https://localhost:8443/5/banner.png",
+                "featuredBanner": "https://localhost:84435/5/featured-banner.png",
+                "large": "https://localhost:8443/5/icon.png",
+                "small": "https://localhost:8443/5/small-icon.png"
+            },
+            "id": 5,
+            "launchUrls": {
+                "default": "https://localhost:8443/app5"
+            },
+            "title": null
+        }
+    },
+    "_links": {
+        "collection": {
+            "href": "https://localhost:8443/marketplace/api/profile/2/library"
+        },
+        "curies": {
+            "href": "http://ozoneplatform.org/docs/rels/{rel}",
+            "name": "ozp",
+            "templated": true
+        },
+        "self": {
+            "href": "https://localhost:8443/marketplace/api/profile/2/library/2"
+        }
+    },
+    "folder": "Folder 1",
+    "serviceItem": {
+        "id": 1
+    }
+}

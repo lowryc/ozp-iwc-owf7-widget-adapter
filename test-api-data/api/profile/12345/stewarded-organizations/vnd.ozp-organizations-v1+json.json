@@ -1,0 +1,19 @@
+{
+    "_embedded": {
+        "item": {
+            "_links": {
+                "self": {
+                    "href": "https://localhost:8443/marketplace/api/agency/1"
+                }
+            },
+            "icon": "https://localhost/",
+            "id": 1,
+            "title": "Agency 1"
+        }
+    },
+    "_links": {
+        "self": {
+            "href": "https://localhost:8443/marketplace/api/profile/1/stewarded-organizations"
+        }
+    }
+}

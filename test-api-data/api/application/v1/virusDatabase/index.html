@@ -1,0 +1,37 @@
+{
+    "name" : "Virus Database",
+    "description" : "Symantic Virus Database",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [{
+      "type": "application/virus+json",
+      "action": "view",
+      "icon": "/ozp-demo/virusDatabase/intentIcon.png",
+      "label": "View Virus Information"
+    } ],
+    "icons" : {
+        "small": "/ozp-demo/virusDatabase/smallIcon.png",
+        "large": "/ozp-demo/virusDatabase/largeIcon.png"
+    },
+    "screenShots" : [
+        {
+            "href" : "/ozp-demo/virusDatabase/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "/ozp-demo/virusDatabase"
+    },
+    "_links": {
+        "self" : { "href": "/api/application/v1/virusDatabase"},
+        "describes" : {"href":"/ozp-demo/virusDatabase"}
+    }
+}

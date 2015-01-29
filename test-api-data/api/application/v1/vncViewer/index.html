@@ -1,0 +1,37 @@
+{
+    "name" : "Desktop Viewer",
+    "description" : "Snoops on a user's workstation",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [    {
+      "type": "application/workstation+json",
+      "action": "view",
+      "icon": "/ozp-demo/vncViewer/intentIcon.png",
+      "label": "View Workstation Desktop"
+    } ],
+    "icons" : {
+        "small": "/ozp-demo/vncViewer/smallIcon.png",
+        "large": "/ozp-demo/vncViewer/largeIcon.png"
+    },
+    "screenShots" : [
+        {
+            "href" : "/ozp-demo/vncViewer/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "/ozp-demo/vncViewer"
+    },
+    "_links": {
+        "self" : { "href": "/api/application/v1/vncViewer"},
+        "describes" : {"href":"/ozp-demo/vncViewer"}
+    }
+}

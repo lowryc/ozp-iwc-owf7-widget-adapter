@@ -1066,7 +1066,6 @@ gadgets.rpc = function() {
         channelType = 'ifpc';
       }
 
-      console.log("Sending to widget on " + channelType + " at url " + relayUrl[targetId] + " with " + (typeof rpcData)+ "=", rpcData);
       //alert('channelType:'+channelType);
       switch (channelType) {
         case 'dpm': // use document.postMessage.

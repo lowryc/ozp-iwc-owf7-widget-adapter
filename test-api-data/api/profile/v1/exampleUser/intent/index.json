@@ -1,0 +1,15 @@
+{
+    "_links": {
+        "self": { "href":"/api/profile/v1/exampleUser/intent"},
+        "curies": [{
+            "name": "ozp",
+            "href": "/api/profile/v1/exampleUser/intent/rels/{rel}",
+            "templated": true
+        }],
+        "item": [
+            { "href": "/api/profile/v1/exampleUser/intent/application/ozp-demo-ball+json"},
+            { "href" : "/api/profile/v1/exampleUser/intent/text/html"},
+            { "href" : "/api/profile/v1/exampleUser/intent/text/plain"}
+        ]
+    }
+}

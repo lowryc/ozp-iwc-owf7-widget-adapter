@@ -1,0 +1,37 @@
+{
+    "name" : "Workstation web history",
+    "description" : "Shows web sites that a workstation has visited",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [{
+      "type": "application/filterViolations+json",
+      "action": "view",
+      "icon": "/ozp-demo/workstationWebHistory/intentIcon.png",
+      "label": "View Violation Information"
+    } ],
+    "icons" : {
+        "small": "/ozp-demo/workstationWebHistory/smallIcon.png",
+        "large": "/ozp-demo/workstationWebHistory/largeIcon.png"
+    },
+    "screenShots" : [
+        {
+            "href" : "/ozp-demo/workstationWebHistory/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "/ozp-demo/workstationWebHistory"
+    },
+    "_links": {
+        "self" : { "href": "/api/application/v1/workstationWebHistory"},
+        "describes" : {"href":"/ozp-demo/workstationWebHistory"}
+    }
+}

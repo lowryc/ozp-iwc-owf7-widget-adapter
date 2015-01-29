@@ -1,0 +1,11 @@
+{
+    "_links": {
+        "self" : {"href": "/api/profile/v1/exampleUser/intent/text/html/view"},
+        "ozp:iwcSelf" : {"href" : "intents.api/text/html/view"}
+    },
+    "type": "text/html",
+    "action": "view",
+    "contentType": "application/vnd.ozp-iwc-intent-definition-v1+json",
+    "icon": "http://example.com/view-text-plain.png",
+    "label": "View as HTML"
+}

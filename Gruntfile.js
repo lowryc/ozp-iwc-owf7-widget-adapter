@@ -86,7 +86,18 @@ module.exports = function(grunt) {
         },
         connect: {
             bus: {
-                options: {port: 16000, base: ['dist','bower_components/ozp-iwc/dist']}
+                options: {port: 16000, base: [
+                    {
+                        "path":"test-api-data",
+                        options: {
+                            directory: false,
+                            index: "index.json"
+                        }
+                    },
+                    'dist',
+                    'bower_components/ozp-iwc/dist'
+                    
+                ]}
             },
             tests: {
                 options: {port: 16001, base: ['dist','test','bower_components/ozp-iwc/dist']}

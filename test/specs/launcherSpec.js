@@ -5,5 +5,21 @@ describe("Widget Launcher", function() {
         client.connect().then(done);
     });
     
-
+    it("OWF.Launcher.launch() and getLaunchData()",function(done) {
+        var data="Hello World, #" + Date.now();
+        client.api('data.api').watch("/owf-legacy-tests/launchData",function(packet,unregister) {
+            expect(packet.entity.newValue).toEqual(data);
+            unregister();
+            done();
+        });
+        
+        OWF.Launcher.launch({
+            guid: "94c734b0-cbbb-4caf-9cb8-29a3d45afc84",
+            launchOnlyIfClosed: true,
+			title: 'Channel Listener Launched',
+            data: data
+        }, function(response) {
+            // some tests here, I guess
+		});
+    });
 });

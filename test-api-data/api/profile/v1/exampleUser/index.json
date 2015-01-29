@@ -1,0 +1,35 @@
+{
+    "createdDate": "2014-09-18T18:59:27.795+0000",
+    "email": "slackbot@nowhere.com",
+    "highestRole": "USER",
+    "organizations": [
+        {
+            "id": 1
+        }
+    ],
+    "bio": null,
+    "lastLogin": "2014-09-23T14:02:27.875+0000",
+    "username": "slackbot",
+    "id": 1,
+    "displayName": "Slackbot",
+    "contentType": "application/vnd.ozp-profile-v1+json",
+    "_links": {
+        "curies": {
+            "href": "http://ozoneplatform.org/docs/rels/{rel}",
+            "name": "ozp",
+            "templated": true
+        },
+        "ozp:application-library": {
+            "href": "/api/profile/v1/exampleUser/library"
+        },
+        "ozp:stewardship": {
+            "href": "/api/profile/v1/exampleUser/stewarded-organizations"
+        },
+        "ozp:user-data": {
+            "href":  "/api/profile/v1/exampleUser/data"
+        },
+        "self": {
+            "href": "/api/profile/v1/exampleUser"
+        }
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "name" : "Gridster Layout",
+    "id": "8e8265bb-fef8-49ab-8b13-2356a1647b6b",
+    "description" : "A sample container that presents widgets in a tile based layout",
+    "descriptionShort" : "A sample container using a tile layout",
+    "contentType": "application/vnd.ozp-application-v1+json",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [],
+    "icons" : {
+        "small": "http://localhost:15004/largeIcon.png",
+        "large": "http://localhost:15004/smallIcon.png",
+        "banner": "http://localhost:15004/largeIcon.png",
+        "featuredBanner": "http://localhost:15004/smallIcon.png"
+    },
+    "screenshots" : [
+        {
+            "href" : "http://localhost:15004/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "http://localhost:15004/",
+        "test" : "http://test.localhost:15004/"
+    },
+
+    "_links": {
+        "self" : { "href": "/api/profile/v1/exampleUser/application/56789"},
+        "describes": { "href": "http://localhost:15004/"},
+        "ozp:iwcSelf" : {"href": "web+ozp://system.api/application/56789"}
+    }
+}

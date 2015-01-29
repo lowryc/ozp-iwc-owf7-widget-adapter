@@ -1,0 +1,7 @@
+{
+    "version": "1.0",
+    "name": "IWC Mock Data",
+    "_links" : {
+        "self": { "href":"/api/system/v1"}
+    }
+}

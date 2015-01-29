@@ -1,0 +1,11 @@
+{
+    "_links": {
+        "self" : {"href" : "/api/profile/v1/exampleUser/intent/application/ozp-demo-ball+json/view"},
+        "ozp:iwcSelf" : {"href" : "intents.api/application/ozp-demo-ball+json/view"}
+    },
+    "type": "application/ozp-demo-ball+json",
+    "action": "view",
+    "contentType": "application/vnd.ozp-iwc-intent-definition-v1+json",
+    "icon": "http://example.com/view-text-plain.png",
+    "label": "View a bouncing ball"
+}

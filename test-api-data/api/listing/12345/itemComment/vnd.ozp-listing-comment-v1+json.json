@@ -1,0 +1,21 @@
+{
+    "id": 129,
+    "text": "This is a pretty good listing",
+    "rate": 4,
+    "_links": {
+        "curies": {
+            "href": "http://ozoneplatform.org/docs/rels/{rel}",
+            "name": "ozp",
+            "templated": true
+        },
+        "ozp:application": {
+            "href": "https://localhost:8443/marketplace/api/listing/1"
+        },
+        "self": {
+            "href": "https://localhost:8443/marketplace/api/listing/1/itemComment/129"
+        },
+        "via": {
+            "href": "https://localhost:8443/marketplace/api/profile/33"
+        }
+    }
+}

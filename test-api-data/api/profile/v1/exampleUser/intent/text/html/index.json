@@ -1,0 +1,15 @@
+{
+    "_links": {
+        "self" : { "href": "/api/profile/v1/exampleUser/intent/text/html" },
+        "curies": [{
+            "name": "ozp",
+            "href": "/api/profile/v1/exampleUser/intent/rels/{rel}",
+            "templated": true
+        }],
+        "item": [
+            { "href": "/api/profile/v1/exampleUser/intent/text/html/view"}
+        ]
+    },
+    "type": "text/html",
+    "contentType": "application/vnd.ozp-iwc-intent-type-v1+json"
+}

@@ -1,0 +1,37 @@
+{
+    "name" : "Time Series Viewer",
+    "description" : "Views a time series metric",
+    "type" : "application",
+    "state" : "active",
+    "uiHints": {
+        "width" : 400,
+        "height" : 400,
+        "singleton" : false
+    },
+    "tags": [
+        "demo"
+    ],
+    "intents": [{
+      "type": "application/metric+json",
+      "action": "view",
+      "icon": "/ozp-demo/metricViewer/intentIcon.png",
+      "label": "View Metric History"
+    } ],
+    "icons" : {
+        "small": "/ozp-demo/metricViewer/smallIcon.png",
+        "large": "/ozp-demo/metricViewer/largeIcon.png"
+    },
+    "screenShots" : [
+        {
+            "href" : "/ozp-demo/metricViewer/screenShot.png",
+            "title" : "A screenshot"
+        }
+    ],
+    "launchUrls" : {
+        "default": "/ozp-demo/metricViewer"
+    },
+    "_links": {
+        "self" : { "href": "/api/application/v1/metricViewer"},
+        "describes" : {"href":"/ozp-demo/metricViewer"}
+    }
+}

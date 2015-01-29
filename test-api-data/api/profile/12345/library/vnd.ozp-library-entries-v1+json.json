@@ -1,0 +1,24 @@
+[{
+    "folder": "folder 1",
+    "serviceItem": {
+        "id": 1
+    }
+},
+{
+    "folder": "folder 1",
+    "serviceItem": {
+        "id": 2
+    }
+},
+{
+    "folder": "My Favorites",
+    "serviceItem": {
+        "id": 3
+    }
+},
+{
+    "folder": null,
+    "serviceItem": {
+        "id": 4
+    }
+}]
