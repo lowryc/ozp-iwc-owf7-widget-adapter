@@ -20,7 +20,7 @@ describe("Eventing", function() {
     it("OWF.Eventing.subscribe()",function(done) {
         OWF.Eventing.subscribe("test.channel", function(sender,msg,channel) {
             OWF.Eventing.unsubscribe("test.channel");
-            expect(JSON.parse(msg)).toEqual({'foo':1});
+            expect(msg).toEqual({'foo':1});
             done();
         });
         setTimeout(function() {
@@ -33,9 +33,8 @@ describe("Eventing", function() {
     });
     it("OWF.Eventing.unsubscribe()",function(done) {
         OWF.Eventing.subscribe("test.channel", function(sender,msg,channel) {
-            console.log("subscribe callback",arguments);
             OWF.Eventing.unsubscribe("test.channel");
-            expect(JSON.parse(msg)).toEqual({'foo':1});
+            expect(msg).toEqual({'foo':1});
             // Jasmine allows you to call done() multiple times.
             // normally this is a problem, but it works well for this test since
             // it makes a second call even uglier

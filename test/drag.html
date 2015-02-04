@@ -20,28 +20,46 @@
                     dragDropData: "Drop Data "+ Date.now()
                 });
                 e.preventDefault();
-                e.stopPropagation();
+//                e.stopPropagation();
             }).mouseup(function() {
               $('#status').text("Mouse up!");  
             });
+//            $(document).mousemove(function(e) {
+//                $("#mousePosition").text("MouseMove screen("+e.screenX +","+e.screenY
+//                    +") client("+e.clientX + ","+e.clientY+")");
+//            }).mouseup(function(e) {
+//                $("#status").text("MouseUp at screen("+e.screenX +","+e.screenY
+//                    +") client("+e.clientX + ","+e.clientY+")");
+//            }).mouseenter(function(e) {
+//                $("#mouseEnter").text("MouseEnter screen("+e.screenX +","+e.screenY
+//                    +") client("+e.clientX + ","+e.clientY+")");
+//            }).mouseout(function(e) {
+//                $("#mouseEnter").text("MouseOut screen("+e.screenX +","+e.screenY
+//                    +") client("+e.clientX + ","+e.clientY+")");
+//            });
             var dragging=false;
             OWF.DragAndDrop.onDragStart(function(msg) {
               dragging = true;
-              $('#status').text("Started dragging "+msg);
+//              $('#status').text("Started dragging "+msg);
             });
             OWF.DragAndDrop.onDragStop(function(msg) {
                 dragging = false;
-                $('#status').text("Stopped dragging "+msg);        
+//                $('#status').text("Stopped dragging "+msg);        
             });
             OWF.DragAndDrop.onDrop(function(msg) {
-                $('#status').text("Dropped "+msg);
+//                $('#status').text("Dropped "+msg);
             });
+            $("#widgetId").text(Ozone.eventing.Widget.getInstance().getWidgetId());
+
         });        
     </script>
 
   </head>
 <body>
     <p id="drag" style="border: 1px solid black;">Drag this text to the other window!</p>
-    <p id="status"></p>
+        <p>ID: <span id="widgetId"></span></p>
+        <p id="status"></p>
+    <p id="mousePosition"></p>
+    <p id="mouseEnter"></p>
 </body>
 </html>

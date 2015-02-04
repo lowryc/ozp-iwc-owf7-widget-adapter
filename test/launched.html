@@ -18,8 +18,12 @@
         OWF.ready(function() {
             client.connect().then(function() {
                 $("#notice").text("Data: "+OWF.Launcher.getLaunchData());
+                var launchData=OWF.Launcher.getLaunchData();
+                if(!launchData) {
+                    launchData={"falsyType": typeof(launchData), "tz":Date.now()};
+                }
                 return client.api('data.api').set("/owf-legacy-tests/launchData",{ 
-                    entity: OWF.Launcher.getLaunchData()
+                    entity: launchData
                 });                
             }).then(function() {
                 $("#notice").append("\n\All done, close this window, now.");

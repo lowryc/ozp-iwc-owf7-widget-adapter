@@ -13,7 +13,7 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 //    if(!config.client) {throw "Needs an IWC Client";}
 
     this.rpcRelay=absolutePath(config.rpcRelay || "rpc_relay.uncompressed.html");
-	this.prefsUrl=absolutePath(config.prefsUrl || "owf7prefs.html");
+	this.prefsUrl=absolutePath(config.prefsUrl || "/owf/prefs");
     this.participants={};
     
     if ((window.name === "undefined") || (window.name === "")) {
@@ -104,21 +104,19 @@ ozpIwc.Owf7ParticipantListener=function(config) {
      */
     gadgets.rpc.register('_fake_mouse_move',function(msg) {
 		// @see @see reference\js\dd\WidgetDragAndDropContainer.js:52
-        getParticipant(this.f);
+        getParticipant(this.f).onFakeMouseMoveFromClient(msg);
 	});
-
-
-//	gadgets.rpc.register('_widget_iframe_ready',function() {
-//		// @see js/components/keys/KeyEventing.js
-//	});
-
-
-	/**
-	 * @see js\state\WidgetStateContainer.js:35
-	 */
-//	gadgets.rpc.register('_WIDGET_STATE_CHANNEL_'+this.widgetParams.id,function() {
-//		
-//	});
+    
+    gadgets.rpc.register('_fake_mouse_up',function(msg) {
+		// @see @see reference\js\dd\WidgetDragAndDropContainer.js:52
+         getParticipant(this.f).onFakeMouseUpFromClient(msg);
+	});
+    gadgets.rpc.register('_fake_mouse_out',function(){ /*ignored*/});
+    
+    var IGNORE=function(){};
+    // @see js/components/keys/KeyEventing.js
+    gadgets.rpc.register('_widget_iframe_ready',IGNORE);
+    
 //
 //	// Intents API
 //	
@@ -166,6 +164,9 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
   config.instanceId=config.client.address; // FIXME: generate
   config.rpcId=gadgets.json.stringify({id:config.instanceId});
   this.participants[config.rpcId]=new ozpIwc.Owf7Participant(config);
+  
+  // @see js\state\WidgetStateContainer.js:35
+  gadgets.rpc.register('_WIDGET_STATE_CHANNEL_'+config.instanceId,function(){});
 };
 
 
