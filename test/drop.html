@@ -19,27 +19,28 @@
             
             OWF.DragAndDrop.onDragStart(function(msg) {
               dragging = true;
-              $('#drop').html("Started dragging <pre>"+JSON.stringify(OWF.DragAndDrop.getDragStartData())+"</pre>");        
+              $('#drop').css('border','5px solid red');
+            $('#status').html("Started dragging <pre>"+JSON.stringify(OWF.DragAndDrop.getDragStartData())+"</pre>");
             });
             OWF.DragAndDrop.onDragStop(function(msg) {
                 dragging = false;
+                $('#drop').css('border','1px solid black');
                 console.log("Stopped dragging ",arguments);
-                $('#drop').text("Stopped dragging <pre>",JSON.stringify(arguments)+"</pre>");        
-              $('#drop').css('border','5px solid red');
+                $('#status').text("Stopped dragging <pre>",JSON.stringify(arguments)+"</pre>");        
             });
             OWF.DragAndDrop.onDrop(function(msg) {
-                $('#drop').html("Dropped <pre>"+msg+"</pre>");
+                $('#status').html("Dropped <pre>"+msg+"</pre>");
             });
             
             
             $('#drop').mouseover(function(e) {
-              $('#status').text("Mouse over! buttons=" + e.buttons + "");
               if(dragging) {
+                $('#drop').css('border','5px solid green');
                 OWF.DragAndDrop.setDropEnabled(true);
               }
             }).mouseout(function() {
-              $('#status').text("Mouse out!");
               if (dragging) {
+                $('#drop').css('border','5px solid red');
                 OWF.DragAndDrop.setDropEnabled(false);
                 $('#drop').css('border','1px solid black');
               }
@@ -55,8 +56,8 @@
 
   </head>
 <body>
-    <div id="drop" style="border: 1px solid black; height: 100px; width: 100%;">Drop here!</div>
-    <pre id="status"></pre>
+    <div id="drop" style="border: 1px solid black; height: 20px; width: 100%;">Drop here!</div>
+    <p id="status"></p>
     <p>ID: <span id="widgetId"></span></p>
 </body>
 </html>

@@ -27,7 +27,8 @@ ozpIwc.Owf7Participant=function(config) {
     this.iframe=config.iframe;
     this.launchData=null;
     var self=this;
-
+    // number of milliseconds to wait before sending another mousemove event
+    this.mouseMoveDelay=250;
     if(config.launchDataResource) {
         this.client.send({
             dst: "intents.api",
@@ -43,8 +44,8 @@ ozpIwc.Owf7Participant=function(config) {
     } else {
         this.initIframe();
     }
-    this.xOffset=0;
-    this.yOffset=0;
+    this.xOffset=window.screenX+window.outerWidth -document.body.clientWidth - 10;
+    this.yOffset=window.screenY+window.outerHeight - document.body.clientHeight - 30;
     this.inDrag=false;
 };
 ozpIwc.Owf7Participant.prototype.initIframe=function() {
@@ -131,9 +132,7 @@ ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message,
         "action": "watch"
     },function(packet,unregister) {
         if(packet.response !== "changed") return;
-        if(channel.indexOf("_drag") >=0) {
-            console.log("Received " + channel + ": ",packet.entity.newValue);
-        }
+
         if(self["hookReceive"+channel] && !self["hookReceive"+channel].call(self,packet.entity.newValue)) {
             return;
         }
@@ -230,10 +229,10 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromClient=function(msg) {
 //    console.log("Fake mouse move:",msg);
     var now=Date.now();
     var deltaT=now-this.lastMouseMove;
-    console.log("Throttling mouse move, deltaT=",deltaT);
-    if(deltaT < 250) {
+    if(deltaT < this.mouseMoveDelay) {
         return;
     }
+    console.log("Sending mouse move",msg);
     this.lastMouseMove=now;
     this.client.send({
        "dst": "data.api",
@@ -264,14 +263,15 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromOthers=function(msg) {
     if(!("screenX" in msg && "screenY" in msg)) {
         return;
     }
+
     this.lastPosition=msg;
     if(msg.sender===this.rpcId) {
         return;
     }
     var localizedEvent=this.convertToLocalCoordinates(msg);
+//    console.log("Received Fake mouse move at page("
+//        +localizedEvent.pageX+","+localizedEvent.pageY+")");
     if(this.inIframeBounds(localizedEvent)) {
-//        console.log("Received Fake mouse move at page("
-//            +localizedEvent.pageX+","+localizedEvent.pageY+")");
         this.mouseOver=true;
         gadgets.rpc.call(this.rpcId, '_fire_mouse_move', null,localizedEvent);
     } else {
@@ -331,17 +331,19 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
     });
     
     var mouseCoordinates=function(e) {
+      console.log("Adjusting screen offset from ("+self.xOffset+","+self.yOffset+")");
       self.xOffset=e.screenX-e.clientX;
       self.yOffset=e.screenY-e.clientY;
+      console.log("     to ("+self.xOffset+","+self.yOffset+")");
     };
     
     this.lastMouseMove=Date.now();
     
     document.addEventListener("mousemove",function(e) {
         mouseCoordinates(e);
-        if(self.inDrag) {
-            return;
-        }
+//        if(self.inDrag) {
+//            return;
+//        }
         self.onFakeMouseMoveFromClient({
             sender: self.rpcId,
             pageX: e.pageX,
@@ -351,9 +353,9 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
         });
     },false);
     document.addEventListener("mouseup",function(e) {
-        if(self.inDrag) {
-            return;
-        }
+//        if(self.inDrag) {
+//            return;
+//        }
         self.onFakeMouseUpFromClient({
             sender: self.rpcId,
             pageX: e.pageX,
@@ -362,8 +364,8 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
             screenY: e.screenY
         });
     },false);
-//    document.addEventListener("mouseenter",mouseCoordinates);
-//    document.addEventListener("mouseout",mouseCoordinates);
+    document.addEventListener("mouseenter",mouseCoordinates);
+    document.addEventListener("mouseout",mouseCoordinates);
 };
 //==========================
 // Hook the pubsub channels for drag and drop

@@ -15,6 +15,8 @@ ozpIwc.Owf7ParticipantListener=function(config) {
     this.rpcRelay=absolutePath(config.rpcRelay || "rpc_relay.uncompressed.html");
 	this.prefsUrl=absolutePath(config.prefsUrl || "/owf/prefs");
     this.participants={};
+    this.offsetX=config.offsetX;
+    this.offsetY=config.offsetY;
     
     if ((window.name === "undefined") || (window.name === "")) {
         window.name = "ContainerWindowName" + Math.random();
@@ -163,6 +165,7 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
   config.guid="eb5435cf-4021-4f2a-ba69-dde451d12551"; // FIXME: generate
   config.instanceId=config.client.address; // FIXME: generate
   config.rpcId=gadgets.json.stringify({id:config.instanceId});
+  
   this.participants[config.rpcId]=new ozpIwc.Owf7Participant(config);
   
   // @see js\state\WidgetStateContainer.js:35

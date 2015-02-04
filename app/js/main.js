@@ -1,8 +1,9 @@
-var adapter=new ozpIwc.Owf7ParticipantListener();
 
 (function() {
     var params=ozpIwc.util.parseQueryParams();
     var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
+    
+    var adapter=new ozpIwc.Owf7ParticipantListener();
 
     adapter.addWidget({
         "url": params.url,
