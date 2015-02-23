@@ -36,7 +36,7 @@ ozpIwc.Owf7Participant=function(config) {
             action: "get"
         }, function (response, done) {
             if (response.response === 'ok') {
-                self.launchData = response.entity.entity;
+                self.launchData = response.entity.entity.launchData;
             }
             self.initIframe();
             done();
@@ -232,7 +232,7 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromClient=function(msg) {
     if(deltaT < this.mouseMoveDelay) {
         return;
     }
-    console.log("Sending mouse move",msg);
+//    console.log("Sending mouse move",msg);
     this.lastMouseMove=now;
     this.client.send({
        "dst": "data.api",
@@ -276,8 +276,8 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromOthers=function(msg) {
         gadgets.rpc.call(this.rpcId, '_fire_mouse_move', null,localizedEvent);
     } else {
         if(this.mouseOver) {
-            console.log("Faking an mouse dragOut at page("
-                +localizedEvent.pageX+","+localizedEvent.pageY+")");
+//            console.log("Faking an mouse dragOut at page("
+//                +localizedEvent.pageX+","+localizedEvent.pageY+")");
             // this.eventingContainer.publish(this.dragOutName, null, lastEl.id);
             // fake the pubsub event directly to the recipient
             gadgets.rpc.call(this.rpcId, 'pubsub', null, "_dragOutName", "..", null);
@@ -293,8 +293,8 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromOthers=function(msg) {
 ozpIwc.Owf7Participant.prototype.onFakeMouseUpFromOthers=function(msg) {
     var localizedEvent=this.convertToLocalCoordinates(msg);
     if(this.inIframeBounds(localizedEvent)) {
-        console.log("Received Fake mouse up at page("
-            +localizedEvent.pageX+","+localizedEvent.pageY+")");    
+//        console.log("Received Fake mouse up at page("
+//            +localizedEvent.pageX+","+localizedEvent.pageY+")");    
         gadgets.rpc.call(this.rpcId, '_fire_mouse_up', null,localizedEvent);
     } else {
         // send a mouse up over container message
@@ -331,10 +331,20 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
     });
     
     var mouseCoordinates=function(e) {
-      console.log("Adjusting screen offset from ("+self.xOffset+","+self.yOffset+")");
+//      console.log("Adjusting screen offset from ("+self.xOffset+","+self.yOffset+")");
+        console.log("InDrag: ",self.inDrag,", buttons:",e.buttons);
+      if(self.inDrag && (e.buttons&1) !== 1) {
+          console.log("Aborted drag!");
+        self.client.send({
+            "dst": "data.api",
+            "resource": self.pubsubChannel("_dragStopInContainer"),
+            "action": "set",
+            "entity": Date.now()  // ignored, but changes the value to trigger watches
+        });
+      }
       self.xOffset=e.screenX-e.clientX;
       self.yOffset=e.screenY-e.clientY;
-      console.log("     to ("+self.xOffset+","+self.yOffset+")");
+//      console.log("     to ("+self.xOffset+","+self.yOffset+")");
     };
     
     this.lastMouseMove=Date.now();
@@ -389,35 +399,36 @@ ozpIwc.Owf7Participant.prototype.hookReceive_dropReceiveData=function() { return
 
 // these all start the drag state
 ozpIwc.Owf7Participant.prototype.hookReceive_dragStart=function(message) {
-    console.log("Starting external drag on ",message);
+//    console.log("Starting external drag on ",message);
     this.inDrag=true;
     return true; 
 };
 ozpIwc.Owf7Participant.prototype.hookPublish_dragStart=function(message) {
-    console.log("Starting internal drag on ",message);
+//    console.log("Starting internal drag on ",message);
     this.inDrag=true;
     return true; 
 };
 
 // these all stop the drag state
 ozpIwc.Owf7Participant.prototype.hookReceive_dragStopInContainer=function() {
-    console.log("Stopping drag in container");
+//    console.log("Stopping drag in container");
     this.inDrag=false;
     return true; 
 };
 ozpIwc.Owf7Participant.prototype.hookReceive_dragStopInWidget=function() {
-    console.log("Stopping drag in widget");
+//    console.log("Stopping drag in widget");
     this.inDrag=false;
     return true; 
 };
 
 // Merely store the dragData for later.
 ozpIwc.Owf7Participant.prototype.hookPublish_dragSendData=function(message) {
+    console.log("Setting drag data to ",message);
     this.client.send({
         "dst": "data.api",
         "resource": this.rpcChannel("_dragSendData_value"),
         "action": "set",
-        "entity": message.dragDropData
+        "entity": message
     });
     return false;
 };
@@ -429,7 +440,7 @@ ozpIwc.Owf7Participant.prototype.hookPublish_dragStopInWidget=function(message) 
     // make sure the mouse is actually over the widget so that it can't steal
     // the drag from someone else
     if(!this.mouseOver) {
-        console.log("dragStopInWidget, but not over myself.  Faking mouse event",this.lastPosition);
+//        console.log("dragStopInWidget, but not over myself.  Faking mouse event",this.lastPosition);
         this.onFakeMouseUpFromClient(this.lastPosition);
 
         return false;
@@ -444,6 +455,7 @@ ozpIwc.Owf7Participant.prototype.hookPublish_dragStopInWidget=function(message) 
         unregister();
 
         if(packet.response==="ok") {
+//            console.log("Completing drag of data ",packet.entity);
             gadgets.rpc.call(self.rpcId, 'pubsub', null, "_dropReceiveData", "..", packet.entity);
         } else {
             console.log("Unable to fetch drag data",packet);
@@ -453,9 +465,9 @@ ozpIwc.Owf7Participant.prototype.hookPublish_dragStopInWidget=function(message) 
         // canceling the whole drag operation
         // is this duplicative of the same event in _fake_mouse_up?
         
-        this.client.send({
+        self.client.send({
             "dst": "data.api",
-            "resource": this.pubsubChannel("_dragStopInContainer"),
+            "resource": self.pubsubChannel("_dragStopInContainer"),
             "action": "set",
             "entity": Date.now()  // ignored, but changes the value to trigger watches
         });

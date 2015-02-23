@@ -25,11 +25,11 @@
             OWF.DragAndDrop.onDragStop(function(msg) {
                 dragging = false;
                 $('#drop').css('border','1px solid black');
-                console.log("Stopped dragging ",arguments);
-                $('#status').text("Stopped dragging <pre>",JSON.stringify(arguments)+"</pre>");        
+//                $('#status').html("Drop container onDragStop: <pre>",JSON.stringify(arguments)+"</pre>");        
             });
             OWF.DragAndDrop.onDrop(function(msg) {
-                $('#status').html("Dropped <pre>"+msg+"</pre>");
+                console.log("Drop target received ",arguments);
+                $('#status').html("Dropped <pre>"+JSON.stringify(msg,null,2)+"</pre>");
             });
             
             

@@ -3,7 +3,7 @@
 CLIENT: Published on call to "startDrag" @owf-widget-debug.js:19208
   Widget unsubscribes itself so that it doesn't see it's own "_dragStart".
   Explicitly calls onStartDrag.
-CLIENT: Received by "onStartDrag" @owf-widget-debug.js:19208
+CLIENT: Received by "onStartDrag" @owf-widget-debug.js:19222
   connnects DOM "onmousemove" and "onmouseup" handlers
 
 CONTAINER: Received by "onStartDrag" @reference\js\dd\WidgetDragAndDropContainer.js:141
@@ -21,37 +21,42 @@ CLIENT: Received by onDragOut @owf-widget-debug.js:19262
   Hides the drag indicator.
 CONTAINER: Published on "mouseOut" @reference\js\dd\WidgetDragAndDropContainer.js:268
 
-==== Pubsub Event: _dragStopInContainer ==== 
-CLIENT: Received by "onDragStopInContainer" @owf-widget-debug.js:19387
-  Stops "dragging" state.
-  Invokes "dragStop" handlers.
-CONTAINER: Published on "dragStopInWidget" @reference\js\dd\WidgetDragAndDropContainer.js:225
-CONTAINER: Published on mouseUp over the container @reference\js\dd\WidgetDragAndDropContainer.js:257
-  
 ==== Pubsub Event: _dragStopInWidget ==== 
 CONTAINER: Received in "dragStopInWidget" @reference\js\dd\WidgetDragAndDropContainer.js:225
   Publishes _dropReceiveData to the sender of _dragStopInWidget
   Publishes _dragStopInContainer to everyone
 CLIENT: Published on mouseup @owf-widget-min.js:19469
 
+==== Pubsub Event: _dragStopInContainer ==== 
+CLIENT: Received by "onDragStopInContainer" @owf-widget-debug.js:19387
+  Stops "dragging" state.
+  Invokes "dragStop" handlers.
+CONTAINER: Published on "dragStopInWidget" @reference\js\dd\WidgetDragAndDropContainer.js:225
+CONTAINER: Published on mouseUp over the container @reference\js\dd\WidgetDragAndDropContainer.js:257
 
 ==== Pubsub Event: _dropReceiveData ==== 
 CLIENT: Received by dropReceiveData @owf-widget-min.js:19480
   sends data to dropZoneHandler for the dropTarget
 CONTAINER: Publishes _dropReceiveData to the sender of _dragStopInWidget @reference\js\dd\WidgetDragAndDropContainer.js:225
 
-==== Client mouseevent: mouseUp ====
-sets the drop target @owf-widget-min.js:19466
+
+
+
+
+
+
+
 
 ==== RPC Event: _fake_mouse_move ====
 CONTAINER: Received in @reference\js\dd\WidgetDragAndDropContainer.js:52
   Translates from widget page coords to container page coords.
   If over widget, translates container page coords to iframe coords and sends _fire_mouse_move.
-CONTAINER: Sent to widget on "_fake_mouse_move" over the iframe @reference\js\dd\WidgetDragAndDropContainer.js:52
-
 CLIENT: Sent to container on mouseMove event if in dragging state @owf-widget-debug.js:19296
+
+==== RPC Event: _fire_mouse_move ====
 CLIENT: Received at @owf-widget-debug.js:19011
   Generates mouseover, mousemove, and mouseout DOM events
+CONTAINER: Sent to widget on "_fake_mouse_move" over the iframe @reference\js\dd\WidgetDragAndDropContainer.js:52
 
 ==== RPC Event: _fake_mouse_up ====
 CONTAINER: Received in @reference\js\dd\WidgetDragAndDropContainer.js:90

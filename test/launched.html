@@ -15,8 +15,11 @@
 
     <script type="text/javascript">
         var client=new ozpIwc.Client({peerUrl:"http://localhost:16000"});
+        console.log("Created Client",client);
         OWF.ready(function() {
+            console.log("OWF Ready");
             client.connect().then(function() {
+            console.log("IWC Ready");
                 $("#notice").text("Data: "+OWF.Launcher.getLaunchData());
                 var launchData=OWF.Launcher.getLaunchData();
                 if(!launchData) {
