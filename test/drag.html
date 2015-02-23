@@ -49,7 +49,8 @@
             OWF.DragAndDrop.onDrop(function(msg) {
                 $('#status').text("Dropped "+msg);
             });
-            $("#widgetId").text(Ozone.eventing.Widget.getInstance().getWidgetId());
+            
+            $("#widgetId").text(OWF.getInstanceId());
 
         });        
     </script>

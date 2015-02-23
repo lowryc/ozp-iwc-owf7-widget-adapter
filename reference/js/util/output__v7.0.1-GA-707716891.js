@@ -1,1 +1,0 @@
-var output=output||{};output.console=function(){return{log:function(b){var a=navigator.appName;if(a=="Microsoft Internet Explorer"){}else{console.log(b)}}}}();

@@ -332,9 +332,9 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
     
     var mouseCoordinates=function(e) {
 //      console.log("Adjusting screen offset from ("+self.xOffset+","+self.yOffset+")");
-        console.log("InDrag: ",self.inDrag,", buttons:",e.buttons);
+//        console.log("InDrag: ",self.inDrag,", buttons:",e.buttons);
       if(self.inDrag && (e.buttons&1) !== 1) {
-          console.log("Aborted drag!");
+//          console.log("Aborted drag!");
         self.client.send({
             "dst": "data.api",
             "resource": self.pubsubChannel("_dragStopInContainer"),
@@ -423,7 +423,7 @@ ozpIwc.Owf7Participant.prototype.hookReceive_dragStopInWidget=function() {
 
 // Merely store the dragData for later.
 ozpIwc.Owf7Participant.prototype.hookPublish_dragSendData=function(message) {
-    console.log("Setting drag data to ",message);
+//    console.log("Setting drag data to ",message);
     this.client.send({
         "dst": "data.api",
         "resource": this.rpcChannel("_dragSendData_value"),

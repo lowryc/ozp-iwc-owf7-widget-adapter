@@ -2027,9 +2027,9 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
     
     var mouseCoordinates=function(e) {
 //      console.log("Adjusting screen offset from ("+self.xOffset+","+self.yOffset+")");
-        console.log("InDrag: ",self.inDrag,", buttons:",e.buttons);
+//        console.log("InDrag: ",self.inDrag,", buttons:",e.buttons);
       if(self.inDrag && (e.buttons&1) !== 1) {
-          console.log("Aborted drag!");
+//          console.log("Aborted drag!");
         self.client.send({
             "dst": "data.api",
             "resource": self.pubsubChannel("_dragStopInContainer"),
@@ -2118,7 +2118,7 @@ ozpIwc.Owf7Participant.prototype.hookReceive_dragStopInWidget=function() {
 
 // Merely store the dragData for later.
 ozpIwc.Owf7Participant.prototype.hookPublish_dragSendData=function(message) {
-    console.log("Setting drag data to ",message);
+//    console.log("Setting drag data to ",message);
     this.client.send({
         "dst": "data.api",
         "resource": this.rpcChannel("_dragSendData_value"),
@@ -2336,8 +2336,8 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
   config.listener=this;
   config.client=new ozpIwc.InternalParticipant();
   ozpIwc.defaultRouter.registerParticipant(config.client);
-  config.guid="eb5435cf-4021-4f2a-ba69-dde451d12551"; // FIXME: generate
-  config.instanceId=config.client.address; // FIXME: generate
+  config.guid=config.instanceId || "eb5435cf-4021-4f2a-ba69-dde451d12551"; // FIXME: generate
+  config.instanceId=config.instanceId || config.client.address; // FIXME: generate
   config.rpcId=gadgets.json.stringify({id:config.instanceId});
   
   this.participants[config.rpcId]=new ozpIwc.Owf7Participant(config);
@@ -2355,12 +2355,26 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
     var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
     
     var adapter=new ozpIwc.Owf7ParticipantListener();
-
+    var hash=window.location.hash;
+    
+    if(!hash) {
+        // not a real guid, but it's the way OWF 7 does it
+        var S4=function(){
+        	return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+        };
+        hash=(S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+		window.location.hash=hash;
+    } else {
+        hash=hash.replace("#","");
+    }
+    
     adapter.addWidget({
         "url": params.url,
         "iframe": document.getElementById("widgetFrame"),
-        "launchDataResource": windowNameParams["ozpIwc.inFlightIntent"]
+        "launchDataResource": windowNameParams["ozpIwc.inFlightIntent"],
+        "guid": "eb5435cf-4021-4f2a-ba69-dde451d12551",
+        "instanceId": hash
     });
-    console.log("Adapter: ",adapter.participants);
+//    console.log("Adapter: ",adapter.participants);
 })();
 //# sourceMappingURL=ozp-iwc-owf7-widget-adapter.js.map

@@ -1,1 +1,0 @@
-Ext.define("Ozone.data.WidgetTypeStore",{extend:"Ext.data.Store",model:"Ozone.data.WidgetType",proxy:{type:"ajax",url:Ozone.util.contextPath()+"/widgettype/list",limitParam:undefined,pageParam:undefined,startParam:undefined,reader:{type:"json",root:"data"}},totalProperty:"results"});

@@ -16,7 +16,6 @@
     <script type="text/javascript">
         OWF.ready(function() {
             var dragging=false;
-            
             OWF.DragAndDrop.onDragStart(function(msg) {
               dragging = true;
               $('#drop').css('border','5px solid red');
@@ -45,7 +44,7 @@
                 $('#drop').css('border','1px solid black');
               }
             });
-            $("#widgetId").text(Ozone.eventing.Widget.getInstance().getWidgetId());
+            $("#widgetId").text(OWF.getInstanceId());
 //                .mouseup(function() {
 //                $('#status').text("Mouse up!");
 //            }).mouseenter(function() {
