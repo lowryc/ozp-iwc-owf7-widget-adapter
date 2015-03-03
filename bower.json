@@ -18,7 +18,7 @@
     "test"
   ],
   "devDependencies": {
-    "ozp-iwc": "ozone-development/ozp-iwc#master"
+    "ozp-iwc": "ozone-development/ozp-iwc"
   },
   "dependencies": {}
 }
