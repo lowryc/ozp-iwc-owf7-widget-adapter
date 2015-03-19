@@ -44,7 +44,8 @@ The OWF API is mapped to a subset of IWC functionality, placing the onus on the 
 3. Pass your launch URL through `encodeURIComponent`.  You can use [this tool](http://pressbin.com/tools/urlencode_urldecode/) or type `encodeURIComponent('http://widget.example.com')` on your browsers developer tools console.
 4. Start with the adapter URL, add `?url=`, and finish with your encoded launch URL.
 
-Example:
+###Example:
+
 1. Adapter URL= https://ozp.example.com
 2. Widget Launch URL= https://widget.example.com
 3. Encoded Launch URL= https%3A%2F%2Fexample.com
