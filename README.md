@@ -1,4 +1,4 @@
-ozp-izp-owf7-widget-adapter
+ozp-iwc-owf7-widget-adapter
 ===========================
 
 This allows an existing OWF 7 widget to "ride on top" of the OZP IWC bus.
