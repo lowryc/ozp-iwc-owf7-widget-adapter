@@ -13,7 +13,7 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 //    if(!config.client) {throw "Needs an IWC Client";}
 
     this.rpcRelay=absolutePath(config.rpcRelay || "rpc_relay.uncompressed.html");
-	this.prefsUrl=absolutePath(config.prefsUrl || "/owf/prefs");
+	this.prefsUrl=absolutePath(config.prefsUrl || ozpIwc.owf7PrefsUrl || "/owf/prefs");
     this.participants={};
     this.offsetX=config.offsetX;
     this.offsetY=config.offsetY;

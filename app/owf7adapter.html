@@ -25,8 +25,14 @@
 		</style>
         <script type="text/javascript">
             var ozpIwc = ozpIwc || {};
-            ozpIwc.apiRootUrl="api";
+            // No reason to accept client applications
             ozpIwc.acceptPostMessageParticipants=false;
+
+            // CONFIG: the OZP IWC api endpoints
+            ozpIwc.apiRootUrl="api";
+            
+            // CONFIG: the base for the OWF7 window.name endpoints
+            ozpIwc.owf7PrefsUrl="/owf/prefs";
         </script>
   </head>
   <body>

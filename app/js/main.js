@@ -5,7 +5,7 @@
     
     var adapter=new ozpIwc.Owf7ParticipantListener();
     var hash=window.location.hash;
-    
+
     if(!hash) {
         // not a real guid, but it's the way OWF 7 does it
         var S4=function(){
@@ -21,7 +21,8 @@
         "url": params.url,
         "iframe": document.getElementById("widgetFrame"),
         "launchDataResource": windowNameParams["ozpIwc.inFlightIntent"],
-        "guid": "eb5435cf-4021-4f2a-ba69-dde451d12551",
+        // FIXME: this should be the guid of the widget being launched.  pipe it through, somehow
+        "guid": "eb5435cf-4021-4f2a-ba69-dde451d12551", 
         "instanceId": hash
     });
 //    console.log("Adapter: ",adapter.participants);

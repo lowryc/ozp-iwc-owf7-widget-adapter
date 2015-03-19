@@ -1,4 +1,34 @@
 
+=== Adapter Mapping ===
+All Pubsub events are mapped to data.api/owf-legacy/eventing/{channel}
+All RPC events are mapped to data.api/owf-legacy/gadgetsRpc/{channel}
+
+=== Rough outline of a drag & drop ===
+
+1 Widget "SOURCE" broadcasts pubsub:_dragStart, all other widgets set "inDrag" to true.
+2 SOURCE sends rpc:_dragSendData_value, which is stored in the data.api for later.
+3 SOURCE hooks mouse events and broadcasts rpc:_fake_mouse_move and rpc:_fake_mouse_up.
+4 SOURCE's Adapter translates rpc:_fake_mouse_move/rpc:_fake_mouse_up into local coordinates for the widget.
+5 Widgets' Adapters receive rpc:_fire_mouse_move/rpc:_fire_mouse_up and convert to DOM events.  
+  Client libraries show the drag indicator.
+
+To cancel the drag operation, any adapter can broadcasts pubsub:_dragStopInContainer.
+
+On a mouse up event in the widget "TARGET"
+1 TARGET broadcasts pubsub:_drag_stop_in_widget
+2 TARGET's Adapter sends pubsub:_dropReceiveData with the drag payload to TARGET
+3 TARGET's adapter broadcasts pubsub:_dragStopInContainer to end the "inDrag" state.
+
+If the mouse is released outside of a widget dropzone:
+1 If SOURCE's adapter receives the mouseup event, it cancels the drag.
+2 All widget adapters will cancel the drag if they get a mouse event
+  when inDrag==true and no mouse buttons held.
+
+
+
+
+
+
 ==== Pubsub Event: _dragStart ==== 
 CLIENT: Published on call to "startDrag" @owf-widget-debug.js:19208
   Widget unsubscribes itself so that it doesn't see it's own "_dragStart".
