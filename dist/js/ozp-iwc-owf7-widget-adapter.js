@@ -2187,7 +2187,7 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 //    if(!config.client) {throw "Needs an IWC Client";}
 
     this.rpcRelay=absolutePath(config.rpcRelay || "rpc_relay.uncompressed.html");
-	this.prefsUrl=absolutePath(config.prefsUrl || "/owf/prefs");
+	this.prefsUrl=absolutePath(config.prefsUrl || ozpIwc.owf7PrefsUrl || "/owf/prefs");
     this.participants={};
     this.offsetX=config.offsetX;
     this.offsetY=config.offsetY;
@@ -2330,6 +2330,13 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 
 
 };
+ozpIwc.Owf7ParticipantListener.prototype.makeGuid=function() {
+    // not a real guid, but it's the way OWF 7 does it
+    var S4=function(){
+        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+};
 
 ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
   // From the caller: config.url and config.iframe
@@ -2337,7 +2344,7 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
   config.client=new ozpIwc.InternalParticipant();
   ozpIwc.defaultRouter.registerParticipant(config.client);
   config.guid=config.instanceId || "eb5435cf-4021-4f2a-ba69-dde451d12551"; // FIXME: generate
-  config.instanceId=config.instanceId || config.client.address; // FIXME: generate
+  config.instanceId=config.instanceId || this.makeGuid(); // FIXME: generate
   config.rpcId=gadgets.json.stringify({id:config.instanceId});
   
   this.participants[config.rpcId]=new ozpIwc.Owf7Participant(config);
@@ -2348,33 +2355,5 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
 
 
 
-})();
-
-(function() {
-    var params=ozpIwc.util.parseQueryParams();
-    var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
-    
-    var adapter=new ozpIwc.Owf7ParticipantListener();
-    var hash=window.location.hash;
-    
-    if(!hash) {
-        // not a real guid, but it's the way OWF 7 does it
-        var S4=function(){
-        	return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-        };
-        hash=(S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
-		window.location.hash=hash;
-    } else {
-        hash=hash.replace("#","");
-    }
-    
-    adapter.addWidget({
-        "url": params.url,
-        "iframe": document.getElementById("widgetFrame"),
-        "launchDataResource": windowNameParams["ozpIwc.inFlightIntent"],
-        "guid": "eb5435cf-4021-4f2a-ba69-dde451d12551",
-        "instanceId": hash
-    });
-//    console.log("Adapter: ",adapter.participants);
 })();
 //# sourceMappingURL=ozp-iwc-owf7-widget-adapter.js.map

@@ -33,11 +33,40 @@
             
             // CONFIG: the base for the OWF7 window.name endpoints
             ozpIwc.owf7PrefsUrl="/owf/prefs";
+
         </script>
   </head>
   <body>
     <iframe id="widgetFrame">
     </iframe>
-        <script type="text/javascript" src="js/ozpIwc-bus.js"></script>
-		<script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>  </body>
+    <script type="text/javascript" src="js/ozpIwc-bus.js"></script>
+    <script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>  
+    <script type="text/javascript">
+                    
+            
+        (function() {
+            var params=ozpIwc.util.parseQueryParams();
+            var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
+
+            var adapter=new ozpIwc.Owf7ParticipantListener();
+            var hash=window.location.hash;
+
+            if(!hash) {
+                hash=window.location.hash=adapter.makeGuid();
+            } else {
+                hash=hash.replace("#","");
+            }
+
+            adapter.addWidget({
+                "url": params.url,
+                "iframe": document.getElementById("widgetFrame"),
+                "launchDataResource": windowNameParams["ozpIwc.inFlightIntent"],
+                // FIXME: this should be the guid of the widget being launched.  pipe it through, somehow
+                "guid": "eb5435cf-4021-4f2a-ba69-dde451d12551", 
+                "instanceId": hash
+            });
+        //    console.log("Adapter: ",adapter.participants);
+        })();
+    </script>
+  </body>
 </html>
