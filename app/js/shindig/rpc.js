@@ -205,7 +205,15 @@ gadgets.rpc = function() {
     if (relayChannel === 'dpm' || relayChannel === 'wpm') {
       var onmessage = function (packet) {
         // TODO validate packet.domain for security reasons
-        process(gadgets.json.parse(packet.data));
+        var msg=null;
+        try{
+            msg=gadgets.json.parse(packet.data);
+        } catch(e) {
+            // assume it was message from some other system and fall through
+        }
+        if(msg) {
+            process(msg);
+        }
       }
 
       if (typeof window.addEventListener != 'undefined') {

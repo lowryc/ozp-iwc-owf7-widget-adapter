@@ -1,34 +1,47 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
+/**
+ * 
+ * @param {object} config
+ * @param {object} config.iframe - The iframe that contains the widget for this participant
+ * @param {object} config.listener - The parent OWF7ParticipantListener
+ * @param {object} config.client - The InternalParticipant for this widget.
+ * @param {string} config.guid - The GUID for the widget that this is an instance of.
+ * @param {string} config.instanceId - The GUID for the widget instance.
+ * @param {string} config.url - The launch URL for this widget.
+ * @param {string} config.rpcId - The iframe.id that is used as the ID for RPC.
+ * @param {string} [config.launchDataResource=undefined] - The intents.api resource that contains the launch data for the widget, or null for no launch data.
+ * @param {boolean} [config.externalInit=false] - Set to true if the iframe has been initialized elsewhere, such as when embedded in OWF 7.
+ */
 
 ozpIwc.Owf7Participant=function(config) {
     config = config || {};
+    if(!config.iframe) { throw "Needs an iframe";}
     if(!config.listener) { throw "Needs to have an OWF7ParticipantListener";}
     if(!config.client) {throw "Needs an IWC Client";}
     if(!config.guid) { throw "Must be assigned a guid for this widget";}
-    if(!config.url) { throw "Needs a url for the widget"; }
-    if(!config.iframe) { throw "Needs an iframe";}
-    if(!config.rpcId) { throw "Needs an rpcID";}
     if(!config.instanceId) { throw "Needs an widget instance id";}
+    if(!config.url) { throw "Needs a url for the widget"; }
+    if(!config.rpcId) { throw "Needs a rpcId for the widget"; }
     
-    this.client=config.client;
+    this.iframe=config.iframe;
     this.listener=config.listener;
-    this.rpcId=config.rpcId;
-    this.instanceId=config.instanceId;
+    this.client=config.client;
     this.url=config.url;
+    this.instanceId=config.instanceId;
     this.widgetGuid=config.guid;
+    this.rpcId=config.rpcId;
+    
+    this.inDrag=false;
+    this.lastMouseMove=Date.now();
+    
     // Do a lookup on these two at some point
     this.widgetQuery="?lang=en_US&owf=true&themeName=a_default&themeContrast=standard&themeFontSize=12";
     
-    this.iframe=config.iframe;
     this.launchData=null;
     var self=this;
     // number of milliseconds to wait before sending another mousemove event
     this.mouseMoveDelay=250;
+
     if(config.launchDataResource) {
         this.client.send({
             dst: "intents.api",
@@ -38,16 +51,18 @@ ozpIwc.Owf7Participant=function(config) {
             if (response.response === 'ok') {
                 self.launchData = response.entity.entity.launchData;
             }
-            self.initIframe();
+            if(!config.externalInit) {
+                self.initIframe();
+            }
             done();
         });
     } else {
-        this.initIframe();
+        if(!config.externalInit) {
+            this.initIframe();
+        }
     }
-    this.xOffset=window.screenX+window.outerWidth -document.body.clientWidth - 10;
-    this.yOffset=window.screenY+window.outerHeight - document.body.clientHeight - 30;
-    this.inDrag=false;
 };
+
 ozpIwc.Owf7Participant.prototype.initIframe=function() {
       
 	// these get turned into the iframes name attribute
@@ -80,10 +95,10 @@ ozpIwc.Owf7Participant.prototype.initIframe=function() {
     
     this.registerDragAndDrop();
 };
-ozpIwc.Owf7Participant.prototype.pubsubChannel=function(channel) {
+ozpIwc.Owf7Participant.pubsubChannel=function(channel) {
     return "/owf-legacy/eventing/"+channel;
 };
-ozpIwc.Owf7Participant.prototype.rpcChannel=function(channel) {
+ozpIwc.Owf7Participant.rpcChannel=function(channel) {
     return "/owf-legacy/gadgetsRpc/"+channel;
 };
 
@@ -116,7 +131,7 @@ ozpIwc.Owf7Participant.prototype.onPublish=function(command, channel, message, d
     }
     this.client.send({
         "dst": "data.api",
-        "resource": this.pubsubChannel(channel),
+        "resource": ozpIwc.Owf7Participant.pubsubChannel(channel),
         "action": "set",
         "entity": message
     });
@@ -128,7 +143,7 @@ ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message,
     this.subscriptions[channel]=true;
     this.client.send({
         "dst": "data.api",
-        "resource": this.pubsubChannel(channel),
+        "resource": ozpIwc.Owf7Participant.pubsubChannel(channel),
         "action": "watch"
     },function(packet,unregister) {
         if(packet.response !== "changed") return;
@@ -185,15 +200,8 @@ ozpIwc.Owf7Participant.prototype.onLaunchWidget=function(sender,msg,rpc) {
  */
 
 ozpIwc.Owf7Participant.prototype.convertToLocalCoordinates=function(msg) {
-    // copy the message
-    var rv={};
-    for(var k in msg) {
-        rv[k]=msg[k];
-    }
-
-    // start with the location relative to the adapter's top-left
-    rv.pageX=msg.screenX-this.xOffset;
-    rv.pageY=msg.screenY-this.yOffset;
+    // translate to container coordinates
+    var rv=this.listener.convertToLocalCoordinates(msg);
 
     // this calculates the position of the iframe relative to the document,
     // accounting for scrolling, padding, etc.  If we started at zero, this
@@ -236,7 +244,7 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromClient=function(msg) {
     this.lastMouseMove=now;
     this.client.send({
        "dst": "data.api",
-       "resource": this.rpcChannel("_fake_mouse_move"),
+       "resource": ozpIwc.Owf7Participant.rpcChannel("_fake_mouse_move"),
        "action": "set",
        "entity": msg
     });
@@ -250,7 +258,7 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseUpFromClient=function(msg) {
     // do any modification
     this.client.send({
        "dst": "data.api",
-       "resource": this.rpcChannel("_fake_mouse_up"),
+       "resource": ozpIwc.Owf7Participant.rpcChannel("_fake_mouse_up"),
        "action": "set",
        "entity": msg
     });
@@ -315,7 +323,7 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
     var self=this;
     this.client.send({
         "dst": "data.api",
-        "resource": this.rpcChannel("_fake_mouse_up"),
+        "resource": ozpIwc.Owf7Participant.rpcChannel("_fake_mouse_up"),
         "action": "watch"
     },function(packet,unregister) {
         if(packet.response!=="changed") return;
@@ -323,59 +331,13 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
     });
     this.client.send({
         "dst": "data.api",
-        "resource": this.rpcChannel("_fake_mouse_move"),
+        "resource": ozpIwc.Owf7Participant.rpcChannel("_fake_mouse_move"),
         "action": "watch"
     },function(packet,unregister) {
         if(packet.response!=="changed") return;
         self.onFakeMouseMoveFromOthers(packet.entity.newValue);
     });
-    
-    var mouseCoordinates=function(e) {
-//      console.log("Adjusting screen offset from ("+self.xOffset+","+self.yOffset+")");
-//        console.log("InDrag: ",self.inDrag,", buttons:",e.buttons);
-      if(self.inDrag && (e.buttons&1) !== 1) {
-//          console.log("Aborted drag!");
-        self.client.send({
-            "dst": "data.api",
-            "resource": self.pubsubChannel("_dragStopInContainer"),
-            "action": "set",
-            "entity": Date.now()  // ignored, but changes the value to trigger watches
-        });
-      }
-      self.xOffset=e.screenX-e.clientX;
-      self.yOffset=e.screenY-e.clientY;
-//      console.log("     to ("+self.xOffset+","+self.yOffset+")");
-    };
-    
-    this.lastMouseMove=Date.now();
-    
-    document.addEventListener("mousemove",function(e) {
-        mouseCoordinates(e);
-//        if(self.inDrag) {
-//            return;
-//        }
-        self.onFakeMouseMoveFromClient({
-            sender: self.rpcId,
-            pageX: e.pageX,
-            pageY: e.pageY,
-            screenX: e.screenX,
-            screenY: e.screenY
-        });
-    },false);
-    document.addEventListener("mouseup",function(e) {
-//        if(self.inDrag) {
-//            return;
-//        }
-        self.onFakeMouseUpFromClient({
-            sender: self.rpcId,
-            pageX: e.pageX,
-            pageY: e.pageY,
-            screenX: e.screenX,
-            screenY: e.screenY
-        });
-    },false);
-    document.addEventListener("mouseenter",mouseCoordinates);
-    document.addEventListener("mouseout",mouseCoordinates);
+ 
 };
 //==========================
 // Hook the pubsub channels for drag and drop
@@ -426,7 +388,7 @@ ozpIwc.Owf7Participant.prototype.hookPublish_dragSendData=function(message) {
 //    console.log("Setting drag data to ",message);
     this.client.send({
         "dst": "data.api",
-        "resource": this.rpcChannel("_dragSendData_value"),
+        "resource": ozpIwc.Owf7Participant.rpcChannel("_dragSendData_value"),
         "action": "set",
         "entity": message
     });
@@ -449,7 +411,7 @@ ozpIwc.Owf7Participant.prototype.hookPublish_dragStopInWidget=function(message) 
     var self=this;
     this.client.send({
         "dst": "data.api",
-        "resource": this.rpcChannel("_dragSendData_value"),
+        "resource": ozpIwc.Owf7Participant.rpcChannel("_dragSendData_value"),
         "action": "get"
     },function(packet,unregister) {
         unregister();
@@ -467,7 +429,7 @@ ozpIwc.Owf7Participant.prototype.hookPublish_dragStopInWidget=function(message) 
         
         self.client.send({
             "dst": "data.api",
-            "resource": self.pubsubChannel("_dragStopInContainer"),
+            "resource": ozpIwc.Owf7Participant.pubsubChannel("_dragStopInContainer"),
             "action": "set",
             "entity": Date.now()  // ignored, but changes the value to trigger watches
         });

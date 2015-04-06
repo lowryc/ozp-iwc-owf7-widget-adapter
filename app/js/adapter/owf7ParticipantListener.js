@@ -18,10 +18,13 @@ ozpIwc.Owf7ParticipantListener=function(config) {
     this.offsetX=config.offsetX;
     this.offsetY=config.offsetY;
     
+    this.client=new ozpIwc.InternalParticipant();
+    ozpIwc.defaultRouter.registerParticipant(this.client);    
+    
     if ((window.name === "undefined") || (window.name === "")) {
         window.name = "ContainerWindowName" + Math.random();
     }
-	
+    this.installDragAndDrop();
     var rpcString=function(rpc) {
 		return "[service:" + rpc.s + ",from:" + rpc.f + "]:" + JSON.stringify(rpc.a);
 	};
@@ -38,6 +41,13 @@ ozpIwc.Owf7ParticipantListener=function(config) {
         }
         return p;
     };
+    
+    // try to find our position on screen to help with cross-window drag and drop
+    this.xOffset=window.screenX+window.outerWidth -document.body.clientWidth - 10;
+    this.yOffset=window.screenY+window.outerHeight - document.body.clientHeight - 30;
+
+
+    
 	/**
 	 * Called by the widget to connect to the container
 	 * @see js/eventing/Container.js:26 for the containerInit function that much of this is copied from
@@ -46,8 +56,6 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 	gadgets.rpc.register('container_init',function(sender,message) {
         getParticipant(this.f).onContainerInit(sender,message);
 	});
-	
-
 
 	/**
 	 * @param {string} command - publish | subscribe | unsubscribe
@@ -164,6 +172,42 @@ ozpIwc.Owf7ParticipantListener.prototype.makeGuid=function() {
     return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 };
 
+ozpIwc.Owf7ParticipantListener.prototype.updateMouseCoordinates=function(e) {
+//      console.log("Updating coords from("+this.xOffset+","+this.yOffset+")");
+      this.xOffset=e.screenX-e.clientX;
+      this.yOffset=e.screenY-e.clientY;
+//      console.log("     to ("+this.xOffset+","+this.yOffset+")");
+};
+
+ozpIwc.Owf7ParticipantListener.prototype.convertToLocalCoordinates=function(msg,element) {
+    // copy the message
+    var rv={};
+    for(var k in msg) {
+        rv[k]=msg[k];
+    }
+
+    // start with the location relative to the adapter's top-left
+    rv.pageX=msg.screenX-this.xOffset;
+    rv.pageY=msg.screenY-this.yOffset;
+
+    // this calculates the position of the iframe relative to the document,
+    // accounting for scrolling, padding, etc.  If we started at zero, this
+    // would be the iframe's coordinates inside the document.  Instead, we started
+    // at the mouse location relative to the adapter, which gives the location
+    // of the event inside the iframe content.
+    // http://www.kirupa.com/html5/get_element_position_using_javascript.htm
+    
+    // should work in most browsers: http://www.quirksmode.org/dom/w3c_cssom.html#elementview
+    // IE < 7: will miscalculate by skipping ancestors that are "position:relative"
+    // IE, Opera: not work if there's a "position:fixed" in the ancestors
+    while(element) {        
+        rv.pageX += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+        rv.pageY += (element.offsetTop - element.scrollTop + element.clientTop);        
+        element = element.offsetParent;    
+    }
+
+    return rv;
+};
 ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
   // From the caller: config.url and config.iframe
   config.listener=this;
@@ -172,13 +216,67 @@ ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
   config.guid=config.instanceId || "eb5435cf-4021-4f2a-ba69-dde451d12551"; // FIXME: generate
   config.instanceId=config.instanceId || this.makeGuid(); // FIXME: generate
   config.rpcId=gadgets.json.stringify({id:config.instanceId});
-  
   this.participants[config.rpcId]=new ozpIwc.Owf7Participant(config);
   
   // @see js\state\WidgetStateContainer.js:35
   gadgets.rpc.register('_WIDGET_STATE_CHANNEL_'+config.instanceId,function(){});
 };
 
+ozpIwc.Owf7ParticipantListener.prototype.cancelDrag=function() {
+    this.inDrag=false;
+    this.client.send({
+        "dst": "data.api",
+        "resource": ozpIwc.Owf7Participant.pubsubChannel("_dragStopInContainer"),
+        "action": "set",
+        "entity": Date.now()  // ignored, but changes the value to trigger watches
+    });
+};
 
-
+ozpIwc.Owf7ParticipantListener.prototype.installDragAndDrop=function() {
+    var self=this;
+    var updateMouse=function(evt) {self.updateMouseCoordinates(evt);};
+    
+    document.addEventListener("mouseenter",updateMouse);
+    document.addEventListener("mouseout",updateMouse);
+    
+    this.client.send({
+       "dst":"data.api",
+       "resource": ozpIwc.Owf7Participant.pubsubChannel("_dragStart"),
+       "action": "watch"       
+    },function(reply) {
+        if(reply.response === "changed") {
+            self.inDrag=true;        
+        }
+    });
+    this.client.send({
+        "dst": "data.api",
+        "resource": ozpIwc.Owf7Participant.pubsubChannel("_dragStopInContainer"),
+        "action": "watch"
+    },function(reply) {
+        if(reply.response === "changed") {
+            self.inDrag=false;        
+        }
+    });    
+    
+    document.addEventListener("mousemove",function(e) {
+        self.updateMouseCoordinates(e);
+//        console.log("Adapter mousemove at ",e);
+        if(self.inDrag && (e.buttons&1) !== 1) {
+            console.log("Canceling drag");
+            self.cancelDrag();
+        }
+    },false);
+//    document.addEventListener("mouseup",function(e) {
+////        if(self.inDrag) {
+////            return;
+////        }
+//        self.onFakeMouseUpFromClient({
+//            sender: self.rpcId,
+//            pageX: e.pageX,
+//            pageY: e.pageY,
+//            screenX: e.screenX,
+//            screenY: e.screenY
+//        });
+//    },false);
+};
 })();
