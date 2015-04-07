@@ -174,8 +174,8 @@ ozpIwc.Owf7ParticipantListener.prototype.makeGuid=function() {
 
 ozpIwc.Owf7ParticipantListener.prototype.updateMouseCoordinates=function(e) {
 //      console.log("Updating coords from("+this.xOffset+","+this.yOffset+")");
-      this.xOffset=e.screenX-e.clientX;
-      this.yOffset=e.screenY-e.clientY;
+    this.xOffset=e.screenX-e.clientX;
+    this.yOffset=e.screenY-e.clientY;
 //      console.log("     to ("+this.xOffset+","+this.yOffset+")");
 };
 
@@ -196,30 +196,65 @@ ozpIwc.Owf7ParticipantListener.prototype.convertToLocalCoordinates=function(msg,
     // at the mouse location relative to the adapter, which gives the location
     // of the event inside the iframe content.
     // http://www.kirupa.com/html5/get_element_position_using_javascript.htm
-    
+
     // should work in most browsers: http://www.quirksmode.org/dom/w3c_cssom.html#elementview
     // IE < 7: will miscalculate by skipping ancestors that are "position:relative"
     // IE, Opera: not work if there's a "position:fixed" in the ancestors
-    while(element) {        
+    while(element) {
         rv.pageX += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-        rv.pageY += (element.offsetTop - element.scrollTop + element.clientTop);        
-        element = element.offsetParent;    
+        rv.pageY += (element.offsetTop - element.scrollTop + element.clientTop);
+        element = element.offsetParent;
     }
 
     return rv;
 };
+
 ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
-  // From the caller: config.url and config.iframe
-  config.listener=this;
-  config.client=new ozpIwc.InternalParticipant();
-  ozpIwc.defaultRouter.registerParticipant(config.client);
-  config.guid=config.instanceId || "eb5435cf-4021-4f2a-ba69-dde451d12551"; // FIXME: generate
-  config.instanceId=config.instanceId || this.makeGuid(); // FIXME: generate
-  config.rpcId=gadgets.json.stringify({id:config.instanceId});
-  this.participants[config.rpcId]=new ozpIwc.Owf7Participant(config);
-  
-  // @see js\state\WidgetStateContainer.js:35
-  gadgets.rpc.register('_WIDGET_STATE_CHANNEL_'+config.instanceId,function(){});
+    // From the caller: config.url, config.launchDataResource, (opt) config.instanceId
+    config.instanceId = config.instanceId || this.makeGuid();
+    config.listener = this;
+    config.client = new ozpIwc.InternalParticipant();
+    config.rpcId = gadgets.json.stringify({id: config.instanceId});
+    ozpIwc.defaultRouter.registerParticipant(config.client);
+
+
+    // Update the hash in case the user refreshes. Then create the participant/register RPC
+    function init() {
+        var hashObj = {};
+        if(config.guid) hashObj.guid = config.guid;
+        if(config.instanceId) hashObj.instanceId= config.instanceId;
+
+        var newHash = "#";
+        for (var i in hashObj) {
+            newHash += i + "=" + hashObj[i] + "&";
+        }
+        newHash = newHash.substring(0, newHash.length - 1);
+        window.location.hash = newHash;
+
+        // After storing the hash, if the guid does not exist just set it as instanceId for OWF7 to not complain.
+        config.guid = config.guid || config.instanceId;
+        config.listener.participants[config.rpcId] = new ozpIwc.Owf7Participant(config);
+
+        // @see js\state\WidgetStateContainer.js:35
+        gadgets.rpc.register('_WIDGET_STATE_CHANNEL_' + config.instanceId, function(){});
+    }
+
+    // If there was a IWC launch resource, go gather it
+    if (config.launchDataResource) {
+        config.client.send({
+            dst: "intents.api",
+            action: "get",
+            resource: config.launchDataResource
+        }, function (resp) {
+            // If the widget is refreshed, the launch resource data has been deleted.
+            if (resp && resp.entity && resp.entity.entity && typeof resp.entity.entity.id === "string") {
+                config.guid = resp.entity.entity.id;
+            }
+            init();
+        });
+    } else {
+        init();
+    }
 };
 
 ozpIwc.Owf7ParticipantListener.prototype.cancelDrag=function() {

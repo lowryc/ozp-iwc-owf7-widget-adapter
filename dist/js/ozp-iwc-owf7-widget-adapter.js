@@ -1701,6 +1701,34 @@ gadgets.rpc = function() {
   };
 }();
 
+var gadgets = gadgets || {};
+if(gadgets.json){
+    gadgets.json.parse = function (text) {
+// Parsing happens in three stages. In the first stage, we run the text against
+// regular expressions that look for non-JSON patterns. We are especially
+// concerned with '()' and 'new' because they can cause invocation, and '='
+// because it can cause mutation. But just to be safe, we want to reject all
+// unexpected forms.
+
+// We split the first stage into 4 regexp operations in order to work around
+// crippling inefficiencies in IE's and Safari's regexp engines. First we
+// replace all backslash pairs with '@' (a non-JSON character). Second, we
+// replace all simple value tokens with ']' characters. Third, we delete all
+// open brackets that follow a colon or comma or that begin the text. Finally,
+// we look to see that the remaining characters are only whitespace or ']' or
+// ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
+
+        if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/b-u]/g, '@').
+                replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+                replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+            if(text)
+                return eval('(' + text + ')');
+        }
+        // If the text is not JSON parseable, then return false.
+
+        return false;
+    };
+}
 
 /**
  * 
@@ -1718,14 +1746,13 @@ gadgets.rpc = function() {
 
 ozpIwc.Owf7Participant=function(config) {
     config = config || {};
-    if(!config.iframe) { throw "Needs an iframe";}
     if(!config.listener) { throw "Needs to have an OWF7ParticipantListener";}
     if(!config.client) {throw "Needs an IWC Client";}
     if(!config.guid) { throw "Must be assigned a guid for this widget";}
     if(!config.instanceId) { throw "Needs an widget instance id";}
     if(!config.url) { throw "Needs a url for the widget"; }
     if(!config.rpcId) { throw "Needs a rpcId for the widget"; }
-    
+
     this.iframe=config.iframe;
     this.listener=config.listener;
     this.client=config.client;
@@ -1733,7 +1760,11 @@ ozpIwc.Owf7Participant=function(config) {
     this.instanceId=config.instanceId;
     this.widgetGuid=config.guid;
     this.rpcId=config.rpcId;
-    
+
+    // Create an iframe for the widget
+    this.iframe = document.createElement('iframe');
+    this.iframe.id = config.instanceId;
+
     this.inDrag=false;
     this.lastMouseMove=Date.now();
     
@@ -1751,8 +1782,11 @@ ozpIwc.Owf7Participant=function(config) {
             resource: config.launchDataResource,
             action: "get"
         }, function (response, done) {
-            if (response.response === 'ok') {
+            if (response.response === 'ok'
+                && response.entity && response.entity.entity && response.entity.entity.launchData) {
                 self.launchData = response.entity.entity.launchData;
+            } else {
+                self.launchData = undefined;
             }
             if(!config.externalInit) {
                 self.initIframe();
@@ -1795,7 +1829,7 @@ ozpIwc.Owf7Participant.prototype.initIframe=function() {
 	this.iframe.setAttribute("name",JSON.stringify(this.widgetParams));
     this.iframe.setAttribute("src",this.widgetParams.url+this.widgetQuery);
     this.iframe.setAttribute("id",this.rpcId);
-    
+    document.body.appendChild(this.iframe);
     this.registerDragAndDrop();
 };
 ozpIwc.Owf7Participant.pubsubChannel=function(channel) {
@@ -2318,8 +2352,8 @@ ozpIwc.Owf7ParticipantListener.prototype.makeGuid=function() {
 
 ozpIwc.Owf7ParticipantListener.prototype.updateMouseCoordinates=function(e) {
 //      console.log("Updating coords from("+this.xOffset+","+this.yOffset+")");
-      this.xOffset=e.screenX-e.clientX;
-      this.yOffset=e.screenY-e.clientY;
+    this.xOffset=e.screenX-e.clientX;
+    this.yOffset=e.screenY-e.clientY;
 //      console.log("     to ("+this.xOffset+","+this.yOffset+")");
 };
 
@@ -2340,30 +2374,65 @@ ozpIwc.Owf7ParticipantListener.prototype.convertToLocalCoordinates=function(msg,
     // at the mouse location relative to the adapter, which gives the location
     // of the event inside the iframe content.
     // http://www.kirupa.com/html5/get_element_position_using_javascript.htm
-    
+
     // should work in most browsers: http://www.quirksmode.org/dom/w3c_cssom.html#elementview
     // IE < 7: will miscalculate by skipping ancestors that are "position:relative"
     // IE, Opera: not work if there's a "position:fixed" in the ancestors
-    while(element) {        
+    while(element) {
         rv.pageX += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-        rv.pageY += (element.offsetTop - element.scrollTop + element.clientTop);        
-        element = element.offsetParent;    
+        rv.pageY += (element.offsetTop - element.scrollTop + element.clientTop);
+        element = element.offsetParent;
     }
 
     return rv;
 };
+
 ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
-  // From the caller: config.url and config.iframe
-  config.listener=this;
-  config.client=new ozpIwc.InternalParticipant();
-  ozpIwc.defaultRouter.registerParticipant(config.client);
-  config.guid=config.instanceId || "eb5435cf-4021-4f2a-ba69-dde451d12551"; // FIXME: generate
-  config.instanceId=config.instanceId || this.makeGuid(); // FIXME: generate
-  config.rpcId=gadgets.json.stringify({id:config.instanceId});
-  this.participants[config.rpcId]=new ozpIwc.Owf7Participant(config);
-  
-  // @see js\state\WidgetStateContainer.js:35
-  gadgets.rpc.register('_WIDGET_STATE_CHANNEL_'+config.instanceId,function(){});
+    // From the caller: config.url, config.launchDataResource, (opt) config.instanceId
+    config.instanceId = config.instanceId || this.makeGuid();
+    config.listener = this;
+    config.client = new ozpIwc.InternalParticipant();
+    config.rpcId = gadgets.json.stringify({id: config.instanceId});
+    ozpIwc.defaultRouter.registerParticipant(config.client);
+
+
+    // Update the hash in case the user refreshes. Then create the participant/register RPC
+    function init() {
+        var hashObj = {};
+        if(config.guid) hashObj.guid = config.guid;
+        if(config.instanceId) hashObj.instanceId= config.instanceId;
+
+        var newHash = "#";
+        for (var i in hashObj) {
+            newHash += i + "=" + hashObj[i] + "&";
+        }
+        newHash = newHash.substring(0, newHash.length - 1);
+        window.location.hash = newHash;
+
+        // After storing the hash, if the guid does not exist just set it as instanceId for OWF7 to not complain.
+        config.guid = config.guid || config.instanceId;
+        config.listener.participants[config.rpcId] = new ozpIwc.Owf7Participant(config);
+
+        // @see js\state\WidgetStateContainer.js:35
+        gadgets.rpc.register('_WIDGET_STATE_CHANNEL_' + config.instanceId, function(){});
+    }
+
+    // If there was a IWC launch resource, go gather it
+    if (config.launchDataResource) {
+        config.client.send({
+            dst: "intents.api",
+            action: "get",
+            resource: config.launchDataResource
+        }, function (resp) {
+            // If the widget is refreshed, the launch resource data has been deleted.
+            if (resp && resp.entity && resp.entity.entity && typeof resp.entity.entity.id === "string") {
+                config.guid = resp.entity.entity.id;
+            }
+            init();
+        });
+    } else {
+        init();
+    }
 };
 
 ozpIwc.Owf7ParticipantListener.prototype.cancelDrag=function() {

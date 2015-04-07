@@ -37,8 +37,6 @@
         </script>
   </head>
   <body>
-    <iframe id="widgetFrame">
-    </iframe>
     <script type="text/javascript" src="js/ozpIwc-bus.js"></script>
     <script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>  
     <script type="text/javascript">
@@ -49,22 +47,15 @@
             var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
 
             var adapter=new ozpIwc.Owf7ParticipantListener();
-            var hash=window.location.hash;
 
-            if(!hash) {
-                hash=window.location.hash=adapter.makeGuid();
-            } else {
-                hash=hash.replace("#","");
-            }
+            // Gather any hash-stashed data pertaining to the widget
+            var config = ozpIwc.util.parseQueryParams(window.location.hash.replace("#", ""));
 
-            adapter.addWidget({
-                "url": params.url,
-                "iframe": document.getElementById("widgetFrame"),
-                "launchDataResource": windowNameParams["ozpIwc.inFlightIntent"],
-                // FIXME: this should be the guid of the widget being launched.  pipe it through, somehow
-                "guid": "eb5435cf-4021-4f2a-ba69-dde451d12551", 
-                "instanceId": hash
-            });
+            // Add any other config params
+            config.url = params.url;
+            config.launchDataResource = windowNameParams["ozpIwc.inFlightIntent"];
+
+            adapter.addWidget(config);
         //    console.log("Adapter: ",adapter.participants);
         })();
     </script>
