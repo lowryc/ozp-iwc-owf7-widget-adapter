@@ -8,6 +8,7 @@ module.exports = function(grunt) {
                 'app/js/shindig/util.js',
                 'app/js/shindig/json.js',
                 'app/js/shindig/rpc.js',
+                'app/js/shindig/overrides.js',
                 'app/js/adapter/*.js',
                 'app/js/main.js'
             ],

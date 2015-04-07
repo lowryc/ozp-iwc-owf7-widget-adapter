@@ -15,14 +15,13 @@
 
 ozpIwc.Owf7Participant=function(config) {
     config = config || {};
-    if(!config.iframe) { throw "Needs an iframe";}
     if(!config.listener) { throw "Needs to have an OWF7ParticipantListener";}
     if(!config.client) {throw "Needs an IWC Client";}
     if(!config.guid) { throw "Must be assigned a guid for this widget";}
     if(!config.instanceId) { throw "Needs an widget instance id";}
     if(!config.url) { throw "Needs a url for the widget"; }
     if(!config.rpcId) { throw "Needs a rpcId for the widget"; }
-    
+
     this.iframe=config.iframe;
     this.listener=config.listener;
     this.client=config.client;
@@ -30,7 +29,11 @@ ozpIwc.Owf7Participant=function(config) {
     this.instanceId=config.instanceId;
     this.widgetGuid=config.guid;
     this.rpcId=config.rpcId;
-    
+
+    // Create an iframe for the widget
+    this.iframe = document.createElement('iframe');
+    this.iframe.id = config.instanceId;
+
     this.inDrag=false;
     this.lastMouseMove=Date.now();
     
@@ -48,8 +51,11 @@ ozpIwc.Owf7Participant=function(config) {
             resource: config.launchDataResource,
             action: "get"
         }, function (response, done) {
-            if (response.response === 'ok') {
+            if (response.response === 'ok'
+                && response.entity && response.entity.entity && response.entity.entity.launchData) {
                 self.launchData = response.entity.entity.launchData;
+            } else {
+                self.launchData = undefined;
             }
             if(!config.externalInit) {
                 self.initIframe();
@@ -92,7 +98,7 @@ ozpIwc.Owf7Participant.prototype.initIframe=function() {
 	this.iframe.setAttribute("name",JSON.stringify(this.widgetParams));
     this.iframe.setAttribute("src",this.widgetParams.url+this.widgetQuery);
     this.iframe.setAttribute("id",this.rpcId);
-    
+    document.body.appendChild(this.iframe);
     this.registerDragAndDrop();
 };
 ozpIwc.Owf7Participant.pubsubChannel=function(channel) {
