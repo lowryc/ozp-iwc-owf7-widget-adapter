@@ -17,7 +17,10 @@ ozpIwc.Owf7ParticipantListener=function(config) {
     this.participants={};
     this.offsetX=config.offsetX;
     this.offsetY=config.offsetY;
-    
+    this.widgetReadyMap = {};
+    this.magicFunctionMap = {};
+    this.proxyMap = {};
+
     this.client=new ozpIwc.InternalParticipant();
     ozpIwc.defaultRouter.registerParticipant(this.client);    
     
@@ -146,10 +149,64 @@ ozpIwc.Owf7ParticipantListener=function(config) {
 //	// @see js/kernel/kernel-rpc-base.js:130
 //	gadgets.rpc.register('_widgetReady',function(widgetId) {
 //	});
-//	// @see js/kernel/kernel-rpc-base.js:147
-//	gadgets.rpc.register('_getWidgetReady',function(widgetId, srcWidgetId) {
-//	});
-//
+
+	// @see js/kernel/kernel-rpc-base.js:147
+	gadgets.rpc.register('_getWidgetReady',function(widgetId, srcWidgetId) {
+        return self.widgetReadyMap[widgetId] = true;
+
+	});
+
+    // @see js/kernel/kernel-rpc-base.js:124
+    gadgets.rpc.register('register_functions',function(iframeId,functions){
+        var widgetID = JSON.parse(iframeId).id;
+
+        if (!self.magicFunctionMap[widgetID]) {
+            self.magicFunctionMap[widgetID] = functions;
+            return;
+        }
+
+        // don't add duplicates
+        var found;
+
+        for (var i = 0, len = functions.length; i < len; i++) {
+            found = false;
+            for (var j = 0, len2 = self.magicFunctionMap[widgetID].length; j < len2; j++) {
+                if (functions[i] === self.magicFunctionMap[widgetID][j]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found === false) {
+                self.magicFunctionMap[widgetID].push(functions[i]);
+            }
+        }
+    });
+
+    // @see js/kernel/kernel-rpc-base.js:88
+    gadgets.rpc.register('GET_FUNCTIONS',function(widgetID, sourceWidgetId){
+        var functions = self.magicFunctionMap[widgetID];
+
+        //save the fact that the sourceWidgetId has a proxy of the widgetId
+        if (self.proxyMap[widgetID] == null) {
+            self.proxyMap[widgetID] = [];
+        }
+        if (self.sourceWidgetId != null) {
+            self.proxyMap[widgetID].push(sourceWidgetId);
+        }
+
+        return functions != null ? functions : [];
+    });
+
+    // @see js/kernel/kernel-container.js:204
+    gadgets.rpc.register('LIST_WIDGETS',function(){
+        var keys = Object.keys(self.participants);
+        var parsedKeys = [];
+        for(var i in keys){
+            parsedKeys.push(gadgets.json.parse(keys[i]));
+        }
+        return parsedKeys;
+    });
+
 //	// OWF.log
 //	gadgets.rpc.register('Ozone.log',function() {
 //	});
