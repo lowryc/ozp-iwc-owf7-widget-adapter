@@ -79,7 +79,7 @@ ozpIwc.Owf7ParticipantListener=function(config) {
             case 'subscribe':
                 p.onSubscribe(command, channel, message, dest);
                 break;
-            case 'unsubscribe': break;
+            case 'unsubscribe': 
                 p.onUnsubscribe(command, channel, message, dest);
                 break;
         }
