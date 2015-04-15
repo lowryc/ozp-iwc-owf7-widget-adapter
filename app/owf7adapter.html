@@ -55,7 +55,11 @@
             config.url = params.url;
             config.launchDataResource = windowNameParams["ozpIwc.inFlightIntent"];
 
+            // Use a fixed delay to prevent the IWC from being overloaded with messages if refresh is held down.
+            window.setTimeout(function(){
             adapter.addWidget(config);
+            },500);
+
         //    console.log("Adapter: ",adapter.participants);
         })();
     </script>
