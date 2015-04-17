@@ -16,7 +16,8 @@ module.exports = function(grunt) {
                 'test/**/*'
             ],
             all: [
-                '<%= src.adapter %>'
+                '<%= src.adapter %>',
+                '<%= src.test %>'
             ]
         },
         output: {
@@ -59,6 +60,17 @@ module.exports = function(grunt) {
         clean: {
           dist: ['./dist/']
         },
+        jshint: {
+            options: {
+                jshintrc: '.jshintrc',
+                reporter: require('jshint-stylish'),
+                force: true
+            },
+            all: [
+                'Gruntfile.js',
+                '<%= src.all %>'
+            ]
+        },
         jsdoc: {
             dist: {
                 src: ['<%= src.bus %>'],
@@ -69,8 +81,8 @@ module.exports = function(grunt) {
         },
         watch: {
             concatFiles: {
-                files: ['Gruntfile.js', 'app/**/*', '<%= src.all %>'],
-                tasks: ['concat_sourcemap', 'copy:dist'],
+                files: ['Gruntfile.js', 'app/**/*', '<%= src.adapter %>'],
+                tasks: ['build'],
                 options: {
                     interrupt: true,
                     spawn: false
@@ -111,7 +123,7 @@ module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     // Default task(s).
-    grunt.registerTask('build', ['concat_sourcemap', 'uglify', 'copy:dist']);
+    grunt.registerTask('build', ['jshint', 'concat_sourcemap', 'uglify', 'copy:dist']);
     grunt.registerTask('test', ['build','connect','watch']);
     grunt.registerTask('default', ['test']);
 };

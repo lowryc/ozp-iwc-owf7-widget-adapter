@@ -23,18 +23,16 @@
         this.rpcRelay=absolutePath(config.rpcRelay || "rpc_relay.uncompressed.html");
         this.prefsUrl=absolutePath(config.prefsUrl || ozpIwc.owf7PrefsUrl || "/owf/prefs");
         this.participants={};
-        this.widgetReadyMap = {};
-        this.magicFunctionMap = {};
-        this.proxyMap = {};
 
         this.client=new ozpIwc.InternalParticipant();
+        this.bridge = config.bridge || new ozpIwc.Owf7Bridge({listener: this});
+
         ozpIwc.defaultRouter.registerParticipant(this.client);
 
         if ((window.name === "undefined") || (window.name === "")) {
             window.name = "ContainerWindowName" + Math.random();
         }
         this.installDragAndDrop();
-        this.registerDefaults();
 
         // try to find our position on screen to help with cross-window drag and drop
         this.xOffset= (typeof config.xOffset !== undefined) ?
@@ -49,6 +47,7 @@
      * @returns {string}
      */
     ozpIwc.Owf7ParticipantListener.prototype.makeGuid=function() {
+        /*jshint bitwise: false*/
         // not a real guid, but it's the way OWF 7 does it
         var S4=function(){
             return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -131,8 +130,7 @@
         // Update the hash in case the user refreshes. Then create the participant/register RPC
         function init(cfg) {
             var hashObj = {},
-                newHash = "#",
-                widgetRegistrations = {};
+                newHash = "#";
 
             if(cfg.guid){
                 hashObj.guid = cfg.guid;
@@ -154,8 +152,9 @@
 
             // Add the _WIDGET_STATE_CHANNEL_<instanceId> RPC registration for the widget.
             // @see js\state\WidgetStateContainer.js:35
-            widgetRegistrations['_WIDGET_STATE_CHANNEL_' + cfg.instanceId] = function(){};
-            self.registerFunctions(widgetRegistrations,gadgets.rpc.register);
+            var widgetRegistrations = {'state': {}};
+            widgetRegistrations.state['_WIDGET_STATE_CHANNEL_' + cfg.instanceId] = function(){};
+            self.bridge.addHandlers(widgetRegistrations);
 
             return cfg.listener.participants[cfg.rpcId];
         }
@@ -225,6 +224,7 @@
         });
 
         document.addEventListener("mousemove",function(e) {
+            /*jshint bitwise: false*/
             self.updateMouseCoordinates(e);
     //        console.log("Adapter mousemove at ",e);
             if(self.inDrag && (e.buttons&1) !== 1) {
@@ -246,23 +246,6 @@
     //    },false);
     };
 
-    /**
-     * Default rpc registration for the OWF7ParticipantListener. Registers the default rpc handler, and all rpc
-     * functions gathered from OWF7ParticipantListener.prototype.getRPCFuncs(). If custom registrations are
-     * desired, see registerFunctions.
-     * @method registerDefaults
-     */
-    ozpIwc.Owf7ParticipantListener.prototype.registerDefaults = function(){
-
-        var rpcString=function(rpc) {
-            return "[service:" + rpc.s + ",from:" + rpc.f + "]:" + JSON.stringify(rpc.a);
-        };
-
-        gadgets.rpc.registerDefault(function() {
-            console.log("Unknown rpc " + rpcString(this));
-        });
-        this.registerFunctions(this.getRPCFunctions(),gadgets.rpc.register);
-    };
 
     /**
      * Returns the participant if it registered to the listener, throws an exception if it does not.
@@ -284,279 +267,4 @@
      * @type {string}
      */
     ozpIwc.Owf7ParticipantListener.prototype.getParticipant_err = "Uknown participant";
-
-    /**
-     * Registers any function nested in the regObj param using the regFn param.
-     * @method registerFunctions
-     * @params  {Object|Array} regObj A object of functions to register where the key is the name, Or nested objects/arrays
-     *                               matching said structure.
-     * @params  {Function} regFn A registration function to pass (name,fn) to.
-     */
-    ozpIwc.Owf7ParticipantListener.prototype.registerFunctions = function(regObj,regFn){
-
-        // Recursively cycle through the object/array.
-        // If property is a function pass it to fn.
-        function recurseIfObject(obj,fn){
-            for(var i in obj){
-                if(obj.hasOwnProperty(i)){
-                    if(typeof obj[i] === 'function'){
-                        fn(i,obj[i]);
-                    } else if(typeof obj[i] === 'object') {
-                        recurseIfObject(obj[i],fn);
-                    } else {
-                        console.error('typeof('+i+')=', typeof(obj[i]), '. Only functions allowed.');
-                    }
-                }
-            }
-        }
-
-        recurseIfObject(regObj,regFn);
-    };
-
-    /**
-     * Using scope isolation, these RPC functions have access to limited properties of the OWF7ParticipantListener.
-     * @method getRPCFunctions
-     * @returns {Object}
-     */
-    ozpIwc.Owf7ParticipantListener.prototype.getRPCFunctions = function(){
-        // Use closure for any members as we are generating handlers.
-        var widgetReadyMap = this.widgetReadyMap,
-            magicFunctionMap = this.magicFunctionMap,
-            proxyMap = this.proxyMap,
-            self = this;
-
-        return {
-            /**
-             * Components
-             */
-            'components': {
-                'keys': {
-                    /**
-                     *
-                     * @see reference/js/components/keys/KeyEventing.js
-                     */
-                    '_widget_iframe_ready': function () {
-                    }
-                },
-                'widget': {
-                    /**
-                     * @see js\components\widget\WidgetIframeComponent.js:15
-                     * @param sender
-                     * @param msg
-                     */
-                    '_WIDGET_LAUNCHER_CHANNEL': function (sender, msg) {
-                        var p = self.getParticipant(this.f);
-                        p.onLaunchWidget(sender, msg, this);
-                    }
-                }
-
-            },
-
-            /**
-             * Drag and Drop
-             */
-            'dd': {
-                /**
-                 *
-                 * _fake_mouse_move is needed for drag and drop.  The container code is at
-                 * @see reference\js\dd\WidgetDragAndDropContainer.js:52
-                 * @param msg
-                 */
-                '_fake_mouse_move': function (msg) {
-                    self.getParticipant(this.f).onFakeMouseMoveFromClient(msg);
-                },
-                /**
-                 * @see reference\js\dd\WidgetDragAndDropContainer.js:52
-                 * @param msg
-                 */
-                '_fake_mouse_up': function (msg) {
-                    self.getParticipant(this.f).onFakeMouseUpFromClient(msg);
-                },
-                /**
-                 *
-                 */
-                '_fake_mouse_out': function () { /*ignored*/
-                }
-            },
-
-            /**
-             * Eventing
-             */
-            'eventing': {
-                /**
-                 * Called by the widget to connect to the container
-                 * @see js/eventing/Container.js:26 for the containerInit function that much of this is copied from
-                 * @see js/eventing/Container.js:104 for the actual rpc.register
-                 * @property container_init
-                 */
-                'container_init': function (sender, message) {
-                    self.getParticipant(this.f).onContainerInit(sender, message);
-                },
-                /**
-                 *
-                 */
-                'after_container_init': function() {
-
-                },
-                /**
-                 * @param {string} command - publish | subscribe | unsubscribe
-                 * @param {string} channel - the OWF7 channel
-                 * @param {string} message - the message being published
-                 * @param {string} dest - the ID of the recipient if this is point-to-point
-                 * @see js/eventing/Container.js:376
-                 * @see js-lib/shindig/pubsub.js
-                 * @see js-lib/shindig/pubsub_router.js
-                 */
-                'pubsub': function (command, channel, message, dest) {
-                    var p = self.getParticipant(this.f);
-                    switch (command) {
-                        case 'publish':
-                            p.onPublish(command, channel, message, dest);
-                            break;
-                        case 'subscribe':
-                            p.onSubscribe(command, channel, message, dest);
-                            break;
-                        case 'unsubscribe':
-                            p.onUnsubscribe(command, channel, message, dest);
-                            break;
-                    }
-                }
-            },
-
-            /**
-             * Intents
-             */
-            'intents': {
-                /**
-                 * used for both handling and invoking intents
-                 * @see js/intents/WidgetIntentsContainer.js:32 for reference
-                 * @param senderId
-                 * @param intent
-                 * @param data
-                 * @param destIds
-                 */
-                '_intents': function(senderId, intent, data, destIds){
-
-                },
-                /**
-                 * used by widgets to register an intent
-                 * @see js/intents/WidgetIntentsContainer.js:85 for reference
-                 * @param intent
-                 * @param destWidgetId
-                 */
-                '_intents_receive': function(intent, destWidgetId){
-
-                }
-            },
-
-            /**
-             * Kernel
-             */
-            'kernel': {
-                /**
-                 * @see js/kernel/kernel-rpc-base.js:147
-                 * @param widgetId
-                 * @param srcWidgetId
-                 * @returns {boolean}
-                 */
-                '_getWidgetReady': function (widgetId, srcWidgetId) {
-                    return widgetReadyMap[widgetId] = true;
-
-                },
-                /**
-                 * @see reference/js/kernel/kernel-rpc-base.js:130
-                 * @param widgetId
-                 */
-                '_widgetReady': function(widgetId){
-
-                },
-                /**
-                 * @see js/kernel/kernel-rpc-base.js:124
-                 * @param iframeId
-                 * @param functions
-                 */
-                'register_functions': function (iframeId, functions) {
-                    var widgetID = JSON.parse(iframeId).id;
-
-                    if (!magicFunctionMap[widgetID]) {
-                        magicFunctionMap[widgetID] = functions;
-                        return;
-                    }
-
-                    // don't add duplicates
-                    var found;
-
-                    for (var i = 0, len = functions.length; i < len; i++) {
-                        found = false;
-                        for (var j = 0, len2 = magicFunctionMap[widgetID].length; j < len2; j++) {
-                            if (functions[i] === magicFunctionMap[widgetID][j]) {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found === false) {
-                            magicFunctionMap[widgetID].push(functions[i]);
-                        }
-                    }
-                },
-                /**
-                 * @see js/kernel/kernel-rpc-base.js:88
-                 * @param widgetID
-                 * @param sourceWidgetId
-                 * @returns {*}
-                 */
-                'GET_FUNCTIONS': function (widgetID, sourceWidgetId) {
-                    var functions = magicFunctionMap[widgetID];
-
-                    //save the fact that the sourceWidgetId has a proxy of the widgetId
-                    if (proxyMap[widgetID] == null) {
-                        proxyMap[widgetID] = [];
-                    }
-                    if (sourceWidgetId != null) {
-                        proxyMap[widgetID].push(sourceWidgetId);
-                    }
-
-                    return functions != null ? functions : [];
-                },
-                /**
-                 * @see js/kernel/kernel-container.js:204
-                 * @returns {Array}
-                 */
-                'LIST_WIDGETS': function () {
-                    self.getParticipant(this.f).onListWidgets(this);
-                }
-            },
-
-            /**
-             *  Launcher API
-             *  The handling of the rpc event is in WidgetLauncherContainer
-             *  @see js/launcher/WidgetLauncherContainer.js:22, 36
-             *  msg: {
-             *    universalName: 'universal name of widget to launch',  //universalName or guid maybe identify the widget to be launched
-             *    guid: 'guid of widget to launch',
-             *    title: 'title to replace the widgets title' the title will only be changed if the widget is opened.
-             *    titleRegex: optional regex used to replace the previous title with the new value of title
-             *    launchOnlyIfClosed: true, //if true will only launch the widget if it is not already opened.
-             *                              //if it is opened then the widget will be restored
-             *    data: dataString  //initial launch config data to be passed to a widget only if the widget is opened.  this must be a string
-             *  });
-             *  The steps to launch a widget are defined in dashboard.launchWidgetInstance
-             *  @see js/components/dashboard/Dashboard.js:427
-             *  The "iframe properties" come from Dashboard.onBeforeWidgetLaunch
-             *  @see js/components/dashboard/Dashboard.js:318
-             *  @see js\eventing\Container.js:237 for getIframeProperties()
-             *  WidgetIframeComponent actually creates the iframe tag.
-             */
-            'launcher': {},
-
-            /**
-             * Util
-             */
-            'util': {
-                'Ozone.log': function() {
-
-                }
-            }
-        };
-    };
 })();
