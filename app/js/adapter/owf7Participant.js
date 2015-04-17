@@ -1,18 +1,18 @@
-
 /**
- * 
- * @param {object} config
- * @param {object} config.iframe - The iframe that contains the widget for this participant
- * @param {object} config.listener - The parent OWF7ParticipantListener
- * @param {object} config.client - The InternalParticipant for this widget.
- * @param {string} config.guid - The GUID for the widget that this is an instance of.
- * @param {string} config.instanceId - The GUID for the widget instance.
- * @param {string} config.url - The launch URL for this widget.
- * @param {string} config.rpcId - The iframe.id that is used as the ID for RPC.
- * @param {string} [config.launchDataResource=undefined] - The intents.api resource that contains the launch data for the widget, or null for no launch data.
- * @param {boolean} [config.externalInit=false] - Set to true if the iframe has been initialized elsewhere, such as when embedded in OWF 7.
+ * @class Owf7Participant
+ * @constructor
+ * @namespace ozpIwc
+ * @param {Object} config
+ * @param {Object} config.iframe The iframe that contains the widget for this participant
+ * @param {Object} config.listener The parent OWF7ParticipantListener
+ * @param {Object} config.client The InternalParticipant for this widget.
+ * @param {String} config.guid The GUID for the widget that this is an instance of.
+ * @param {String} config.instanceId The GUID for the widget instance.
+ * @param {String} config.url The launch URL for this widget.
+ * @param {String} config.rpcId The iframe.id that is used as the ID for RPC.
+ * @param {String} [config.launchDataResource=undefined] The intents.api resource that contains the launch data for the widget, or null for no launch data.
+ * @param {Boolean} [config.externalInit=false] Set to true if the iframe has been initialized elsewhere, such as when embedded in OWF 7.
  */
-
 ozpIwc.Owf7Participant=function(config) {
     config = config || {};
     if(!config.listener) { throw "Needs to have an OWF7ParticipantListener";}
@@ -69,6 +69,11 @@ ozpIwc.Owf7Participant=function(config) {
     }
 };
 
+/**
+ * Creates the iframe for the legacy widget content. Registers drag and drop for the widget.
+ *
+ * @method initIframe
+ */
 ozpIwc.Owf7Participant.prototype.initIframe=function() {
       
 	// these get turned into the iframes name attribute
@@ -99,15 +104,43 @@ ozpIwc.Owf7Participant.prototype.initIframe=function() {
     this.iframe.setAttribute("src",this.widgetParams.url+this.widgetQuery);
     this.iframe.setAttribute("id",this.rpcId);
     document.body.appendChild(this.iframe);
-    this.registerDragAndDrop();
 };
+
+/**
+ * IWC data.api resource path where all active legacy widget GUIDs are reported.
+ * @property listWidgetChannel
+ * @type {string}
+ */
+ozpIwc.Owf7Participant.listWidgetChannel = "/owf-legacy/kernel/_list_widgets";
+
+/**
+ * Returns the IWC data.api resource path for the given pubsub channel.
+ * @method pubsubChannel
+ * @param {String} channel
+ * @returns {String}
+ */
 ozpIwc.Owf7Participant.pubsubChannel=function(channel) {
     return "/owf-legacy/eventing/"+channel;
 };
+
+/**
+ * Returns the IWC data.api resource path for the given rpc Channel
+ * @method rpcChannel
+ * @param {String} channel
+ * @returns {String}
+ */
 ozpIwc.Owf7Participant.rpcChannel=function(channel) {
     return "/owf-legacy/gadgetsRpc/"+channel;
 };
 
+/**
+ * Handler for the RPC channel "container_init". Configures the widgets window.name, rpc relay url, and auth token.
+ * Calls RPC channel "after_container_init".
+ *
+ * @method onContainerInit
+ * @param sender
+ * @param message
+ */
 ozpIwc.Owf7Participant.prototype.onContainerInit=function(sender,message) {
     // The container sends params, but the widget JS ignores them
     if ((window.name === "undefined") || (window.name === "")) {
@@ -116,21 +149,35 @@ ozpIwc.Owf7Participant.prototype.onContainerInit=function(sender,message) {
     var initMessage = gadgets.json.parse(message);
     var useMultiPartMessagesForIFPC = initMessage.useMultiPartMessagesForIFPC;
     var idString = this.rpcId;//null;
-//		if (initMessage.id.charAt(0) !== '{') {
-//				idString = initMessage.id;
-//		}
-//		else {
-//				var obj = gadgets.json.parse(initMessage.id);
-//				var id = obj.id;
-//				idString = gadgets.json.stringify({id:obj.id});
-//		}
+    //if (initMessage.id.charAt(0) !== '{') {
+    //		idString = initMessage.id;
+    //}
+    //else {
+    //		var obj = gadgets.json.parse(initMessage.id);
+    //		var id = obj.id;
+    //		idString = gadgets.json.stringify({id:obj.id});
+    //}
 
     gadgets.rpc.setRelayUrl(idString, initMessage.relayUrl, false, useMultiPartMessagesForIFPC);
     gadgets.rpc.setAuthToken(idString, 0);
     var jsonString = '{\"id\":\"' + window.name + '\"}';
+
+    this.registerDragAndDrop();
+    this.registerWidgetListing();
+
     gadgets.rpc.call(idString, 'after_container_init', null, window.name, jsonString);
 };
-    
+
+/**
+ * Handler for the RPC channel "pubsub" when receiving "publish" commands.
+ * Forwards the message using the IWC's data.api.
+ *
+ * @method onPublish
+ * @param {String} command
+ * @param {String} channel
+ * @param {String|Number|Object|Boolean} message
+ * @param {String} dest
+ */
 ozpIwc.Owf7Participant.prototype.onPublish=function(command, channel, message, dest) {
     if(this["hookPublish"+channel] && !this["hookPublish"+channel].call(this,message)) {
         return;
@@ -144,6 +191,17 @@ ozpIwc.Owf7Participant.prototype.onPublish=function(command, channel, message, d
 };
 
 
+/**
+ * Handler for the RPC channel "pubsub" when receiving "subscribe" commands.
+ * Subscribes using the IWC's data.api watch capabilities.
+ * Replies to the subscriber upon change in data.api resource.
+ *
+ * @method onSubscribe
+ * @param {String} command
+ * @param {String} channel
+ * @param {String|Number|Object|Boolean} message
+ * @param {String} dest
+ */
 ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message, dest) {
     var self=this;
     this.subscriptions[channel]=true;
@@ -163,14 +221,32 @@ ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message,
             gadgets.rpc.call(self.rpcId, 'pubsub', null, channel, null, packet.entity.newValue);
         }else {
             unregister();
-        };
+        }
     });
 };
+/**
+ * Handler for the RPC channel "pubsub" when receiving "unsubscribe" commands.
+ * Unsubscribes from the IWC's data.api updates.
+ *
+ * @method onUnsubscribe
+ * @param {String} command
+ * @param {String} channel
+ * @param {String|Number|Object|Boolean} message
+ * @param {String} dest
+ */
 ozpIwc.Owf7Participant.prototype.onUnsubscribe=function(command, channel, message, dest) {
     this.subscriptions[channel]=false;
 };
 
-
+/**
+ * Handler for the RPC channel "_WIDGET_LAUNCHER_CHANNEL".
+ * Launches legacy widgets using the IWC's system.api launch capabilities.
+ *
+ * @method onLaunchWidget
+ * @param {String} sender
+ * @param {String} msg
+ * @param {Object} rpc
+ */
 ozpIwc.Owf7Participant.prototype.onLaunchWidget=function(sender,msg,rpc) {
     msg=JSON.parse(msg);    
     // ignore title, titleRegex, and launchOnlyIfClosed
@@ -191,6 +267,80 @@ ozpIwc.Owf7Participant.prototype.onLaunchWidget=function(sender,msg,rpc) {
     });
 };
 
+/**
+ * Updates the IWC's data.api resource specified by listWidgetChannel with this widget's GUID.
+ * Registers a beforeunload event to remove the GUID on closing.
+ *
+ * @method registerWidgetListing
+ */
+ozpIwc.Owf7Participant.prototype.registerWidgetListing = function() {
+    var self = this;
+
+    window.addEventListener("beforeunload",function(){
+        self.unregisterWidgetListing();
+    });
+
+    this.client.send({
+        dst: "data.api",
+        resource: ozpIwc.Owf7Participant.listWidgetChannel,
+        action: "addChild",
+        contentType: "text/plain",
+        entity: gadgets.json.parse(this.rpcId)
+    },function(reply){
+        self.widgetListing = reply.entity.resource;
+    });
+};
+
+/**
+ * Updates the IWC's data.api resource specified by listWidgetChannel by removing this widget's GUID.
+ *
+ * @method unregisterWidgetListing
+ */
+ozpIwc.Owf7Participant.prototype.unregisterWidgetListing = function() {
+    console.log(this.client.send,ozpIwc.Owf7Participant.listWidgetChannel,this.widgetListing);
+    this.client.send({
+        dst: "data.api",
+        resource: ozpIwc.Owf7Participant.listWidgetChannel,
+        action: "removeChild",
+        contentType: "text/plain",
+        entity: {resource: this.widgetListing}
+    });
+    return true;
+};
+
+/**
+ * Gathers a list of current active legacy widget GUIDs from the IWC data.api.
+ *
+ * @method onListWidgets
+ * @param {Object} rpc
+ */
+ozpIwc.Owf7Participant.prototype.onListWidgets = function(rpc){
+    var self = this;
+    this.client.send({
+        dst: "data.api",
+        resource: ozpIwc.Owf7Participant.listWidgetChannel,
+        action: "list"
+    },function(reply){
+        var widgets = [];
+        var widgetCount = reply.entity.length || 0;
+        for(var i in reply.entity){
+            self.client.send({
+                dst: "data.api",
+                resource: reply.entity[i],
+                action: "get"
+            },function(resp){
+                if(resp.entity && resp.entity.id) {
+                    widgets.push(resp.entity);
+                }
+                if (--widgetCount <= 0) {
+                    rpc.callback(widgets);
+                }
+            });
+        }
+
+    });
+};
+
 //=======================================================================
 // Drag and Drop MADNESS
 //=======================================================================
@@ -204,7 +354,12 @@ ozpIwc.Owf7Participant.prototype.onLaunchWidget=function(sender,msg,rpc) {
         screenY: e.screenY
     }
  */
-
+/**
+ * Normalize the drag and drop message coordinates for the widget's content.
+ * @method convertToLocalCoordinates
+ * @param {Object} msg A drag and drop message.
+ * @returns {Object}
+ */
 ozpIwc.Owf7Participant.prototype.convertToLocalCoordinates=function(msg) {
     // translate to container coordinates
     var rv=this.listener.convertToLocalCoordinates(msg);
@@ -229,6 +384,12 @@ ozpIwc.Owf7Participant.prototype.convertToLocalCoordinates=function(msg) {
     return rv;
 };
 
+/**
+ * Returns true if the location is within the widget's iframe bounds.
+ * @method inIframeBounds
+ * @param {MouseEvent} location
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.inIframeBounds=function(location) {
     // since we normalized the coordinates, we can just check to see if they are 
     // within the dimensions of the iframe.
@@ -236,6 +397,10 @@ ozpIwc.Owf7Participant.prototype.inIframeBounds=function(location) {
            location.pageY >= 0 && location.pageY < this.iframe.clientHeight;
 };
 
+/**
+ * @method onFakeMouseMoveFromClient
+ * @param msg
+ */
 ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromClient=function(msg) {
     // originally translated the pageX/pageY to container coordinates.  With
     // the adapter, we're translating from screen coordinates so don't need to 
@@ -257,7 +422,11 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromClient=function(msg) {
     
 };
 
-// Only sent if the client is a flash widget (dunno why?).  Otherwise, it sends a _dragStopInWidgetName
+/**
+ * Only sent if the client is a flash widget (dunno why?).  Otherwise, it sends a _dragStopInWidgetName
+ * @method onFakeMouseUpFromClient
+ * @param {MouseEvent} msg
+ */
 ozpIwc.Owf7Participant.prototype.onFakeMouseUpFromClient=function(msg) {
     // originally translated the pageX/pageY to container coordinates.  With
     // the adapter, we're translating from screen coordinates so don't need to 
@@ -270,8 +439,11 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseUpFromClient=function(msg) {
     });
 };
 
-/* Receive a fake mouse event from another widget.  Do the conversions and
+/**
+ * Receive a fake mouse event from another widget.  Do the conversions and
  * finagling that the container would have done in OWF 7.
+ * @method onFakeMouseMoveFromOthers
+ * @param {MouseEvent} msg
  */
 ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromOthers=function(msg) {
     if(!("screenX" in msg && "screenY" in msg)) {
@@ -301,8 +473,11 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseMoveFromOthers=function(msg) {
 };
 
 
-/* Receive a fake mouse event from another widget.  Do the conversions and
+/**
+ * Receive a fake mouse event from another widget.  Do the conversions and
  * finagling that the container would have done in OWF 7.
+ * @method onFakeMouseUpFromOthers
+ * @param {MouseEvent} msg
  */
 ozpIwc.Owf7Participant.prototype.onFakeMouseUpFromOthers=function(msg) {
     var localizedEvent=this.convertToLocalCoordinates(msg);
@@ -325,6 +500,10 @@ ozpIwc.Owf7Participant.prototype.onFakeMouseUpFromOthers=function(msg) {
     }
 };
 
+/**
+ * Uses the data.api watch capabilities to receive drag and drop events from other legacy widgets.
+ * @method registerDragAndDrop
+ */
 ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
     var self=this;
     this.client.send({
@@ -345,6 +524,7 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
     });
  
 };
+
 //==========================
 // Hook the pubsub channels for drag and drop
 //==========================
@@ -354,42 +534,94 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
 // _dragOverWidget:  publish, receive (not used by client)
 
  
-// cancel the publish, since these should originate from the container, not widgets
+/**
+ * Cancels the publish, since these should originate from the container, not widgets
+ * @method hookPublish_dragOutName
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookPublish_dragOutName=function() {return false;};
-ozpIwc.Owf7Participant.prototype.hookPublish_dropReceiveData=function() { return false; };
+
+/**
+ * Cancels the publish, since these should originate from the container, not widgets
+ * @method hookPublish_dropReceiveData
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookPublish_dropReceiveData=function() { return false; };
 
-// cancel the receive, since these should not originate from outside the adapter
+/**
+ * Cancels the receive, since these should not originate from outside the adapter
+ * @method hookReceive_dragSendData
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookReceive_dragSendData=function() { return false;};
+
+/**
+ * Cancels the receive, since these should not originate from outside the adapter
+ * @method hookReceive_dragOutName
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookReceive_dragOutName=function() { return false;};
+
+/**
+ * Cancels the receive, since these should not originate from outside the adapter
+ * @method hookReceive_dropReceiveData
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookReceive_dropReceiveData=function() { return false; };
 
 
-// these all start the drag state
+/**
+ * Starts the drag state.
+ * @method hookReceive_dragStart
+ * @param {Object} message
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookReceive_dragStart=function(message) {
 //    console.log("Starting external drag on ",message);
     this.inDrag=true;
     return true; 
 };
+
+/**
+ * Starts the drag state.
+ * @method hookPublish_dragStart
+ * @param {Object} message
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookPublish_dragStart=function(message) {
 //    console.log("Starting internal drag on ",message);
     this.inDrag=true;
     return true; 
 };
 
-// these all stop the drag state
+/**
+ * Stops the drag state.
+ * @method hookReceive_dragStopInContainer
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookReceive_dragStopInContainer=function() {
 //    console.log("Stopping drag in container");
     this.inDrag=false;
     return true; 
 };
+
+/**
+ * Stops the drag state.
+ * @method hookReceive_dragStopInWidget
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookReceive_dragStopInWidget=function() {
 //    console.log("Stopping drag in widget");
     this.inDrag=false;
     return true; 
 };
 
-// Merely store the dragData for later.
+/**
+ * Stores the drag data in the data.api.
+ * @method hookPublish_dragSendData
+ * @param {Object} message
+ * @returns {Boolean}
+ */
 ozpIwc.Owf7Participant.prototype.hookPublish_dragSendData=function(message) {
 //    console.log("Setting drag data to ",message);
     this.client.send({
@@ -401,6 +633,12 @@ ozpIwc.Owf7Participant.prototype.hookPublish_dragSendData=function(message) {
     return false;
 };
 
+/**
+ * Handles drag data if the drag stopped over top of this participant.
+ * @method hookPublish_dragStopInWidget
+ * @param {Object} message
+ * @returns {Boolean} true if stopped in this widget, false if not.
+ */
 ozpIwc.Owf7Participant.prototype.hookPublish_dragStopInWidget=function(message) {
     // this always published from the widget that initiated the drag
     // so we need to figure out who to send it to

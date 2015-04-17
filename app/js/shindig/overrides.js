@@ -14,12 +14,12 @@ if(gadgets.json){
 // open brackets that follow a colon or comma or that begin the text. Finally,
 // we look to see that the remaining characters are only whitespace or ']' or
 // ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
-
-        if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/b-u]/g, '@').
-                replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
-                replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
-            if(text)
+        if(text && text.replace) {
+            if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/b-u]/g, '@').
+                    replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+                    replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
                 return eval('(' + text + ')');
+            }
         }
         // If the text is not JSON parseable, then return false.
 
