@@ -51,8 +51,8 @@ ozpIwc.Owf7Participant=function(config) {
             resource: config.launchDataResource,
             action: "get"
         }, function (response, done) {
-            if (response.response === 'ok'
-                && response.entity && response.entity.entity && response.entity.entity.launchData) {
+            if (response.response === 'ok' &&
+                response.entity && response.entity.entity && response.entity.entity.launchData) {
                 self.launchData = response.entity.entity.launchData;
             } else {
                 self.launchData = undefined;
@@ -210,7 +210,9 @@ ozpIwc.Owf7Participant.prototype.onSubscribe=function(command, channel, message,
         "resource": ozpIwc.Owf7Participant.pubsubChannel(channel),
         "action": "watch"
     },function(packet,unregister) {
-        if(packet.response !== "changed") return;
+        if(packet.response !== "changed") {
+            return;
+        }
 
         if(self["hookReceive"+channel] && !self["hookReceive"+channel].call(self,packet.entity.newValue)) {
             return;
@@ -323,21 +325,22 @@ ozpIwc.Owf7Participant.prototype.onListWidgets = function(rpc){
     },function(reply){
         var widgets = [];
         var widgetCount = reply.entity.length || 0;
+        var handleWidgetData = function(resp){
+            if(resp.entity && resp.entity.id) {
+                widgets.push(resp.entity);
+            }
+            if (--widgetCount <= 0) {
+                rpc.callback(widgets);
+            }
+        };
+
         for(var i in reply.entity){
             self.client.send({
                 dst: "data.api",
                 resource: reply.entity[i],
                 action: "get"
-            },function(resp){
-                if(resp.entity && resp.entity.id) {
-                    widgets.push(resp.entity);
-                }
-                if (--widgetCount <= 0) {
-                    rpc.callback(widgets);
-                }
-            });
+            },handleWidgetData);
         }
-
     });
 };
 
@@ -511,7 +514,9 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
         "resource": ozpIwc.Owf7Participant.rpcChannel("_fake_mouse_up"),
         "action": "watch"
     },function(packet,unregister) {
-        if(packet.response!=="changed") return;
+        if(packet.response!=="changed") {
+            return;
+        }
         self.onFakeMouseUpFromOthers(packet.entity.newValue);
     });
     this.client.send({
@@ -519,7 +524,9 @@ ozpIwc.Owf7Participant.prototype.registerDragAndDrop=function() {
         "resource": ozpIwc.Owf7Participant.rpcChannel("_fake_mouse_move"),
         "action": "watch"
     },function(packet,unregister) {
-        if(packet.response!=="changed") return;
+        if(packet.response!=="changed") {
+            return;
+        }
         self.onFakeMouseMoveFromOthers(packet.entity.newValue);
     });
  

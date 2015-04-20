@@ -1,8 +1,8 @@
 describe("Eventing", function() {
     var owf7ParticipantListener,
-        functions,
         err,
         rpcMsg,
+        functions,
         fn,
         args,
         widgetConfig;
@@ -12,15 +12,10 @@ describe("Eventing", function() {
             fn.apply(scope,args);
             expect("no exception thrown.").toEqual(err);
         } catch (e) {
-            expect(e).toEqual(err)
+            expect(e).toEqual(err);
         }
     };
 
-    var removeAllWidgets = function(){
-        for(var i in owf7ParticipantListener.participants){
-            document.body.removeChild(owf7ParticipantListener.participants[i].iframe);
-        }
-    };
 
     var participantCallTest = function(rpcCall,scope,fn,args){
         var participant1 = owf7ParticipantListener.addWidget(widgetConfig);
@@ -44,7 +39,7 @@ describe("Eventing", function() {
         });
         err = owf7ParticipantListener.getParticipant_err;
 
-        functions = owf7ParticipantListener.getRPCFunctions().eventing;
+        functions = owf7ParticipantListener.bridge.funcs.eventing;
         rpcMsg = {
             f: '{"id":"1234-5678-abcd-ef01"}'
         };
@@ -70,7 +65,7 @@ describe("Eventing", function() {
 
     describe("container_init",function(){
         beforeEach(function(){
-            fn = functions['container_init'];
+            fn = functions.container_init;
             args = [rpcMsg.f, undefined];
         });
 
@@ -89,7 +84,7 @@ describe("Eventing", function() {
 
     describe("pubsub",function(){
         beforeEach(function(){
-            fn = functions['pubsub'];
+            fn = functions.pubsub;
         });
 
         it("can't perform an action if the participant does not exist.",function() {
