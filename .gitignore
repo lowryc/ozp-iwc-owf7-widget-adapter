@@ -1,5 +1,6 @@
 /nbproject
-/app/js/ozp-iwc-owf7-widget-adapter-owf7-listener.js
-/app/js/ozp-iwc-owf7-widget-adapter-owf7-listener.min.js
 /node_modules/
-/doc
+app/js/ozp-iwc-owf7-widget-adapter-owf7-listener.js
+app/js/ozp-iwc-owf7-widget-adapter-owf7-listener.min.js
+dist
+doc
