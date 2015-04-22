@@ -1,6 +1,5 @@
 describe("Bridge", function() {
     var listener,bridge,functions;
-
     var init = function (){
         listener = new ozpIwc.Owf7ParticipantListener({
             xOffset: 1,
