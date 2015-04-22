@@ -14,6 +14,7 @@
     "grunt-contrib-watch": "*",
     "grunt-contrib-yuidoc": "^0.5.2",
     "grunt-bump": "0.0.6",
+    "grunt-shell": "^1.1.1",
     "grunt-jsdoc": "*",
     "jshint-stylish": "*",
     "load-grunt-tasks": "~0.6.0",

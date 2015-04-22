@@ -153,7 +153,7 @@ module.exports = function(grunt) {
                     'git commit -m "chore(release): <%= pkg.version %>"',
                     'git push origin master',
                     'git checkout --detach',
-                    'grunt dist',
+                    'grunt build',
                     'git add -f dist',
                     'git commit -m "chore(release): <%= pkg.version %>"',
                     'git tag -a "<%= pkg.version %>" -m "chore(release): <%= pkg.version %>"',
