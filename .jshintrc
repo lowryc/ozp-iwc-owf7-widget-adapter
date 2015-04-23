@@ -40,6 +40,10 @@
     "spyOn": false,
 
     //Test globals
-    "OWF": true
+    "OWF": true,
+    "initTestListener": true,
+    "destructTestListener": true,
+    "expectErr": true,
+    "participantCallTest": true
   }
 }
