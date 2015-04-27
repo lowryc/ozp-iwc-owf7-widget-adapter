@@ -187,7 +187,7 @@
         this.inDrag=false;
         this.client.send({
             "dst": "data.api",
-            "resource": ozpIwc.Owf7Participant.pubsubChannel("_dragStopInContainer"),
+            "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
             "action": "set",
             "entity": Date.now()  // ignored, but changes the value to trigger watches
         });
@@ -206,7 +206,7 @@
 
         this.client.send({
            "dst":"data.api",
-           "resource": ozpIwc.Owf7Participant.pubsubChannel("_dragStart"),
+           "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStart"),
            "action": "watch"
         },function(reply) {
             if(reply.response === "changed") {
@@ -215,7 +215,7 @@
         });
         this.client.send({
             "dst": "data.api",
-            "resource": ozpIwc.Owf7Participant.pubsubChannel("_dragStopInContainer"),
+            "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
             "action": "watch"
         },function(reply) {
             if(reply.response === "changed") {

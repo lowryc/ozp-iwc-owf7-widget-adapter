@@ -9,7 +9,7 @@ module.exports = function(grunt) {
                 'app/js/shindig/json.js',
                 'app/js/shindig/rpc.js',
                 'app/js/shindig/overrides.js',
-                'app/js/adapter/*.js',
+                'app/js/adapter/**/*.js',
                 'app/js/main.js'
             ],
             testLib: [
@@ -27,11 +27,19 @@ module.exports = function(grunt) {
         output: {
             adapterJs: 'dist/js/<%= pkg.name %>.js',
             adapterJsMin: 'dist/js/<%= pkg.name %>.min.js',
-            testUnit: [
+            test: [
                 'bower_components/ozp-iwc/dist/js/ozpIwc-bus.js',
-                'test/karma/unitGlobals.js',
-                '<%= output.adapterJs %>',
+                'test/karma/globals.js',
+                'test/lib/adapterTools.js',
+                '<%= output.adapterJs %>'
+            ],
+            testUnit: [
+                '<%= output.test %>',
                 'test/specs/unit/**/*.js'
+            ],
+            testIntegration: [
+                '<%= output.test %>',
+                'test/specs/integration/owf7ParticipantListener/**/*.js'
             ]
         },
         concat_sourcemap: {
@@ -177,15 +185,21 @@ module.exports = function(grunt) {
                 configFile: 'karma.conf.js',
                 browsers: ['PhantomJS']
             },
-            unit: {
-                files: {src: ['<%= output.testUnit %>']}
+            build: {
+                files: {src: [
+                    '<%= output.testUnit %>',
+                    '<%= output.testIntegration %>'
+                ]}
             },
-            unitCI: {
+            CI: {
                 options: {
                     configFile: 'karma.conf.js',
                     browsers: ['Firefox']
                 },
-                files: { src: ['<%= output.testUnit %>']}
+                files: { src: [
+                    '<%= output.testUnit %>',
+                    '<%= output.testIntegration %>'
+                ]}
             }
         }
 
@@ -200,10 +214,10 @@ module.exports = function(grunt) {
 
     // Default task(s).
     grunt.registerTask('build', ['jshint', 'concat_sourcemap', 'uglify', 'copy:dist']);
-    grunt.registerTask('test', ['build','karma:unit','connect','watch']);
+    grunt.registerTask('test', ['build', 'karma:build', 'connect','watch']);
     grunt.registerTask('releasePatch', ['bump:patch','readpkg','shell:releaseGit']);
     grunt.registerTask('releaseMinor', ['bump:minor','readpkg', 'shell:releaseGit']);
     grunt.registerTask('releaseMajor', ['bump:major','readpkg', 'shell:releaseGit']);
-    grunt.registerTask('travis', ['build','connect','karma:unitCI']);
+    grunt.registerTask('travis', ['build','connect','karma:CI']);
     grunt.registerTask('default', ['test']);
 };
