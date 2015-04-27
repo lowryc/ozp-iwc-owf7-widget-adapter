@@ -74,7 +74,7 @@ module.exports = function(grunt) {
                     }
                 ]
             }
-        },      
+        },
         clean: {
           dist: ['./dist/']
         },
@@ -105,7 +105,7 @@ module.exports = function(grunt) {
                     interrupt: true,
                     spawn: false
                 }
-                
+
             },
             test: {
                 files: ['Gruntfile.js', 'dist/**/*', '<%= src.testSrc %>'],
@@ -127,7 +127,7 @@ module.exports = function(grunt) {
                     },
                     'dist',
                     'bower_components/ozp-iwc/dist'
-                    
+
                 ]}
             },
             tests: {
@@ -171,12 +171,12 @@ module.exports = function(grunt) {
             },
             tarDate: {
                 command: [
-                    './packageRelease.sh iwc-prod dist'
+                    './packageRelease.sh iwc-owf7-widget-adapter-prod dist'
                 ].join('&&')
             },
             tarVersion: {
                 command: [
-                    './packageRelease.sh iwc-prod dist <%= pkg.version %>'
+                    './packageRelease.sh iwc-owf7-widget-adapter-prod dist <%= pkg.version %>'
                 ].join('&&')
             }
         },
