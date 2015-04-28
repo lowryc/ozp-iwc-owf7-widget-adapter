@@ -147,7 +147,7 @@
             window.location.hash = newHash;
 
             // After storing the hash, if the guid does not exist just set it as instanceId for OWF7 to not complain.
-            cfg.guid = config.guid || cfg.instanceId;
+            cfg.guid = cfg.guid || cfg.instanceId;
             cfg.listener.participants[cfg.rpcId] = new ozpIwc.Owf7Participant(cfg);
 
             // Add the _WIDGET_STATE_CHANNEL_<instanceId> RPC registration for the widget.
@@ -167,11 +167,12 @@
                 dst: "intents.api",
                 action: "get",
                 resource: config.launchDataResource
-            }, function (resp) {
+            }, function (resp,done) {
                 // If the widget is refreshed, the launch resource data has been deleted.
                 if (resp && resp.entity && resp.entity.entity && typeof resp.entity.entity.id === "string") {
                     participantConfig.guid = resp.entity.entity.id;
                 }
+                done();
                 return init(participantConfig);
             });
         } else {

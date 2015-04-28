@@ -105,7 +105,7 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, c
         "dst": "data.api",
         "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel(channel),
         "action": "watch"
-    },function(packet,unregister) {
+    },function(packet,done) {
         if(packet.response !== "changed") {
             return;
         }
@@ -118,7 +118,7 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, c
             //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
             gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, null, packet.entity.newValue);
         }else {
-            unregister();
+            done();
         }
     });
 };
