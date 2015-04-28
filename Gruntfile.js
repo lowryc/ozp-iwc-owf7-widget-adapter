@@ -39,7 +39,8 @@ module.exports = function(grunt) {
             ],
             testIntegration: [
                 '<%= output.test %>',
-                'test/specs/integration/owf7ParticipantListener/**/*.js'
+                'test/specs/integration/owf7ParticipantListener/**/*.js',
+                'test/specs/integration/owf7Participant/**/*.js'
             ]
         },
         concat_sourcemap: {

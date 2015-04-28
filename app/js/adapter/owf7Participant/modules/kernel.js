@@ -76,11 +76,11 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetReadyListener = fun
         dst: "data.api",
         resource: this.widgetReadyResource(this.participant.instanceId),
         action: "watch"
-    },function(packet,unregister) {
+    },function(packet,done) {
         if(packet.response!=="changed") {
             return;
         }
-        unregisterFn = unregister;
+        unregisterFn = done;
 
         self.onWidgetReady(self.participant.instanceId);
     });
@@ -106,8 +106,9 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetListing = function(
         action: "addChild",
         contentType: "text/plain",
         entity: gadgets.json.parse(this.participant.rpcId)
-    },function(reply){
+    },function(reply,done){
         self.widgetListing = reply.entity.resource;
+        done();
     });
 };
 
@@ -139,12 +140,13 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetWidgetReady = function(widge
             dst: "data.api",
             resource: this.widgetReadyResource(widgetId),
             action: "get"
-        },function(packet){
+        },function(packet,done){
             var ready = !!packet.entity;
             if(ready) {
                 self.onWidgetReady(widgetId);
             }
             rpc.callback(ready);
+            done();
         });
     }
 };
@@ -193,7 +195,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onRegisterFunctions = function(if
         dst: "data.api",
         resource: this.widgetProxyChannelPrefix + widgetID,
         action: "get"
-    },function(reply){
+    },function(reply,done){
         var functionArray = Array.isArray(reply.entity) ? reply.entity : [];
         for(var j in functions){
             if(functionArray.indexOf(functions[j]) < 0){
@@ -207,6 +209,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onRegisterFunctions = function(if
             action : "set",
             entity: functionArray
         });
+        done();
     });
 };
 
@@ -223,7 +226,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetFunctions = function(widgetI
         dst: "data.api",
         resource: this.widgetProxyChannelPrefix + widgetId,
         action: "get"
-    },function(reply){
+    },function(reply,done){
 
         //save the fact that the sourceWidgetId has a proxy of the widgetId
         if (!self.proxyMap[widgetId]) {
@@ -233,8 +236,8 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetFunctions = function(widgetI
             self.proxyMap[widgetId].push(sourceWidgetId);
         }
 
-
         rpc.callback(reply.entity);
+        done();
     });
 };
 
@@ -319,11 +322,11 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallListener = fu
         dst: "data.api",
         resource: this.functionCallResource(this.participant.instanceId),
         action: "watch"
-    },function(packet,unregister) {
+    },function(packet,done) {
         if(packet.response!=="changed") {
             return;
         }
-        unregisterFn = unregister;
+        unregisterFn = done;
         var widgetId = packet.entity.newValue.widgetId || "";
         var widgetIdCaller = packet.entity.newValue.widgetIdCaller || "";
         var functionName = packet.entity.newValue.functionName || "";
@@ -345,11 +348,11 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallResultListene
         dst: "data.api",
         resource: this.functionCallResultResource(this.participant.instanceId),
         action: "watch"
-    },function(packet,unregister) {
+    },function(packet,done) {
         if(packet.response!=="changed") {
             return;
         }
-        unregisterFn = unregister;
+        unregisterFn = done;
         var widgetId = packet.entity.newValue.widgetId || "";
         var widgetIdCaller = packet.entity.newValue.widgetIdCaller || "";
         var functionName = packet.entity.newValue.functionName || "";
@@ -371,16 +374,17 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onListWidgets = function(rpc){
         dst: "data.api",
         resource: this.listWidgetChannel,
         action: "list"
-    },function(reply){
+    },function(reply,done){
         var widgets = [];
         var widgetCount = reply.entity.length || 0;
-        var handleWidgetData = function(resp){
+        var handleWidgetData = function(resp,done){
             if(resp.entity && resp.entity.id) {
                 widgets.push(resp.entity);
             }
             if (--widgetCount <= 0) {
                 rpc.callback(widgets);
             }
+            done();
         };
 
         for(var i in reply.entity){
@@ -390,5 +394,6 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onListWidgets = function(rpc){
                 action: "get"
             },handleWidgetData);
         }
+        done();
     });
 };

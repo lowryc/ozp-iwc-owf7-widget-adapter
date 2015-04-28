@@ -31,13 +31,13 @@ ozpIwc.owf7ParticipantModules.Components.prototype.onLaunchWidget=function(sende
         action: "launch",
         contentType: "text/plain",
         entity: msg.data
-    },function(reply,unregister) {
+    },function(reply,done) {
         //gadgets.rpc.call(rpc.f, '__cb', null, rpc.c, {
         rpc.callback({
             error: false,
             newWidgetLaunched: true,
             uniqueId: "unknown,not supported yet"
         });
-        unregister();
+        done();
     });
 };

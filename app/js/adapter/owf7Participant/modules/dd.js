@@ -39,7 +39,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.registerDragAndDrop=function() {
         "dst": "data.api",
         "resource": ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_fake_mouse_up"),
         "action": "watch"
-    },function(packet,unregister) {
+    },function(packet) {
         if(packet.response!=="changed") {
             return;
         }
@@ -49,7 +49,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.registerDragAndDrop=function() {
         "dst": "data.api",
         "resource": ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_fake_mouse_move"),
         "action": "watch"
-    },function(packet,unregister) {
+    },function(packet) {
         if(packet.response!=="changed") {
             return;
         }
@@ -335,8 +335,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function
         "dst": "data.api",
         "resource": ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_dragSendData_value"),
         "action": "get"
-    },function(packet,unregister) {
-        unregister();
+    },function(packet,done) {
 
         if(packet.response==="ok") {
 //            console.log("Completing drag of data ",packet.entity);
@@ -355,6 +354,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function
             "action": "set",
             "entity": Date.now()  // ignored, but changes the value to trigger watches
         });
+        done();
     });
 
     return true;

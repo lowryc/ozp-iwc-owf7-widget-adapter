@@ -107,8 +107,52 @@ ozpIwc.Owf7Participant.prototype._initIframe=function() {
 		"locked":false,
         "data": this.launchData
 	};
-	this.iframe.setAttribute("name",JSON.stringify(this.widgetParams));
+
+    this.setWidgetTitle();
+    this.iframe.setAttribute("name",JSON.stringify(this.widgetParams));
     this.iframe.setAttribute("src",this.widgetParams.url+this.widgetQuery);
     this.iframe.setAttribute("id",this.rpcId);
     document.body.appendChild(this.iframe);
+};
+
+/**
+ * Gathers information from the system.api for the participants widgetGuid. If no information exists on the system.api,
+ * an empty object is passed to the callback function
+ * @method _getApplicationData
+ * @param {Function} cb callback to handle the retrieved application data.
+ * @private
+ */
+ozpIwc.Owf7Participant.prototype._getApplicationData = function(cb){
+    cb = cb || function(){};
+    this.client.send({
+        'dst': "system.api",
+        'resource': "/application/" + this.widgetGuid,
+        'action': "get"
+    },function(reply,done){
+        var response = reply.entity || {};
+        cb(response);
+        done();
+    });
+};
+
+/**
+ * Sets the document title to that of the widget if it is registered to the System.api. If it is not the title is
+ * set with the following pattern "<href.host><href.pathname> -- OWF Widget".
+ * @method setWidgetTitle
+ * @param {Function} cb callback which will return the set title.
+ */
+ozpIwc.Owf7Participant.prototype.setWidgetTitle = function(cb){
+    cb = cb || function(){};
+    var self = this;
+    this._getApplicationData(function(data){
+        if(data.name){
+            self.widgetParams.name = data.name;
+        } else {
+            var a=document.createElement("a");
+            a.href = self.widgetParams.url;
+            self.widgetParams.name = a.host + a.pathname + " -- OWF Widget";
+        }
+        document.title = self.widgetParams.name;
+        cb(document.title);
+    });
 };
