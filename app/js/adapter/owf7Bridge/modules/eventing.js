@@ -31,7 +31,7 @@ ozpIwc.owf7BridgeModules.eventing = function(listener){
              * @see js-lib/shindig/pubsub_router.js
              */
             'pubsub': function (command, channel, message, dest) {
-                listener.getParticipant(this.f).eventing.onPubsub(command,channel,message,dest);
+                listener.getParticipant(this.f).eventing.onPubsub(command,channel,message,dest,this.f);
             }
         }
     };

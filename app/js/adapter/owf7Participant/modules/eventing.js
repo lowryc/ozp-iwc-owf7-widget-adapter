@@ -55,10 +55,10 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onContainerInit=function(sender
  * @param {String} message
  * @param {String} dest
  */
-ozpIwc.owf7ParticipantModules.Eventing.prototype.onPubsub = function(command,channel,message,dest){
+ozpIwc.owf7ParticipantModules.Eventing.prototype.onPubsub = function(command,channel,message,dest,sender){
     switch (command) {
         case 'publish':
-            this.onPublish(command, channel, message, dest);
+            this.onPublish(command, channel, message, dest, sender);
             break;
         case 'subscribe':
             this.onSubscribe(command, channel, message, dest);
@@ -77,7 +77,7 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onPubsub = function(command,cha
  * @param {String} message
  * @param {String} dest
  */
-ozpIwc.owf7ParticipantModules.Eventing.prototype.onPublish=function(command, channel, message, dest) {
+ozpIwc.owf7ParticipantModules.Eventing.prototype.onPublish=function(command, channel, message, dest, sender) {
     if(this.participant.dd["hookPublish"+channel] && !this.participant.dd["hookPublish"+channel].call(this.participant.dd,message)) {
         return;
     }
@@ -85,7 +85,10 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onPublish=function(command, cha
         "dst": "data.api",
         "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel(channel),
         "action": "set",
-        "entity": message
+        "entity": {
+            "message": message,
+            "sender": sender
+        }
     });
 };
 
@@ -116,7 +119,7 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, c
         if(self.subscriptions[channel]) {
             // from shindig/pubsub_router.js:77
             //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
-            gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, null, packet.entity.newValue);
+            gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, packet.entity.newValue.sender, packet.entity.newValue.message);
         }else {
             done();
         }
