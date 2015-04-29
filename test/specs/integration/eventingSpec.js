@@ -7,7 +7,8 @@ describe("Eventing", function() {
     
     it("OWF.Eventing.publish()",function(done) {
         client.api("data.api").watch("/owf-legacy/eventing/test.channel",function(e,unregister) {
-                expect(e.entity.newValue).toEqual({'foo':1});
+                expect(e.entity.newValue.message).toEqual({'foo':1});
+                expect(e.entity.newValue.sender).toBeDefined();
                 unregister();
                 done();
         }).then(function() {
@@ -21,12 +22,14 @@ describe("Eventing", function() {
         OWF.Eventing.subscribe("test.channel", function(sender,msg,channel) {
             OWF.Eventing.unsubscribe("test.channel");
             expect(msg).toEqual({'foo':1});
+            expect(sender).toEqual("{id:'fakeGUID'}");
             done();
         });
         setTimeout(function() {
             client.api("data.api").set("/owf-legacy/eventing/test.channel",{
                 entity: {
-                    foo: 1
+                    "message": {foo: 1},
+                    "sender": "{id:'fakeGUID'}"
                 }
             });
         },10);
@@ -35,6 +38,7 @@ describe("Eventing", function() {
         OWF.Eventing.subscribe("test.channel", function(sender,msg,channel) {
             OWF.Eventing.unsubscribe("test.channel");
             expect(msg).toEqual({'foo':1});
+            expect(sender).toEqual("{id:'fakeGUID'}");
             // Jasmine allows you to call done() multiple times.
             // normally this is a problem, but it works well for this test since
             // it makes a second call even uglier
@@ -43,13 +47,15 @@ describe("Eventing", function() {
         setTimeout(function() {
             client.api("data.api").set("/owf-legacy/eventing/test.channel",{
                 entity: {
-                    foo: 1
+                    "message": {foo: 1},
+                    "sender": "{id:'fakeGUID'}"
                 }
             });
             // first message will unsubscribe.  Second message should be ignored.
             client.api("data.api").set("/owf-legacy/eventing/test.channel",{
                 entity: {
-                    foo: 2
+                    "message": {foo: 2},
+                    "sender": "{id:'fakeGUID'}"
                 }
             });
         },10);
