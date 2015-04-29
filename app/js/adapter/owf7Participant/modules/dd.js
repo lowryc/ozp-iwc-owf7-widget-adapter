@@ -12,7 +12,7 @@ ozpIwc.owf7ParticipantModules.Dd = function(participant){
     if(!participant) { throw "Needs to have an Owf7Participant";}
     this.participant = participant;
     this.inDrag=false;
-    this.mouseOver = true;
+    this.lastPosition = {};
     this.lastMouseMove=Date.now();
     // number of milliseconds to wait before sending another mousemove event
     this.mouseMoveDelay=250;
