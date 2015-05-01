@@ -11,7 +11,7 @@ ozpIwc.owf7ParticipantModules = ozpIwc.owf7ParticipantModules || {};
 ozpIwc.owf7ParticipantModules.Dd = function(participant){
     if(!participant) { throw "Needs to have an Owf7Participant";}
     this.participant = participant;
-    this.inDrag=false;
+    this.mouseOver = true;
     this.lastPosition = {};
     this.lastMouseMove=Date.now();
     // number of milliseconds to wait before sending another mousemove event
@@ -56,7 +56,6 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.registerDragAndDrop=function() {
         }
         self.onFakeMouseMoveFromOthers(packet.entity.newValue);
     });
-
 };
 
 /**
@@ -68,21 +67,21 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.registerDragAndDrop=function() {
 ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromOthers=function(msg) {
     var localizedEvent=this.convertToLocalCoordinates(msg);
     if(this.inIframeBounds(localizedEvent)) {
-        console.log("Received Fake mouse up at page("
-            +localizedEvent.pageX+","+localizedEvent.pageY+")");
+        //console.log("Received Fake mouse up at page("+localizedEvent.pageX+","+localizedEvent.pageY+")");
         gadgets.rpc.call(this.participant.rpcId, '_fire_mouse_up', null,localizedEvent);
     } else {
-        // send a mouse up over container message
-        // @see dd/WidgetDragAndDropContainer.js:257
+        //console.log("out of page: Received Fake mouse up at page("
+        //            +localizedEvent.pageX+","+localizedEvent.pageY+")", "InDrag?" , this.participant.listener.inDrag);
 
+        //gadgets.rpc.call(this.participant.rpcId, '_dragStopInContainer', null,localizedEvent);
         // this.eventingContainer.publish(this.dragStopInContainerName, null);
         // TODO: not sure if the cancel goes here
-//        this.client.send({
-//            "dst": "data.api",
-//            "resource": this.pubsubChannel("_dragStopInContainer"),
-//            "action": "set",
-//            "entity": msg  // ignored, but changes the value to trigger watches
-//        });
+        //this.participant.client.send({
+        //    "dst": "data.api",
+        //    "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
+        //    "action": "set",
+        //    "entity": msg  // ignored, but changes the value to trigger watches
+        //});
     }
 };
 
@@ -102,8 +101,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseMoveFromOthers=function(ms
         return;
     }
     var localizedEvent=this.convertToLocalCoordinates(msg);
-    console.log("Received Fake mouse move at page("
-        +localizedEvent.pageX+","+localizedEvent.pageY+")");
+    //console.log("Received Fake mouse move at page("+localizedEvent.pageX+","+localizedEvent.pageY+")");
     if(this.inIframeBounds(localizedEvent)) {
         this.mouseOver=true;
         gadgets.rpc.call(this.participant.rpcId, '_fire_mouse_move', null,localizedEvent);
@@ -127,13 +125,18 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseMoveFromClient=function(ms
     // originally translated the pageX/pageY to container coordinates.  With
     // the adapter, we're translating from screen coordinates so don't need to
     // do any modification
-    console.log("Fake mouse move:",msg);
+    //console.log("Fake mouse move:",msg);
+
+    this.lastPosition = msg;
     var now=Date.now();
     var deltaT=now-this.lastMouseMove;
     if(deltaT < this.mouseMoveDelay) {
         return;
     }
-    console.log("Sending mouse move",msg);
+    var localizedEvent=this.convertToLocalCoordinates(msg);
+    this.mouseOver = this.inIframeBounds(localizedEvent);
+
+    //console.log("Sending mouse move", this.mouseOver, msg);
     this.lastMouseMove=now;
     this.participant.client.send({
         "dst": "data.api",
@@ -153,6 +156,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromClient=function(msg)
     // originally translated the pageX/pageY to container coordinates.  With
     // the adapter, we're translating from screen coordinates so don't need to
     // do any modification
+    //console.log("sending rpc msg to client: _fake_mouse_up");
     this.participant.client.send({
         "dst": "data.api",
         "resource": ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_fake_mouse_up"),
@@ -171,7 +175,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.inIframeBounds=function(location) {
     // since we normalized the coordinates, we can just check to see if they are
     // within the dimensions of the iframe.
     return location.pageX >= 0 && location.pageX < this.participant.iframe.clientWidth &&
-        location.pageY >= 0 && location.pageY < this.participant.clientHeight;
+        location.pageY >= 0 && location.pageY < this.participant.iframe.clientHeight;
 };
 
 /**
@@ -257,7 +261,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dropReceiveData=function(
  */
 ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStart=function(message) {
     console.log("Starting external drag on ",message);
-    this.inDrag=true;
+    this.participant.listener.inDrag=true;
     return true;
 };
 
@@ -269,7 +273,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStart=function(messag
  */
 ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStart=function(message) {
     console.log("Starting internal drag on ",message);
-    this.inDrag=true;
+    this.participant.listener.inDrag=true;
     return true;
 };
 
@@ -278,9 +282,12 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStart=function(messag
  * @method hookReceive_dragStopInContainer
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInContainer=function() {
-    console.log("Stopping drag in container");
-    this.inDrag=false;
+ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInContainer=function(msg) {
+    var localizedEvent=this.convertToLocalCoordinates(msg);
+    this.mouseOver = this.inIframeBounds(localizedEvent);
+
+    //console.log("Stopping drag in container",msg);
+    this.participant.listener.inDrag=false;
     return true;
 };
 
@@ -290,8 +297,8 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInContainer=funct
  * @returns {Boolean}
  */
 ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInWidget=function() {
-    console.log("Stopping drag in widget");
-    this.inDrag=false;
+    //console.log("Stopping drag in widget");
+    this.participant.listener.inDrag=false;
     return true;
 };
 
@@ -302,7 +309,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInWidget=function
  * @returns {Boolean}
  */
 ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragSendData=function(message) {
-    console.log("Setting drag data to ",message);
+    //console.log("Setting drag data to ",message);
     this.participant.client.send({
         "dst": "data.api",
         "resource": ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_dragSendData_value"),
@@ -324,14 +331,27 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function
 
     // make sure the mouse is actually over the widget so that it can't steal
     // the drag from someone else
+    //console.log("hookPublish_dragStopInWidget",message);
+    var self = this;
     if(!this.mouseOver) {
-        console.log("dragStopInWidget, but not over myself.  Faking mouse event",this.lastPosition);
+        //console.log("dragStopInWidget, but not over myself.  Faking mouse event",this.lastPosition);
         this.onFakeMouseUpFromClient(this.lastPosition);
+
+        //wait 1/4 second, see if someone canceled/handled the drag if not cancel it
+        window.setTimeout(function(){
+            if(self.participant.listener.inDrag){
+                self.participant.client.send({
+                    "dst": "data.api",
+                    "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
+                    "action": "set",
+                    "entity": Date.now()  // ignored, but changes the value to trigger watches
+                });
+            }
+        },250);
 
         return false;
     }
     // this widget claims the drag, give it the drag data
-    var self=this;
     this.participant.client.send({
         "dst": "data.api",
         "resource": ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_dragSendData_value"),
@@ -342,7 +362,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function
             console.log("Completing drag of data ",packet.entity);
             gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, "_dropReceiveData", "..", packet.entity);
         } else {
-            console.log("Unable to fetch drag data",packet);
+            //console.log("Unable to fetch drag data",packet);
         }
         // tell everyone else that the container took over the drag
         // also handles the case where the we couldn't get the dragData for some reason by

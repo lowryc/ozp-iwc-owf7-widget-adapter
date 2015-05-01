@@ -101,14 +101,14 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onPublish=function(command, cha
  * @param {String} dest
  */
 ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, channel, message, dest) {
-    this.subscriptions[channel]=true;
+    this.subscriptions[channel]=this.subscriptions[channel] || [];
 
     var self = this;
-    this.participant.client.send({
+    var packet = this.participant.client.send({
         "dst": "data.api",
         "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel(channel),
         "action": "watch"
-    },function(packet,done) {
+    },function(packet) {
         if(packet.response !== "changed") {
             return;
         }
@@ -116,14 +116,14 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, c
         if(self.participant.dd["hookReceive"+channel] && !self.participant.dd["hookReceive"+channel].call(self.participant.dd,packet.entity.newValue)) {
             return;
         }
-        if(self.subscriptions[channel]) {
-            // from shindig/pubsub_router.js:77
-            //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
-            gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, packet.entity.newValue.sender, packet.entity.newValue.message);
-        }else {
-            done();
-        }
+
+        // from shindig/pubsub_router.js:77
+        //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
+        gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, packet.entity.newValue.sender, packet.entity.newValue.message);
     });
+
+    //Add the msgId to a list of handlers to unregister should unsubscribe be fired.
+    this.subscriptions[channel].push(packet.msgId);
 };
 
 /**
@@ -135,5 +135,8 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, c
  * @param {String} dest
  */
 ozpIwc.owf7ParticipantModules.Eventing.prototype.onUnsubscribe=function(command, channel, message, dest) {
-    this.subscriptions[channel]=false;
+    this.subscriptions[channel] = this.subscriptions[channel] || [];
+    while(this.subscriptions[channel].length) {
+        this.participant.client.cancelCallback(this.subscriptions[channel].shift());
+    }
 };
