@@ -223,12 +223,11 @@
                 self.inDrag=false;
             }
         });
-
         document.addEventListener("mousemove",function(e) {
             /*jshint bitwise: false*/
             self.updateMouseCoordinates(e);
-    //        console.log("Adapter mousemove at ",e);
-            if(self.inDrag && (e.buttons&1) !== 1) {
+            //console.log("Adapter mousemove at ",e);
+            if(self.inDrag && (e.button !== 0)) {
                 console.log("Canceling drag");
                 self.cancelDrag();
             }
