@@ -1,7 +1,7 @@
 {
   "author": "Ozone Developers",
   "name": "ozp-iwc-owf7-widget-adapter",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": "https://github.com/ozone-development/ozp-iwc-owf7-widget-adapter",
   "devDependencies": {
     "grunt": "0.4.x",
