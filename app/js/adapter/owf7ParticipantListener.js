@@ -35,10 +35,13 @@
         this.installDragAndDrop();
 
         // try to find our position on screen to help with cross-window drag and drop
-        this.xOffset= (typeof config.xOffset !== undefined) ?
-            config.xOffset : window.screenX+window.outerWidth - document.body.clientWidth - 10;
-        this.yOffset= (typeof config.yOffset !== undefined) ?
-            config.yOffset : window.screenY+window.outerHeight - document.body.clientHeight - 30;
+        // +26 on height for 10px container margin total + 16px on scrollbar
+        // @TODO the container/iframe overflow:hidden, this needs to be changed to overflow:auto and use its scrollbar rather than the iframes document. State Api related.
+
+        this.xOffset= (typeof config.xOffset === "number") ?
+            config.xOffset : window.screenX+window.outerWidth - window.innerWidth + 10;
+        this.yOffset= (typeof config.yOffset === "number") ?
+            config.yOffset : window.screenY+window.outerHeight - window.innerHeight + 26;
     };
 
     /**
@@ -230,6 +233,9 @@
             if(self.inDrag && (e.button !== 0)) {
                 console.log("Canceling drag");
                 self.cancelDrag();
+            }
+            for(var i in self.participants){
+                self.participants[i].iframe.style.pointerEvents = "auto";
             }
         },false);
     //    document.addEventListener("mouseup",function(e) {
