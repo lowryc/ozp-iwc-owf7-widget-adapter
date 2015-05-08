@@ -13,13 +13,15 @@
 				border: 0px;
 				margin: 0px;
 				padding: 0px;
+                overflow: hidden;
                 line-height: 0;
             }
             iframe {
                 -moz-box-sizing: border-box;
                 box-sizing: border-box;
-				padding: 3px;
-                overflow: auto;
+				padding: 5px;
+                overflow: hidden;
+                pointer-events: none; // this is cleared when a mouse over without drag occurs
 
             }
 		</style>
@@ -41,7 +43,7 @@
     <script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>  
     <script type="text/javascript">
                     
-            
+
         (function() {
             var params=ozpIwc.util.parseQueryParams();
             var windowNameParams=ozpIwc.util.parseQueryParams(window.name);

@@ -15,7 +15,7 @@ ozpIwc.owf7ParticipantModules.Dd = function(participant){
     this.lastPosition = {};
     this.lastMouseMove=Date.now();
     // number of milliseconds to wait before sending another mousemove event
-    this.mouseMoveDelay=250;
+    this.mouseMoveDelay=100;
 
     this.registerDragAndDrop();
 };
@@ -283,9 +283,6 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStart=function(messag
  * @returns {Boolean}
  */
 ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInContainer=function(msg) {
-    var localizedEvent=this.convertToLocalCoordinates(msg);
-    this.mouseOver = this.inIframeBounds(localizedEvent);
-
     //console.log("Stopping drag in container",msg);
     this.participant.listener.inDrag=false;
     return true;
