@@ -107,8 +107,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseMoveFromOthers=function(ms
         gadgets.rpc.call(this.participant.rpcId, '_fire_mouse_move', null,localizedEvent);
     } else {
         if(this.mouseOver) {
-            console.log("Faking an mouse dragOut at page("
-                +localizedEvent.pageX+","+localizedEvent.pageY+")");
+            //console.log("Faking an mouse dragOut at page(" + localizedEvent.pageX+","+localizedEvent.pageY + ")");
             // this.eventingContainer.publish(this.dragOutName, null, lastEl.id);
             // fake the pubsub event directly to the recipient
             gadgets.rpc.call(this.participant.rpcId, 'pubsub', null, "_dragOutName", "..", null);
@@ -260,7 +259,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dropReceiveData=function(
  * @returns {Boolean}
  */
 ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStart=function(message) {
-    console.log("Starting external drag on ",message);
+    //console.log("Starting external drag on ",message);
     this.participant.listener.inDrag=true;
     return true;
 };
@@ -272,7 +271,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStart=function(messag
  * @returns {Boolean}
  */
 ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStart=function(message) {
-    console.log("Starting internal drag on ",message);
+    //console.log("Starting internal drag on ",message);
     this.participant.listener.inDrag=true;
     return true;
 };
@@ -356,7 +355,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function
     },function(packet,done) {
 
         if(packet.response==="ok") {
-            console.log("Completing drag of data ",packet.entity);
+            //console.log("Completing drag of data ",packet.entity);
             gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, "_dropReceiveData", "..", packet.entity);
         } else {
             //console.log("Unable to fetch drag data",packet);

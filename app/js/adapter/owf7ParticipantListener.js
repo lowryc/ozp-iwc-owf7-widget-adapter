@@ -117,6 +117,7 @@
      * @returns {*}
      */
     ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
+        config = config || {};
         var self = this;
         var participantConfig = {};
 

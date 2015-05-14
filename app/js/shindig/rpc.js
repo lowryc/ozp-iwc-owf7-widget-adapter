@@ -214,8 +214,18 @@ gadgets.rpc = function() {
         if(msg) {
             process(msg);
         }
-      }
+      };
 
+      // the widget's rpc will try and run up the chain to the widget opener if same domain.
+      // we must do the same to capture the message if the opener was non legacy. If cross domain this rpc will catch
+      // the message.
+      if(window.opener){
+        if(window.opener.parent){
+          window.opener.parent.addEventListener('message',onmessage, false);
+        } else {
+          window.opener.addEventListener('message',onmessage, false);
+        }
+      }
       if (typeof window.addEventListener != 'undefined') {
         window.addEventListener('message', onmessage, false);
       } else if (typeof window.attachEvent != 'undefined') {
