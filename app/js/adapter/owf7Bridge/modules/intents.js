@@ -21,7 +21,7 @@ ozpIwc.owf7BridgeModules.intents = function(listener){
              * @param destIds
              */
             '_intents': function(senderId, intent, data, destIds){
-                //@TODO
+                listener.getParticipant(this.f).intents.onIntents(senderId,intent,data,destIds);
             },
             /**
              * used by widgets to register an intent
@@ -30,7 +30,7 @@ ozpIwc.owf7BridgeModules.intents = function(listener){
              * @param destWidgetId
              */
             '_intents_receive': function(intent, destWidgetId){
-                //@TODO
+                listener.getParticipant(this.f).intents.onIntentsReceive(intent,destWidgetId);
             }
         }
     };

@@ -29,6 +29,7 @@ ozpIwc.Owf7Participant=function(config) {
     this.instanceId=config.instanceId;
     this.widgetGuid=config.guid;
     this.rpcId=config.rpcId;
+    this.onReady = config.onReady;
 
     // Create an iframe for the widget
     this.iframe = document.createElement('iframe');
@@ -75,6 +76,7 @@ ozpIwc.Owf7Participant.prototype._initModules = function(){
     this.eventing = new ozpIwc.owf7ParticipantModules.Eventing(this);
     this.kernel = new ozpIwc.owf7ParticipantModules.Kernel(this);
     this.components = new ozpIwc.owf7ParticipantModules.Components(this);
+    this.intents = new ozpIwc.owf7ParticipantModules.Intents(this);
 };
 
 /**
@@ -108,7 +110,15 @@ ozpIwc.Owf7Participant.prototype._initIframe=function() {
         "data": this.launchData
 	};
 
-    this.setWidgetTitle();
+    var self =this;
+    this._getApplicationData(function(appData){
+        self.appData = appData || {};
+        self.setWidgetTitle(self.appData.name);
+        if(typeof self.onReady === "function"){
+            self.onReady();
+        }
+    });
+
     this.iframe.setAttribute("name",JSON.stringify(this.widgetParams));
     this.iframe.setAttribute("src",this.widgetParams.url+this.widgetQuery);
     this.iframe.setAttribute("id",this.rpcId);
@@ -136,23 +146,17 @@ ozpIwc.Owf7Participant.prototype._getApplicationData = function(cb){
 };
 
 /**
- * Sets the document title to that of the widget if it is registered to the System.api. If it is not the title is
+ * Sets the document title to the given name. If no name given, the title is
  * set with the following pattern "<href.host><href.pathname> -- OWF Widget".
  * @method setWidgetTitle
  * @param {Function} cb callback which will return the set title.
  */
-ozpIwc.Owf7Participant.prototype.setWidgetTitle = function(cb){
-    cb = cb || function(){};
-    var self = this;
-    this._getApplicationData(function(data){
-        if(data.name){
-            self.widgetParams.name = data.name;
-        } else {
-            var a=document.createElement("a");
-            a.href = self.widgetParams.url;
-            self.widgetParams.name = a.host + a.pathname + " -- OWF Widget";
-        }
-        document.title = self.widgetParams.name;
-        cb(document.title);
-    });
+ozpIwc.Owf7Participant.prototype.setWidgetTitle = function(name){
+    if(!name){
+        var a=document.createElement("a");
+        a.href = this.widgetParams.url;
+        name = a.host + a.pathname + " -- OWF Widget";
+    }
+    document.title = name;
+    return document.title;
 };
