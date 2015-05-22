@@ -1,5 +1,18 @@
 describe("Bridge", function() {
     var listener,bridge,functions;
+
+    var fakedRegistration =function(object){
+        var onFunction = function(outObj,fn, name){
+            gadgets.rpc.register(name,fn);
+            outObj[name] = fn;
+        };
+
+        ozpIwc.Owf7Bridge.functionsInObjects({
+            'inObj': object,
+            'outObj': this.funcs,
+            'onFn':onFunction
+        });
+    };
     var init = function (){
         listener = new ozpIwc.Owf7ParticipantListener({
             xOffset: 1,
@@ -13,6 +26,7 @@ describe("Bridge", function() {
         listener.bridge = bridge;
 
         functions = listener.bridge.funcs;
+        spyOn(ozpIwc.Owf7Bridge.prototype,"_registerFunctions").and.callFake(fakedRegistration);
     };
 
     var destruct = function(){
@@ -20,6 +34,7 @@ describe("Bridge", function() {
             document.body.removeChild(listener.participants[i].iframe);
         }
     };
+
     beforeEach(function(){
         init();
     });

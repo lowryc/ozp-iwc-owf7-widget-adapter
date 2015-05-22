@@ -15,18 +15,21 @@ ozpIwc.owf7BridgeModules.components = function(listener){
             'keys': {
                 /**
                  * @see reference/js/components/keys/KeyEventing.js
+                 * @param {ozpIwc.Owf7Participant} participant
                  */
-                '_widget_iframe_ready': function () {
+                '_widget_iframe_ready': function (participant) {
+
                 }
             },
             'widget': {
                 /**
                  * @see js\components\widget\WidgetIframeComponent.js:15
-                 * @param sender
-                 * @param msg
+                 * @param {ozpIwc.Owf7Participant} participant
+                 * @param {String} sender
+                 * @param {String} msg
                  */
-                '_WIDGET_LAUNCHER_CHANNEL': function (sender, msg) {
-                    listener.getParticipant(this.f).components.onLaunchWidget(sender, msg, this);
+                '_WIDGET_LAUNCHER_CHANNEL': function (participant, sender, msg) {
+                    participant.components.onLaunchWidget(sender, msg, this);
                 }
             }
 

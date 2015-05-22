@@ -15,19 +15,22 @@ ozpIwc.owf7BridgeModules.dd = function(listener){
             /**
              * _fake_mouse_move is needed for drag and drop.  The container code is at
              * @see reference\js\dd\WidgetDragAndDropContainer.js:52
-             * @param msg
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {Object} msg
              */
-            '_fake_mouse_move': function (msg) {
-                listener.getParticipant(this.f).dd.onFakeMouseMoveFromClient(msg);
+            '_fake_mouse_move': function (participant, msg) {
+                console.log(msg);
+                participant.dd.onFakeMouseMoveFromClient(msg);
             },
             /**
              * @see reference\js\dd\WidgetDragAndDropContainer.js:52
-             * @param msg
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {Object} msg
              */
-            '_fake_mouse_up': function (msg) {
-                listener.getParticipant(this.f).dd.onFakeMouseUpFromClient(msg);
+            '_fake_mouse_up': function (participant, msg) {
+                participant.dd.onFakeMouseUpFromClient(msg);
             },
-            '_fake_mouse_out': function () {
+            '_fake_mouse_out': function (participant) {
                 /*ignored*/
             }
         }

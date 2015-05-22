@@ -1,15 +1,39 @@
 describe("Owf7Participant", function() {
     var participant;
 
-    beforeEach(function(){
+    beforeEach(function(done){
 
         participant = new ozpIwc.Owf7Participant({
             url: "http://www.testhost.com/test/path/name.html",
             rpcId: "fake",
             instanceId: "fake",
             guid: "fake",
-            client: { send: function(){}},
-            listener: {}
+            client: {
+                data: function(){
+                    return {
+                        'watch': function(){return Promise.resolve();},
+                        'addChild': function(){
+                            return Promise.resolve({
+                                entity: {
+                                    resource: "fake"
+                                }
+                            });
+                        }
+                    };
+                },
+                system: function(){
+                    return {
+                        'get': function(){return Promise.resolve({});},
+                    };
+                },
+                intents: function(){
+                    return {};
+                }
+            },
+            listener: {},
+            onReady: function(){
+                done();
+            }
         });
     });
     afterEach(function(){

@@ -94,9 +94,21 @@ ozpIwc.Owf7Bridge.prototype.registerDefaultHandler = function(fn){
  * @private
  */
 ozpIwc.Owf7Bridge.prototype._registerFunctions = function(object){
+    var self = this;
     var onFunction = function(outObj,fn, name){
-        gadgets.rpc.register(name,fn);
-        outObj[name] = fn;
+
+        function func(){
+            //Ignore messages not meant for this participant.
+            var participant = self.listener.getParticipant(this.f);
+            if(participant){
+                // unshift to front of arguments
+                Array.prototype.unshift.call(arguments, participant);
+                fn.apply(this,arguments);
+            }
+        }
+
+        gadgets.rpc.register(name,func);
+        outObj[name] = func;
     };
 
     ozpIwc.Owf7Bridge.functionsInObjects({
@@ -106,18 +118,6 @@ ozpIwc.Owf7Bridge.prototype._registerFunctions = function(object){
     });
 };
 
-/**
- * Default handler function to call if no registered function found.
- * @method _defaultHandler
- * @private
- */
-ozpIwc.Owf7Bridge.prototype._defaultHandler = function() {
-    var rpcString=function(rpc) {
-        return "[service:" + rpc.s + ",from:" + rpc.f + "]:" + JSON.stringify(rpc.a);
-    };
-
-    console.log("Unknown rpc " + rpcString(this));
-};
 
 /**
  * Unregisters the object-indexed functions.
@@ -146,6 +146,23 @@ ozpIwc.Owf7Bridge.prototype._unregisterFunctions = function(object){
  * @private
  */
 ozpIwc.Owf7Bridge.prototype._initHandlers = function(){
+    var self = this;
+    /**
+     * Default handler function to call if no registered function found.
+     * @method _defaultHandler
+     * @private
+     */
+    this._defaultHandler = function() {
+        //If this is from someone else using rpc we don't care.
+        if(self.listener.getParticipant(this.f)) {
+            var rpcString = function (rpc) {
+                return "[service:" + rpc.s + ",from:" + rpc.f + "]:" + JSON.stringify(rpc.a);
+            };
+
+            console.log("Unknown rpc " + rpcString(this));
+        }
+    };
+
     this.registerDefaultHandler(this._defaultHandler);
 
     for(var i in ozpIwc.owf7BridgeModules){

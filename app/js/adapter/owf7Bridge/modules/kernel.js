@@ -14,52 +14,72 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
         'kernel': {
             /**
              * @see js/kernel/kernel-rpc-base.js:147
+             * @param {ozpIwc.Owf7Participant} participant
              * @param widgetId
              * @param srcWidgetId
              * @returns {boolean}
              */
-            '_getWidgetReady': function (widgetId, srcWidgetId) {
-                listener.getParticipant(this.f).kernel.onGetWidgetReady(widgetId,this);
+            '_getWidgetReady': function (participant, widgetId, srcWidgetId) {
+                participant.kernel.onGetWidgetReady(widgetId,this);
             },
             /**
              * @see reference/js/kernel/kernel-rpc-base.js:130
+             * @param {ozpIwc.Owf7Participant} participant
              * @param widgetId
              */
-            '_widgetReady': function(widgetId){
-                listener.getParticipant(this.f).kernel.onWidgetReady(widgetId);
+            '_widgetReady': function(participant, widgetId){
+                participant.kernel.onWidgetReady(widgetId);
             },
             /**
              * @see js/kernel/kernel-rpc-base.js:124
-             * @param iframeId
-             * @param functions
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {String} iframeId
+             * @param {String[]} functions
              */
-            'register_functions': function (iframeId, functions) {
-                listener.getParticipant(this.f).kernel.onRegisterFunctions(iframeId,functions);
+            'register_functions': function (participant, iframeId, functions) {
+                participant.kernel.onRegisterFunctions(iframeId,functions);
 
             },
             /**
              * @see js/kernel/kernel-rpc-base.js:88
-             * @param widgetID
-             * @param sourceWidgetId
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {String} widgetID
+             * @param {String} sourceWidgetId
              * @returns {*}
              */
-            'GET_FUNCTIONS': function (widgetID, sourceWidgetId) {
-                listener.getParticipant(this.f).kernel.onGetFunctions(widgetID, sourceWidgetId,this);
+            'GET_FUNCTIONS': function (participant, widgetID, sourceWidgetId) {
+                participant.kernel.onGetFunctions(widgetID, sourceWidgetId,this);
             },
 
-            'FUNCTION_CALL': function(widgetId, widgetIdCaller, functionName, var_args){
-                listener.getParticipant(this.f).kernel.onFunctionCall(widgetId, widgetIdCaller, functionName, var_args);
+            /**
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {String} widgetId
+             * @param {String} widgetIdCaller
+             * @param {String} functionName
+             * @param {Array} var_args
+             */
+            'FUNCTION_CALL': function(participant, widgetId, widgetIdCaller, functionName, var_args){
+                participant.kernel.onFunctionCall(widgetId, widgetIdCaller, functionName, var_args);
             },
 
-            'FUNCTION_CALL_RESULT': function(widgetId, widgetIdCaller, functionName, result){
-                listener.getParticipant(this.f).kernel.onFunctionCallResult(widgetId, widgetIdCaller, functionName, result);
+            /**
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {String} widgetId
+             * @param {String} widgetIdCaller
+             * @param {String} functionName
+             * @param {String} result
+             */
+            'FUNCTION_CALL_RESULT': function(participant, widgetId, widgetIdCaller, functionName, result){
+                participant.kernel.onFunctionCallResult(widgetId, widgetIdCaller, functionName, result);
             },
+
             /**
              * @see js/kernel/kernel-container.js:204
-             * @returns {Array}
+             * @param {ozpIwc.Owf7Participant} participant
+             * @returns {String[]}
              */
-            'LIST_WIDGETS': function () {
-                listener.getParticipant(this.f).kernel.onListWidgets(this);
+            'LIST_WIDGETS': function (participant) {
+                participant.kernel.onListWidgets(this);
             }
         }
     };

@@ -22,47 +22,99 @@ ozpIwc.Owf7Participant=function(config) {
     if(!config.url) { throw "Needs a url for the widget"; }
     if(!config.rpcId) { throw "Needs a rpcId for the widget"; }
 
+    /**
+     * The iframe element of this participant.
+     * @property iframe
+     * @type {Object}
+     */
     this.iframe=config.iframe;
+
+    /**
+     * The listener this participant is connected to.
+     * @property listener
+     * @type {ozpIwc.Owf7ParticipantListener}
+     */
     this.listener=config.listener;
+
+    /**
+     * The client participant this uses to communicate on the bus.
+     * @property client
+     * @type {ozpIwc.ClientParticipant}
+     */
     this.client=config.client;
+
+    /**
+     * A shorthand for system api access.
+     * @property systemApi
+     * @type {Object}
+     */
+    this.systemApi = this.client.system();
+
+    /**
+     * A shorthand for intents api access
+     * @property intentsApi
+     * @type {Object}
+     */
+    this.intentsApi = this.client.intents();
+
+    /**
+     * The url of the owf7 widget
+     * @property url
+     * @type {String}
+     */
     this.url=config.url;
+
+    /**
+     * @property instanceId
+     * @type {String}
+     */
     this.instanceId=config.instanceId;
+
+    /**
+     * @property widgetGuid
+     * @type {String}
+     */
     this.widgetGuid=config.guid;
+
+    /**
+     * @property rpcId
+     * @type {String}
+     */
     this.rpcId=config.rpcId;
+
+    /**
+     * A callback for when this participant is initialized.
+     * @property onReady
+     * @type {Fimctopm}
+     */
     this.onReady = config.onReady;
+
+    /**
+     * @todo  Do a lookup on this at some point
+     * @property widgetQuery
+     * @type {string}
+     */
+    this.widgetQuery="?lang=en_US&owf=true&themeName=a_default&themeContrast=standard&themeFontSize=12";
+
+    /**
+     * @property launchData
+     * @type {Object}
+     */
+    this.launchData={};
+    /**
+     * @property appData
+     * @type {Object}
+     */
+    this.appData={};
 
     // Create an iframe for the widget
     this.iframe = document.createElement('iframe');
     this.iframe.id = config.instanceId;
 
-    // Do a lookup on these two at some point
-    this.widgetQuery="?lang=en_US&owf=true&themeName=a_default&themeContrast=standard&themeFontSize=12";
-    
-    this.launchData=null;
     this._initModules();
 
-    if(config.launchDataResource) {
-        var self=this;
-        this.client.send({
-            dst: "intents.api",
-            resource: config.launchDataResource,
-            action: "get"
-        }, function (response, done) {
-            if (response.response === 'ok' &&
-                response.entity && response.entity.entity && response.entity.entity.launchData) {
-                self.launchData = response.entity.entity.launchData;
-            } else {
-                self.launchData = undefined;
-            }
-            if(!config.externalInit) {
-                self._initIframe();
-            }
-            done();
-        });
-    } else {
-        if(!config.externalInit) {
-            this._initIframe();
-        }
+    if(!config.externalInit) {
+        this.connect(config.launchDataResource);
     }
 };
 
@@ -72,10 +124,39 @@ ozpIwc.Owf7Participant=function(config) {
  * @private
  */
 ozpIwc.Owf7Participant.prototype._initModules = function(){
+    /**
+     * Drag and Drop module of the participant.
+     * @property dd
+     * @type {ozpIwc.owf7ParticipantModules.Dd}
+     */
     this.dd = new ozpIwc.owf7ParticipantModules.Dd(this);
+
+    /**
+     * Eventing module of the participant.
+     * @property dd
+     * @type {ozpIwc.owf7ParticipantModules.Eventing}
+     */
     this.eventing = new ozpIwc.owf7ParticipantModules.Eventing(this);
+
+    /**
+     * Kernel module of the participant.
+     * @property dd
+     * @type {ozpIwc.owf7ParticipantModules.Kernel}
+     */
     this.kernel = new ozpIwc.owf7ParticipantModules.Kernel(this);
+
+    /**
+     * Components module of the participant.
+     * @property dd
+     * @type {ozpIwc.owf7ParticipantModules.Components}
+     */
     this.components = new ozpIwc.owf7ParticipantModules.Components(this);
+
+    /**
+     * Intents module of the participant.
+     * @property dd
+     * @type {ozpIwc.owf7ParticipantModules.Intents}
+     */
     this.intents = new ozpIwc.owf7ParticipantModules.Intents(this);
 };
 
@@ -84,64 +165,96 @@ ozpIwc.Owf7Participant.prototype._initModules = function(){
  * @method initIframe
  * @private
  */
-ozpIwc.Owf7Participant.prototype._initIframe=function() {
-      
-	// these get turned into the iframes name attribute
-	// Refer to js/eventing/container.js:272
-	this.widgetParams={
-		"id": this.instanceId,
-		"webContextPath":"/owf",
-		"preferenceLocation": this.listener.prefsUrl,
-		"relayUrl":  this.listener.rpcRelay, 
-		"url": this.url,
-		"guid": this.widgetGuid,
-		// fixed values
-		"layout":"desktop",
-		"containerVersion":"7.0.1-GA",
-		"owf":true,
-		"lang":"en_US",
-		"currentTheme":{
-			"themeName":"a_default",
-			"themeContrast":"standard",
-			"themeFontSize":12
-		},		
-		"version":1,
-		"locked":false,
-        "data": this.launchData
-	};
+ozpIwc.Owf7Participant.prototype.connect=function(launchDataResource) {
+    if(!this.connectPromise) {
+        var self = this;
+        /**
+         * @property connectPromise
+         * @Type Promise
+         */
+        this.connectPromise = new Promise(function(resolve,reject) {
+            if(launchDataResource){
+                resolve(self.intentsApi.get(launchDataResource));
+            } else {
+                resolve({});
+            }
+        }).then(function (response) {
+            if (response.entity && response.entity.entity && response.entity.entity.launchData) {
+                self.launchData = response.entity.entity.launchData;
+            } else {
+                self.launchData = undefined;
+            }
+            // these get turned into the iframes name attribute
+            // Refer to js/eventing/container.js:272
+            self.widgetParams = {
+                "id": self.instanceId,
+                "webContextPath": "/owf",
+                "preferenceLocation": self.listener.prefsUrl,
+                "relayUrl": self.listener.rpcRelay,
+                "url": self.url,
+                "guid": self.widgetGuid,
+                // fixed values
+                "layout": "desktop",
+                "containerVersion": "7.0.1-GA",
+                "owf": true,
+                "lang": "en_US",
+                "currentTheme": {
+                    "themeName": "a_default",
+                    "themeContrast": "standard",
+                    "themeFontSize": 12
+                },
+                "version": 1,
+                "locked": false,
+                "data": self.launchData
+            };
+            return self._getApplicationData();
+        }).then(function (appData) {
+            self.appData = appData;
+            self.setWidgetTitle(self.appData.name);
+            self.iframe.setAttribute("name", JSON.stringify(self.widgetParams));
+            self.iframe.setAttribute("src", self.widgetParams.url + self.widgetQuery);
+            self.iframe.setAttribute("id", self.rpcId);
+            var iframe = document.body.appendChild(self.iframe);
 
-    var self =this;
-    this._getApplicationData(function(appData){
-        self.appData = appData || {};
-        self.setWidgetTitle(self.appData.name);
-        if(typeof self.onReady === "function"){
-            self.onReady();
-        }
-    });
+            var ddCalibrate = function(){
+                // cancel out the pointerEvents= none after first calculation.
+                iframe.style.pointerEvents = "auto";
+                iframe.removeEventListener("mousemove",ddCalibrate);
+            };
 
-    this.iframe.setAttribute("name",JSON.stringify(this.widgetParams));
-    this.iframe.setAttribute("src",this.widgetParams.url+this.widgetQuery);
-    this.iframe.setAttribute("id",this.rpcId);
-    document.body.appendChild(this.iframe);
+            document.addEventListener("mousemove",ddCalibrate);
+            if (typeof self.onReady === "function") {
+                self.onReady();
+            }
+        });
+    }
+
+    return this.connectPromise;
 };
 
 /**
  * Gathers information from the system.api for the participants widgetGuid. If no information exists on the system.api,
  * an empty object is passed to the callback function
  * @method _getApplicationData
- * @param {Function} cb callback to handle the retrieved application data.
+ * @returns {Promise}
  * @private
  */
-ozpIwc.Owf7Participant.prototype._getApplicationData = function(cb){
-    cb = cb || function(){};
-    this.client.send({
-        'dst': "system.api",
-        'resource': "/application/" + this.widgetGuid,
-        'action': "get"
-    },function(reply,done){
-        var response = reply.entity || {};
-        cb(response);
-        done();
+ozpIwc.Owf7Participant.prototype._getApplicationData = function(){
+    return this.systemApi.get("/application/" + this.widgetGuid).then(function(reply){
+        if(reply.entity && reply.entity.icons){
+            return reply.entity;
+        } else {
+            return {
+                icons: {
+                    small: "about:blank",
+                    large: "about:blank",
+                    banner: "about:blank",
+                    featuredBanner: "about:blank"
+                },
+                intents: [],
+                name: null
+            };
+        }
     });
 };
 
@@ -149,7 +262,7 @@ ozpIwc.Owf7Participant.prototype._getApplicationData = function(cb){
  * Sets the document title to the given name. If no name given, the title is
  * set with the following pattern "<href.host><href.pathname> -- OWF Widget".
  * @method setWidgetTitle
- * @param {Function} cb callback which will return the set title.
+ * @param {String} name.
  */
 ozpIwc.Owf7Participant.prototype.setWidgetTitle = function(name){
     if(!name){

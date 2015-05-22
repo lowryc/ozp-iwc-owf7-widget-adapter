@@ -20,14 +20,45 @@
     ozpIwc.Owf7ParticipantListener=function(config) {
         config = config || {};
 
+        /**
+         * @property rpcRelay
+         * @type {String}
+         */
         this.rpcRelay=absolutePath(config.rpcRelay || "rpc_relay.uncompressed.html");
+
+        /**
+         * @property prefsUrl
+         * @type {String}
+         */
         this.prefsUrl=absolutePath(config.prefsUrl || ozpIwc.owf7PrefsUrl || "/owf/prefs");
+
+        /**
+         * @property participants
+         * @type Object
+         * @default {}
+         */
         this.participants={};
 
-        this.client=new ozpIwc.InternalParticipant();
+        /**
+         * @property client
+         * @type {ozpIwc.ClientParticipant}
+         */
+        this.client=new ozpIwc.ClientParticipant();
+        this.client.connect();
+
+        /**
+         * A shorthand for data api access
+         * @property dataApi
+         * @type {Object}
+         */
+        this.dataApi = this.client.data();
+
+        /**
+         * @property bridge
+         * @type {ozpIwc.Owf7Bridge}
+         */
         this.bridge = config.bridge || new ozpIwc.Owf7Bridge({listener: this});
 
-        ozpIwc.defaultRouter.registerParticipant(this.client);
 
         if ((window.name === "undefined") || (window.name === "")) {
             window.name = "ContainerWindowName" + Math.random();
@@ -38,8 +69,17 @@
         // +26 on height for 10px container margin total + 16px on scrollbar
         // @TODO the container/iframe overflow:hidden, this needs to be changed to overflow:auto and use its scrollbar rather than the iframes document. State Api related.
 
+        /**
+         * @property xOffset
+         * @type {Number}
+         */
         this.xOffset= (typeof config.xOffset === "number") ?
             config.xOffset : window.screenX+window.outerWidth - window.innerWidth + 10;
+
+        /**
+         * @property yOffset
+         * @type {Number}
+         */
         this.yOffset= (typeof config.yOffset === "number") ?
             config.yOffset : window.screenY+window.outerHeight - window.innerHeight + 26;
     };
@@ -111,8 +151,9 @@
      * Creates a Owf7Participant for the given widget and registers its widget state channel.
      * @method addWidget
      * @param {Object} config
-     * @param {String} [config.instanceId] a guid is assigned if not given.
-     * @param {String} config.url the url of the widget
+     * @param {String} [config.instanceId] a id is assigned if not given.
+     * @param {String} [config.guid] the guid of the widget.
+     * @param {String} config.url the url of the widget.
      * @param {String} [config.launchDataResource] a resource path of data to be used for the launch of the widget.
      * @returns {*}
      */
@@ -127,7 +168,8 @@
 
         participantConfig.instanceId = config.instanceId || this.makeGuid();
         participantConfig.listener = self;
-        participantConfig.client = new ozpIwc.InternalParticipant();
+        participantConfig.client = new ozpIwc.ClientParticipant();
+        participantConfig.intentsApi = participantConfig.client.intents();
         participantConfig.rpcId = gadgets.json.stringify({id:participantConfig.instanceId});
 
 
@@ -160,23 +202,20 @@
             widgetRegistrations.state['_WIDGET_STATE_CHANNEL_' + cfg.instanceId] = function(){};
             self.bridge.addHandlers(widgetRegistrations);
 
-            return cfg.listener.participants[cfg.rpcId];
+            // Ensure the participant has connected before we resolve.
+            return cfg.listener.participants[cfg.rpcId].connect().then(function(){
+                return cfg.listener.participants[cfg.rpcId];
+            });
         }
 
-        ozpIwc.defaultRouter.registerParticipant(participantConfig.client);
 
         // If there was a IWC launch resource, go gather it
         if (config.launchDataResource) {
-            participantConfig.client.send({
-                dst: "intents.api",
-                action: "get",
-                resource: config.launchDataResource
-            }, function (resp,done) {
+            participantConfig.intentsApi.get(config.launchDataResource).then(function (resp) {
                 // If the widget is refreshed, the launch resource data has been deleted.
                 if (resp && resp.entity && resp.entity.entity && typeof resp.entity.entity.id === "string") {
                     participantConfig.guid = resp.entity.entity.id;
                 }
-                done();
                 return init(participantConfig);
             });
         } else {
@@ -190,10 +229,7 @@
      */
     ozpIwc.Owf7ParticipantListener.prototype.cancelDrag=function() {
         this.inDrag=false;
-        this.client.send({
-            "dst": "data.api",
-            "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
-            "action": "set",
+        this.dataApi.set(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
             "entity": Date.now()  // ignored, but changes the value to trigger watches
         });
     };
@@ -204,29 +240,24 @@
      */
     ozpIwc.Owf7ParticipantListener.prototype.installDragAndDrop=function() {
         var self=this;
+
+        /**
+         * @property inDrag
+         * @type {Boolean}
+         */
+        this.inDrag = false;
         var updateMouse=function(evt) {self.updateMouseCoordinates(evt);};
 
         document.addEventListener("mouseenter",updateMouse);
         document.addEventListener("mouseout",updateMouse);
 
-        this.client.send({
-           "dst":"data.api",
-           "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStart"),
-           "action": "watch"
-        },function(reply) {
-            if(reply.response === "changed") {
-                self.inDrag=true;
-            }
+        this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStart"), function(reply,done) {
+            self.inDrag=true;
         });
-        this.client.send({
-            "dst": "data.api",
-            "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
-            "action": "watch"
-        },function(reply) {
-            if(reply.response === "changed") {
+        this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
+            function(reply,done) {
                 self.inDrag=false;
-            }
-        });
+            });
         document.addEventListener("mousemove",function(e) {
             /*jshint bitwise: false*/
             self.updateMouseCoordinates(e);
@@ -235,24 +266,8 @@
                 console.log("Canceling drag");
                 self.cancelDrag();
             }
-            for(var i in self.participants){
-                self.participants[i].iframe.style.pointerEvents = "auto";
-            }
         },false);
-    //    document.addEventListener("mouseup",function(e) {
-    ////        if(self.inDrag) {
-    ////            return;
-    ////        }
-    //        self.onFakeMouseUpFromClient({
-    //            sender: self.rpcId,
-    //            pageX: e.pageX,
-    //            pageY: e.pageY,
-    //            screenX: e.screenX,
-    //            screenY: e.screenY
-    //        });
-    //    },false);
     };
-
 
     /**
      * Returns the participant if it registered to the listener, throws an exception if it does not.
@@ -261,17 +276,6 @@
      * @returns {Object}
      */
     ozpIwc.Owf7ParticipantListener.prototype.getParticipant = function(id){
-        var p=this.participants[id];
-        if(!p) {
-            throw this.getParticipant_err;
-        }
-        return p;
+        return this.participants[id];
     };
-
-    /**
-     * The error message passed when a desired participant does not exist in the listener.
-     * @property getParticipant_err
-     * @type {string}
-     */
-    ozpIwc.Owf7ParticipantListener.prototype.getParticipant_err = "Uknown participant";
 })();
