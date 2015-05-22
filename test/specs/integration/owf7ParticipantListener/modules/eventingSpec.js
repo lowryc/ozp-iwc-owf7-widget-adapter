@@ -8,7 +8,6 @@ describe("Eventing", function() {
 
         testConfig = {
             'listener': owf7ParticipantListener,
-            'err': config.err,
             'rpcMsg': config.rpcMsg,
             'module': 'eventing',
             'scope': config.rpcMsg,
@@ -29,12 +28,8 @@ describe("Eventing", function() {
             testConfig.handler = 'onContainerInit';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
 
@@ -47,27 +42,22 @@ describe("Eventing", function() {
             testConfig.fn = functions.pubsub;
         });
 
-        it("can't perform an action if the participant does not exist.",function() {
-            testConfig.args[0] ='publish';
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onPublish.",function(){
+        pit("calls the corresponding participant's onPublish.",function(){
             testConfig.handler = 'onPublish';
             testConfig.args[0] ='publish';
-            participantCallTest(testConfig);
+            return participantCallTest(testConfig);
         });
 
-        it("calls the corresponding participant's onSubscribe.",function(){
+        pit("calls the corresponding participant's onSubscribe.",function(){
             testConfig.handler = 'onSubscribe';
             testConfig.args[0] ='subscribe';
-            participantCallTest(testConfig);
+            return  participantCallTest(testConfig);
         });
 
-        it("calls the corresponding participant's onUnsubscribe.",function(){
+        pit("calls the corresponding participant's onUnsubscribe.",function(){
             testConfig.handler = 'onUnsubscribe';
             testConfig.args[0] ='unsubscribe';
-            participantCallTest(testConfig);
+            return participantCallTest(testConfig);
         });
     });
 });

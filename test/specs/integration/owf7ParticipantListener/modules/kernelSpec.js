@@ -29,12 +29,8 @@ describe("Kernel", function() {
             testConfig.handler = 'onGetWidgetReady';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
 
@@ -44,12 +40,8 @@ describe("Kernel", function() {
             testConfig.handler = 'onWidgetReady';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
     describe("register_functions",function(){
@@ -58,12 +50,8 @@ describe("Kernel", function() {
             testConfig.handler = 'onRegisterFunctions';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
     describe("GET_FUNCTIONS",function(){
@@ -72,12 +60,8 @@ describe("Kernel", function() {
             testConfig.handler = 'onGetFunctions';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
     describe("FUNCTION_CALL",function(){
@@ -86,12 +70,8 @@ describe("Kernel", function() {
             testConfig.handler = 'onFunctionCall';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
     describe("FUNCTION_CALL_RESULT",function(){
@@ -100,12 +80,8 @@ describe("Kernel", function() {
             testConfig.handler = 'onFunctionCallResult';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
     describe("LIST_WIDGETS",function(){
@@ -114,12 +90,8 @@ describe("Kernel", function() {
             testConfig.handler = 'onListWidgets';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
 });

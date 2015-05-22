@@ -44,6 +44,7 @@
     "initTestListener": true,
     "destructTestListener": true,
     "expectErr": true,
-    "participantCallTest": true
+    "participantCallTest": true,
+    "pit": true
   }
 }

@@ -17,21 +17,25 @@ ozpIwc.owf7BridgeModules.eventing = function(listener){
              * @see js/eventing/Container.js:26 for the containerInit function that much of this is copied from
              * @see js/eventing/Container.js:104 for the actual rpc.register
              * @property container_init
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {String} sender
+             * @param {String} message
              */
-            'container_init': function (sender, message) {
-                listener.getParticipant(this.f).eventing.onContainerInit(sender, message);
+            'container_init': function (participant, sender, message) {
+                participant.eventing.onContainerInit(sender, message);
             },
             /**
-             * @param {string} command - publish | subscribe | unsubscribe
-             * @param {string} channel - the OWF7 channel
-             * @param {string} message - the message being published
-             * @param {string} dest - the ID of the recipient if this is point-to-point
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {String} command - publish | subscribe | unsubscribe
+             * @param {String} channel - the OWF7 channel
+             * @param {String} message - the message being published
+             * @param {String} dest - the ID of the recipient if this is point-to-point
              * @see js/eventing/Container.js:376
              * @see js-lib/shindig/pubsub.js
              * @see js-lib/shindig/pubsub_router.js
              */
-            'pubsub': function (command, channel, message, dest) {
-                listener.getParticipant(this.f).eventing.onPubsub(command,channel,message,dest,this.f);
+            'pubsub': function (participant, command, channel, message, dest) {
+                participant.eventing.onPubsub(command,channel,message,dest,this.f);
             }
         }
     };

@@ -87,6 +87,7 @@ var tick=function(t) {
 	}
 };
 
+ozpIwc.util = ozpIwc.util || {};
 // mock out the now function to let us fast forward time
 ozpIwc.util.now=function() {
 	return new Date().getTime() + clockOffset;

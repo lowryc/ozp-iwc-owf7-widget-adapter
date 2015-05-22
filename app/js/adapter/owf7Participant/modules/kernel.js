@@ -3,14 +3,39 @@ ozpIwc.owf7ParticipantModules = ozpIwc.owf7ParticipantModules || {};
 
 /**
  * A Kernel module for the owf7Participant.
- * @param participant
+ * @class Kernel
+ * @namespace ozpIwc.owf7ParticipantModules
+ * @param {ozpIwc.Owf7Participant} participant
  * @constructor
  */
 ozpIwc.owf7ParticipantModules.Kernel = function(participant){
     if(!participant) { throw "Needs to have an Owf7Participant";}
+
+    /**
+     * @property participant
+     * @type {ozpIwc.Owf7Participant}
+     */
     this.participant = participant;
+
+    /**
+     * @property widgetReadyMap
+     * @type {Object}
+     */
     this.widgetReadyMap = {};
+
+    /**
+     * @property proxyMap
+     * @type {Object}
+     */
     this.proxyMap = {};
+
+
+    /**
+     * A shorthand for data api access through the participant.
+     * @property dataApi
+     * @type {Object}
+     */
+    this.dataApi = this.participant.client.data();
 
     this.registerWidgetListing();
     this.registerFunctionCallListener();
@@ -72,16 +97,8 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResultResource = func
 ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetReadyListener = function(){
     var self = this;
     var unregisterFn;
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.widgetReadyResource(this.participant.instanceId),
-        action: "watch"
-    },function(packet,done) {
-        if(packet.response!=="changed") {
-            return;
-        }
+    this.dataApi.watch(this.widgetReadyResource(this.participant.instanceId),function(packet,done) {
         unregisterFn = done;
-
         self.onWidgetReady(self.participant.instanceId);
     });
     return unregisterFn;
@@ -100,15 +117,10 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetListing = function(
         self.unregisterWidgetListing();
     });
 
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.listWidgetChannel,
-        action: "addChild",
-        contentType: "text/plain",
+    this.dataApi.addChild(this.listWidgetChannel,{
         entity: gadgets.json.parse(this.participant.rpcId)
-    },function(reply,done){
+    }).then(function(reply){
         self.widgetListing = reply.entity.resource;
-        done();
     });
 };
 
@@ -117,11 +129,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetListing = function(
  * @method unregisterWidgetListing
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.unregisterWidgetListing = function() {
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.listWidgetChannel,
-        action: "removeChild",
-        contentType: "text/plain",
+    this.dataApi.removeChild(this.listWidgetChannel,{
         entity: {resource: this.widgetListing}
     });
     return true;
@@ -130,23 +138,20 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.unregisterWidgetListing = functio
 /**
  * A handler for the _getWidgetReady event.
  * @method onGetWidgetReady
+ * @param {String} widgetId
+ * @param {Object} rpc
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetWidgetReady = function(widgetId,rpc){
     if(this.widgetReadyMap.hasOwnProperty(widgetId)) {
         rpc.callback(this.widgetReadyMap[widgetId] === true);
     } else {
         var self = this;
-        this.participant.client.send({
-            dst: "data.api",
-            resource: this.widgetReadyResource(widgetId),
-            action: "get"
-        },function(packet,done){
+        this.dataApi.get(this.widgetReadyResource(widgetId)).then(function(packet){
             var ready = !!packet.entity;
             if(ready) {
                 self.onWidgetReady(widgetId);
             }
             rpc.callback(ready);
-            done();
         });
     }
 };
@@ -154,13 +159,11 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetWidgetReady = function(widge
 /**
  * A handler for the _widgetReady event.
  * @method onWidgetReady
+ * @param {String} widgetId
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onWidgetReady = function(widgetId){
     this.widgetReadyMap[widgetId] = true;
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.widgetReadyResource(widgetId),
-        action: "set",
+    this.dataApi.set(this.widgetReadyResource(widgetId),{
         entity: this.widgetReadyMap[widgetId]
     });
 
@@ -170,10 +173,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onWidgetReady = function(widgetId
         for (var i = 0, len = proxyHolders.length; i < len; i++) {
             var proxyHolder = proxyHolders[i];
             if (proxyHolder) {
-                this.participant.client.send({
-                    dst: "data.api",
-                    resource: this.widgetReadyResource(proxyHolder),
-                    action: "set",
+                this.dataApi.set(this.widgetReadyResource(proxyHolder),{
                     entity: true
                 });
             }
@@ -185,17 +185,13 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onWidgetReady = function(widgetId
  * A handler for the register_functions event.
  * @method onRegisterFunctions
  * @param {String} iframeId
- * @param {Array} functions
+ * @param {String[]} functions
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onRegisterFunctions = function(iframeId, functions){
     var widgetID = JSON.parse(iframeId).id;
     var self = this;
 
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.widgetProxyChannelPrefix + widgetID,
-        action: "get"
-    },function(reply,done){
+    this.dataApi.get(this.widgetProxyChannelPrefix + widgetID).then(function(reply){
         var functionArray = Array.isArray(reply.entity) ? reply.entity : [];
         for(var j in functions){
             if(functionArray.indexOf(functions[j]) < 0){
@@ -203,13 +199,9 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onRegisterFunctions = function(if
             }
         }
 
-        self.participant.client.send({
-            dst: "data.api",
-            resource:self.widgetProxyChannelPrefix + widgetID,
-            action : "set",
+        self.dataApi.set(self.widgetProxyChannelPrefix + widgetID,{
             entity: functionArray
         });
-        done();
     });
 };
 
@@ -222,11 +214,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onRegisterFunctions = function(if
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetFunctions = function(widgetId, sourceWidgetId, rpc){
     var self = this;
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.widgetProxyChannelPrefix + widgetId,
-        action: "get"
-    },function(reply,done){
+    this.dataApi.get(this.widgetProxyChannelPrefix + widgetId).then(function(reply){
 
         //save the fact that the sourceWidgetId has a proxy of the widgetId
         if (!self.proxyMap[widgetId]) {
@@ -237,7 +225,6 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetFunctions = function(widgetI
         }
 
         rpc.callback(reply.entity);
-        done();
     });
 };
 
@@ -250,10 +237,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetFunctions = function(widgetI
  * @param {Array} var_args
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCall = function(widgetId, widgetIdCaller, functionName, var_args){
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.functionCallResource(widgetId),
-        action: "set",
+    this.dataApi.set(this.functionCallResource(widgetId),{
         entity: {
             'widgetId': widgetId,
             'widgetIdCaller': widgetIdCaller,
@@ -265,12 +249,12 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCall = function(widgetI
 };
 
 /**
- *  When receiving a function call from another widget call FUNCTION_CALL_CLIENT to route it to this legacy widget.
+ * When receiving a function call from another widget call FUNCTION_CALL_CLIENT to route it to this legacy widget.
  * @method onFunctionCallClient
- * @param widgetId
- * @param widgetIdCaller
- * @param functionName
- * @param var_args
+ * @param {String} widgetId
+ * @param {String} widgetIdCaller
+ * @param {String} functionName
+ * @param {Array} var_args
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallClient = function(widgetId, widgetIdCaller, functionName, var_args){
     gadgets.rpc.call(this.participant.rpcId, 'FUNCTION_CALL_CLIENT', null, widgetId, widgetIdCaller, functionName, var_args);
@@ -279,10 +263,10 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallClient = function(w
 /**
 *  When receiving a function call from another widget call FUNCTION_CALL_CLIENT to route it to this legacy widget.
 * @method onFunctionCallResultClient
-* @param widgetId
-* @param widgetIdCaller
-* @param functionName
-* @param result
+* @param {String} widgetId
+* @param {String} widgetIdCaller
+* @param {String} functionName
+* @param {String} result
 */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallResultClient = function(widgetId, widgetIdCaller, functionName, result){
     gadgets.rpc.call(this.participant.rpcId, 'FUNCTION_CALL_RESULT_CLIENT', null, widgetId, functionName, result);
@@ -297,10 +281,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallResultClient = func
  * @param {Object} result
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallResult = function(widgetId, widgetIdCaller, functionName, result){
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.functionCallResultResource(widgetIdCaller),
-        action: "set",
+    this.dataApi.set(this.functionCallResultResource(widgetIdCaller),{
         entity: {
             'widgetId': widgetId, //NOTE swapping
             'widgetIdCaller': widgetIdCaller,
@@ -318,14 +299,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallResult = function(w
 ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallListener = function(){
     var self = this;
     var unregisterFn;
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.functionCallResource(this.participant.instanceId),
-        action: "watch"
-    },function(packet,done) {
-        if(packet.response!=="changed") {
-            return;
-        }
+    this.dataApi.watch(this.functionCallResource(this.participant.instanceId),function(packet,done) {
         unregisterFn = done;
         var widgetId = packet.entity.newValue.widgetId || "";
         var widgetIdCaller = packet.entity.newValue.widgetIdCaller || "";
@@ -344,14 +318,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallListener = fu
 ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallResultListener = function(){
     var self = this;
     var unregisterFn;
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.functionCallResultResource(this.participant.instanceId),
-        action: "watch"
-    },function(packet,done) {
-        if(packet.response!=="changed") {
-            return;
-        }
+    this.dataApi.watch(this.functionCallResultResource(this.participant.instanceId), function(packet,done) {
         unregisterFn = done;
         var widgetId = packet.entity.newValue.widgetId || "";
         var widgetIdCaller = packet.entity.newValue.widgetIdCaller || "";
@@ -370,30 +337,20 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallResultListene
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onListWidgets = function(rpc){
     var self = this;
-    this.participant.client.send({
-        dst: "data.api",
-        resource: this.listWidgetChannel,
-        action: "list"
-    },function(reply,done){
+    this.dataApi.list(this.listWidgetChannel).then(function(reply){
         var widgets = [];
         var widgetCount = reply.entity.length || 0;
-        var handleWidgetData = function(resp,done){
+        var handleWidgetData = function(resp){
             if(resp.entity && resp.entity.id) {
                 widgets.push(resp.entity);
             }
             if (--widgetCount <= 0) {
                 rpc.callback(widgets);
             }
-            done();
         };
 
         for(var i in reply.entity){
-            self.participant.client.send({
-                dst: "data.api",
-                resource: reply.entity[i],
-                action: "get"
-            },handleWidgetData);
+            self.dataApi.get(reply.entity[i]).then(handleWidgetData);
         }
-        done();
     });
 };

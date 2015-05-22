@@ -29,12 +29,8 @@ describe("Drag and Drop", function() {
             testConfig.handler = 'onFakeMouseMoveFromClient';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
 
@@ -45,12 +41,8 @@ describe("Drag and Drop", function() {
             testConfig.handler = 'onFakeMouseUpFromClient';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onContainerInit.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onContainerInit.",function(){
+            return participantCallTest(testConfig);
         });
     });
 

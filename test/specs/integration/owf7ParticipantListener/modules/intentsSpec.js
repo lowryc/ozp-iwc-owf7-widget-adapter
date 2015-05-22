@@ -29,12 +29,8 @@ describe("Eventing", function() {
             testConfig.handler = 'onIntents';
         });
 
-        it("can't initialize if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onIntents.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onIntents.",function(){
+            return participantCallTest(testConfig);
         });
     });
 
@@ -44,12 +40,8 @@ describe("Eventing", function() {
             testConfig.handler = 'onIntentsReceive';
         });
 
-        it("can't perform an action if the participant does not exist.",function() {
-            expectErr(testConfig);
-        });
-
-        it("calls the corresponding participant's onIntentsReceive.",function(){
-            participantCallTest(testConfig);
+        pit("calls the corresponding participant's onIntentsReceive.",function(){
+            return participantCallTest(testConfig);
         });
     });
 });
