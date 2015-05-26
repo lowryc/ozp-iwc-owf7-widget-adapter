@@ -194,7 +194,7 @@
 
             // After storing the hash, if the guid does not exist just set it as instanceId for OWF7 to not complain.
             cfg.guid = cfg.guid || cfg.instanceId;
-            cfg.listener.participants[cfg.rpcId] = new ozpIwc.Owf7Participant(cfg);
+            cfg.listener.participants[cfg.instanceId] = new ozpIwc.Owf7Participant(cfg);
 
             // Add the _WIDGET_STATE_CHANNEL_<instanceId> RPC registration for the widget.
             // @see js\state\WidgetStateContainer.js:35
@@ -203,8 +203,8 @@
             self.bridge.addHandlers(widgetRegistrations);
 
             // Ensure the participant has connected before we resolve.
-            return cfg.listener.participants[cfg.rpcId].connect().then(function(){
-                return cfg.listener.participants[cfg.rpcId];
+            return cfg.listener.participants[cfg.instanceId].connect().then(function(){
+                return cfg.listener.participants[cfg.instanceId];
             });
         }
 
@@ -251,11 +251,11 @@
         document.addEventListener("mouseenter",updateMouse);
         document.addEventListener("mouseout",updateMouse);
 
-        this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStart"), function(reply,done) {
+        this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStart"), function(reply) {
             self.inDrag=true;
         });
         this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
-            function(reply,done) {
+            function(reply) {
                 self.inDrag=false;
             });
         document.addEventListener("mousemove",function(e) {
@@ -276,6 +276,13 @@
      * @returns {Object}
      */
     ozpIwc.Owf7ParticipantListener.prototype.getParticipant = function(id){
-        return this.participants[id];
+        //If this is from someone else using rpc we don't care.
+        var formattedId;
+        try {
+            formattedId = JSON.parse(id).id;
+        } catch (e){
+            formattedId = id; // If its malformed it was likely malformed to begin with.
+        }
+        return this.participants[formattedId];
     };
 })();

@@ -182,7 +182,6 @@ describe("Bridge", function() {
             expect(bridge.funcs.eventing).toBeDefined();
             expect(bridge.funcs.intents).toBeDefined();
             expect(bridge.funcs.kernel).toBeDefined();
-            expect(bridge.funcs.launcher).toBeDefined();
         });
         it("registers additional handlers received in the config",function(){
             var funcs = {

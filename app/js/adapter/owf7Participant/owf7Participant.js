@@ -133,31 +133,38 @@ ozpIwc.Owf7Participant.prototype._initModules = function(){
 
     /**
      * Eventing module of the participant.
-     * @property dd
+     * @property eventing
      * @type {ozpIwc.owf7ParticipantModules.Eventing}
      */
     this.eventing = new ozpIwc.owf7ParticipantModules.Eventing(this);
 
     /**
      * Kernel module of the participant.
-     * @property dd
+     * @property kernel
      * @type {ozpIwc.owf7ParticipantModules.Kernel}
      */
     this.kernel = new ozpIwc.owf7ParticipantModules.Kernel(this);
 
     /**
      * Components module of the participant.
-     * @property dd
+     * @property components
      * @type {ozpIwc.owf7ParticipantModules.Components}
      */
     this.components = new ozpIwc.owf7ParticipantModules.Components(this);
 
     /**
      * Intents module of the participant.
-     * @property dd
+     * @property intents
      * @type {ozpIwc.owf7ParticipantModules.Intents}
      */
     this.intents = new ozpIwc.owf7ParticipantModules.Intents(this);
+
+    /**
+     * Util module of the participant.
+     * @property util
+     * @type {ozpIwc.owf7ParticipantModules.Intents}
+     */
+    this.util = new ozpIwc.owf7ParticipantModules.Util(this);
 };
 
 /**

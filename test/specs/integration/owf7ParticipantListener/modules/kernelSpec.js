@@ -29,7 +29,7 @@ describe("Kernel", function() {
             testConfig.handler = 'onGetWidgetReady';
         });
 
-        pit("calls the corresponding participant's onContainerInit.",function(){
+        pit("calls the corresponding participant's onGetWidgetReady.",function(){
             return participantCallTest(testConfig);
         });
     });
@@ -40,7 +40,7 @@ describe("Kernel", function() {
             testConfig.handler = 'onWidgetReady';
         });
 
-        pit("calls the corresponding participant's onContainerInit.",function(){
+        pit("calls the corresponding participant's onWidgetReady.",function(){
             return participantCallTest(testConfig);
         });
     });
@@ -50,7 +50,7 @@ describe("Kernel", function() {
             testConfig.handler = 'onRegisterFunctions';
         });
 
-        pit("calls the corresponding participant's onContainerInit.",function(){
+        pit("calls the corresponding participant's onRegisterFunctions.",function(){
             return participantCallTest(testConfig);
         });
     });
@@ -60,7 +60,7 @@ describe("Kernel", function() {
             testConfig.handler = 'onGetFunctions';
         });
 
-        pit("calls the corresponding participant's onContainerInit.",function(){
+        pit("calls the corresponding participant's onGetFunctions.",function(){
             return participantCallTest(testConfig);
         });
     });
@@ -70,7 +70,7 @@ describe("Kernel", function() {
             testConfig.handler = 'onFunctionCall';
         });
 
-        pit("calls the corresponding participant's onContainerInit.",function(){
+        pit("calls the corresponding participant's onFunctionCall.",function(){
             return participantCallTest(testConfig);
         });
     });
@@ -80,7 +80,7 @@ describe("Kernel", function() {
             testConfig.handler = 'onFunctionCallResult';
         });
 
-        pit("calls the corresponding participant's onContainerInit.",function(){
+        pit("calls the corresponding participant's onFunctionCallResult.",function(){
             return participantCallTest(testConfig);
         });
     });
@@ -90,7 +90,50 @@ describe("Kernel", function() {
             testConfig.handler = 'onListWidgets';
         });
 
-        pit("calls the corresponding participant's onContainerInit.",function(){
+        pit("calls the corresponding participant's onListWidgets.",function(){
+            return participantCallTest(testConfig);
+        });
+    });
+    describe("DIRECT_MESSAGE",function(){
+        beforeEach(function(){
+            testConfig.fn = functions.DIRECT_MESSAGE;
+            testConfig.handler = 'onDirectMessage';
+        });
+
+        pit("calls the corresponding participant's onDirectMessage.",function(){
+            return participantCallTest(testConfig);
+        });
+    });
+
+    describe("DIRECT_MESSAGE",function(){
+        beforeEach(function(){
+            testConfig.fn = functions.DIRECT_MESSAGE;
+            testConfig.handler = 'onDirectMessage';
+        });
+
+        pit("calls the corresponding participant's onDirectMessage.",function(){
+            return participantCallTest(testConfig);
+        });
+    });
+
+    describe("ADD_EVENT",function(){
+        beforeEach(function(){
+            testConfig.fn = functions.ADD_EVENT;
+            testConfig.handler = 'onAddEvent';
+        });
+
+        pit("calls the corresponding participant's onAddEvent.",function(){
+            return participantCallTest(testConfig);
+        });
+    });
+
+    describe("CALL_EVENT",function(){
+        beforeEach(function(){
+            testConfig.fn = functions.CALL_EVENT;
+            testConfig.handler = 'onCallEvent';
+        });
+
+        pit("calls the corresponding participant's onCallEvent.",function(){
             return participantCallTest(testConfig);
         });
     });

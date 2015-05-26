@@ -80,6 +80,34 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
              */
             'LIST_WIDGETS': function (participant) {
                 participant.kernel.onListWidgets(this);
+            },
+
+            /**
+             * @see js/
+             * @param {ozpIwc.Owf7Participant}participant
+             * @param {String} widgetId
+             * @param {*} dataToSend
+             */
+            'DIRECT_MESSAGE': function (participant, widgetId, dataToSend) {
+                participant.kernel.onDirectMessage(widgetId, dataToSend);
+            },
+
+            /**
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {String} widgetId
+             * @param {String} eventName
+             */
+            'ADD_EVENT': function (participant, widgetId, eventName) {
+                participant.kernel.onAddEvent(widgetId, eventName);
+            },
+
+            /**
+             * @param {ozpIwc.Owf7Participant} participant
+             * @param {String} eventName
+             * @param {*} payload
+             */
+            'CALL_EVENT': function (participant, eventName, payload) {
+                participant.kernel.onCallEvent(eventName, payload);
             }
         }
     };
