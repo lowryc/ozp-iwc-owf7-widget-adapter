@@ -220,11 +220,15 @@ gadgets.rpc = function() {
       // we must do the same to capture the message if the opener was non legacy. If cross domain this rpc will catch
       // the message.
       if(window.opener){
-        if(window.opener.parent){
-          window.opener.parent.addEventListener('message',onmessage, false);
-        } else {
-          window.opener.addEventListener('message',onmessage, false);
+        if(window.opener.parent) {
+          // hijack messages from the opener
+          window.opener.parent.addEventListener('message', onmessage, false);
+          // remove listener gracefully on close of widget
+          window.addEventListener('beforeunload', function () {
+            window.opener.parent.removeEventListener('message', onmessage);
+          });
         }
+        window.opener.addEventListener('message',onmessage, false);
       }
       if (typeof window.addEventListener != 'undefined') {
         window.addEventListener('message', onmessage, false);

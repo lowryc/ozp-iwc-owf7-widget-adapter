@@ -23,7 +23,10 @@ describe("Listener Kernel Bridging", function() {
                 onGetFunctions: function () {},
                 onFunctionCall: function () {},
                 onFunctionCallResult: function () {},
-                onListWidgets: function () {}
+                onListWidgets: function () {},
+                onDirectMessage: function () {},
+                onAddEvent: function () {},
+                onCallEvent: function () {}
             }
         };
         fakeParticipantHandlers = fakeParticipant.kernel;
@@ -51,6 +54,9 @@ describe("Listener Kernel Bridging", function() {
         expect(listenerHandlers.FUNCTION_CALL).toBeDefined();
         expect(listenerHandlers.FUNCTION_CALL_RESULT).toBeDefined();
         expect(listenerHandlers.LIST_WIDGETS).toBeDefined();
+        expect(listenerHandlers.DIRECT_MESSAGE).toBeDefined();
+        expect(listenerHandlers.ADD_EVENT).toBeDefined();
+        expect(listenerHandlers.CALL_EVENT).toBeDefined();
     });
 
     describe("RPC Registration calls the appropriate participant handler", function(){
@@ -121,6 +127,33 @@ describe("Listener Kernel Bridging", function() {
             gadgets.rpc.call("..","LIST_WIDGETS",null);
             delayForRPC(function(){
                 expect(fakeParticipantHandlers.onListWidgets).toHaveBeenCalled();
+                done();
+            });
+        });
+
+        it("DIRECT_MESSAGE",function(done){
+            spyOn(fakeParticipantHandlers,"onDirectMessage");
+            gadgets.rpc.call("..","DIRECT_MESSAGE",null);
+            delayForRPC(function(){
+                expect(fakeParticipantHandlers.onDirectMessage).toHaveBeenCalled();
+                done();
+            });
+        });
+
+        it("ADD_EVENT",function(done){
+            spyOn(fakeParticipantHandlers,"onAddEvent");
+            gadgets.rpc.call("..","ADD_EVENT",null);
+            delayForRPC(function(){
+                expect(fakeParticipantHandlers.onAddEvent).toHaveBeenCalled();
+                done();
+            });
+        });
+
+        it("CALL_EVENT",function(done){
+            spyOn(fakeParticipantHandlers,"onCallEvent");
+            gadgets.rpc.call("..","CALL_EVENT",null);
+            delayForRPC(function(){
+                expect(fakeParticipantHandlers.onCallEvent).toHaveBeenCalled();
                 done();
             });
         });

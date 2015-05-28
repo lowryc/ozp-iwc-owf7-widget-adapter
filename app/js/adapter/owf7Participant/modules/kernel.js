@@ -29,7 +29,6 @@ ozpIwc.owf7ParticipantModules.Kernel = function(participant){
      */
     this.proxyMap = {};
 
-
     /**
      * A shorthand for data api access through the participant.
      * @property dataApi
@@ -41,6 +40,7 @@ ozpIwc.owf7ParticipantModules.Kernel = function(participant){
     this.registerFunctionCallListener();
     this.registerFunctionCallResultListener();
     this.registerWidgetReadyListener();
+    this.registerDirectMessageListener();
 };
 
 /**
@@ -87,6 +87,24 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResultResource = func
     return this.widgetProxyChannelPrefix + widgetId + "/FUNCTION_CALL_RESULT_CLIENT";
 };
 
+/**
+ * Returns the IWC Data.api resource path for the given widget's DIRECT_MESSAGE event.
+ * @method directMessageResource
+ * @param {String} widgetId
+ * @returns {String}
+ */
+ozpIwc.owf7ParticipantModules.Kernel.prototype.directMessageResource = function(widgetId){
+    return this.widgetProxyChannelPrefix + widgetId + "/DIRECT_MESSAGE";
+};
+/**
+ * Returns the IWC Data.api resource path for the given widget's CALL_EVENT event.
+ * @method directMessageResource
+ * @param {String} eventName
+ * @returns {String}
+ */
+ozpIwc.owf7ParticipantModules.Kernel.prototype.callEventResource = function(eventName) {
+    return this.widgetProxyChannelPrefix + "/CALL_EVENT/" + eventName;
+};
 
 /**
  * Register's a listener for the given widget's _widgetReady event.
@@ -96,12 +114,10 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResultResource = func
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetReadyListener = function(){
     var self = this;
-    var unregisterFn;
     this.dataApi.watch(this.widgetReadyResource(this.participant.instanceId),function(packet,done) {
-        unregisterFn = done;
+        done();
         self.onWidgetReady(self.participant.instanceId);
     });
-    return unregisterFn;
 };
 
 /**
@@ -249,26 +265,26 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCall = function(widgetI
 };
 
 /**
- * When receiving a function call from another widget call FUNCTION_CALL_CLIENT to route it to this legacy widget.
- * @method onFunctionCallClient
+ * When receiving a function call from another widget, this calls rpc FUNCTION_CALL_CLIENT to route it to this legacy widget.
+ * @method functionCallClient
  * @param {String} widgetId
  * @param {String} widgetIdCaller
  * @param {String} functionName
  * @param {Array} var_args
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallClient = function(widgetId, widgetIdCaller, functionName, var_args){
+ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallClient = function(widgetId, widgetIdCaller, functionName, var_args){
     gadgets.rpc.call(this.participant.rpcId, 'FUNCTION_CALL_CLIENT', null, widgetId, widgetIdCaller, functionName, var_args);
 };
 
 /**
-*  When receiving a function call from another widget call FUNCTION_CALL_CLIENT to route it to this legacy widget.
-* @method onFunctionCallResultClient
+*  When receiving a function call result from another widget, this calls rpc  FUNCTION_CALL_CLIENT to route it to this legacy widget.
+* @method functionCallResultClient
 * @param {String} widgetId
 * @param {String} widgetIdCaller
 * @param {String} functionName
 * @param {String} result
 */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallResultClient = function(widgetId, widgetIdCaller, functionName, result){
+ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResultClient = function(widgetId, widgetIdCaller, functionName, result){
     gadgets.rpc.call(this.participant.rpcId, 'FUNCTION_CALL_RESULT_CLIENT', null, widgetId, functionName, result);
 };
 
@@ -298,17 +314,14 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallResult = function(w
 */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallListener = function(){
     var self = this;
-    var unregisterFn;
-    this.dataApi.watch(this.functionCallResource(this.participant.instanceId),function(packet,done) {
-        unregisterFn = done;
+    this.dataApi.watch(this.functionCallResource(this.participant.instanceId),function(packet) {
         var widgetId = packet.entity.newValue.widgetId || "";
         var widgetIdCaller = packet.entity.newValue.widgetIdCaller || "";
         var functionName = packet.entity.newValue.functionName || "";
         var var_arg = packet.entity.newValue.var_arg || [];
 
-        self.onFunctionCallClient(widgetId,widgetIdCaller,functionName,var_arg);
+        self.functionCallClient(widgetId,widgetIdCaller,functionName,var_arg);
     });
-    return unregisterFn;
 };
 
 /**
@@ -317,17 +330,14 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallListener = fu
 */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallResultListener = function(){
     var self = this;
-    var unregisterFn;
-    this.dataApi.watch(this.functionCallResultResource(this.participant.instanceId), function(packet,done) {
-        unregisterFn = done;
+    this.dataApi.watch(this.functionCallResultResource(this.participant.instanceId), function(packet) {
         var widgetId = packet.entity.newValue.widgetId || "";
         var widgetIdCaller = packet.entity.newValue.widgetIdCaller || "";
         var functionName = packet.entity.newValue.functionName || "";
         var result = packet.entity.newValue.result || {};
 
-        self.onFunctionCallResultClient(widgetId,widgetIdCaller,functionName,result);
+        self.functionCallResultClient(widgetId,widgetIdCaller,functionName,result);
     });
-    return unregisterFn;
 };
 
 /**
@@ -351,6 +361,84 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onListWidgets = function(rpc){
 
         for(var i in reply.entity){
             self.dataApi.get(reply.entity[i]).then(handleWidgetData);
+        }
+    });
+};
+
+/**
+ * Forwards RPC call DIRECT_MESSAGE on IWC Bus.
+ * @method onDirectMessage
+ * @param {String} widgetId
+ * @param {Object} dataToSend
+ */
+ozpIwc.owf7ParticipantModules.Kernel.prototype.onDirectMessage = function(widgetId, dataToSend){
+    this.dataApi.set(this.directMessageResource(widgetId),{
+        entity:{
+            message: dataToSend,
+            ts: ozpIwc.util.now()
+        }
+    });
+};
+
+/**
+ * Watches for other legacy widgets to send a DIRECT_MESSAGE through the iwc.
+ * @method registerDirectMessageListener
+ */
+ozpIwc.owf7ParticipantModules.Kernel.prototype.registerDirectMessageListener = function(){
+    var self = this;
+    this.dataApi.watch(this.directMessageResource(this.participant.instanceId), function(packet) {
+        if(packet.entity && packet.entity.newValue && packet.entity.newValue.message) {
+            var payload = packet.entity.newValue.message;
+            self.directMessageClient(payload);
+        }
+    });
+};
+
+/**
+ *  When receiving a direct message from another widget, this calls DIRECT_MESSAGE to route it to this legacy widget.
+ * @method directMessageClient
+ * @param {*} payload
+ */
+ozpIwc.owf7ParticipantModules.Kernel.prototype.directMessageClient = function(payload){
+    gadgets.rpc.call(this.participant.rpcId, 'DIRECT_MESSAGEL_CLIENT', null, payload);
+};
+
+/**
+ *  When receiving a add event call from the widget, this registers to pass any events onto the widget for the eventName.
+ * @method onAddEvent
+ * @param {String} widgetId
+ * @param {String} eventName
+ */
+ozpIwc.owf7ParticipantModules.Kernel.prototype.onAddEvent = function(widgetId, eventName){
+    var self = this;
+    this.dataApi.watch(this.callEventResource(eventName), function(packet) {
+        if(packet.entity && packet.entity.newValue && packet.entity.newValue.message) {
+            self.eventClient(eventName,packet.entity.newValue.message);
+        }
+    });
+};
+
+/**
+ * When receiving a event call  from another widget, this calls rpc EVENT_CLIENT to route it to this legacy widget.
+ * @method eventCall
+ * @param {String} eventName
+ * @param {*} payload
+ */
+ozpIwc.owf7ParticipantModules.Kernel.prototype.eventClient = function(eventName,payload){
+    gadgets.rpc.call(this.participant.rpcId, "EVENT_CLIENT", null, eventName, payload);
+};
+
+/**
+ * Forwards RPC call CLIENT_EVENT on IWC Bus.
+ * @method onCallEvent
+ * @param {String} eventName
+ * @param {*} payload
+ */
+ozpIwc.owf7ParticipantModules.Kernel.prototype.onCallEvent = function(eventName, payload){
+    this.dataApi.set(this.callEventResource(eventName), {
+        entity:{
+            'message': payload,
+            'ts': ozpIwc.util.now()
         }
     });
 };
