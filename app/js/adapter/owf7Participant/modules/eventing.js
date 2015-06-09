@@ -102,7 +102,8 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onPublish=function(command, cha
         "entity": {
             "message": message,
             "sender": sender
-        }
+        },
+        "lifespan": "ephemeral"
     });
 };
 
@@ -119,20 +120,21 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, c
 
     var self = this;
 
-    this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel(channel), function(packet,done) {
-        //Add the msgId to a list of handlers to unregister should unsubscribe be fired.
-        self.subscriptions[channel] = self.subscriptions[channel] || {};
-        self.subscriptions[channel][packet.replyTo] = done;
-        if(self.participant.dd["hookReceive"+channel] &&
-            !self.participant.dd["hookReceive"+channel].call(self.participant.dd,packet.entity.newValue)) {
-            return;
-        }
+    this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel(channel),{"lifespan": "ephemeral"},
+        function(packet,done) {
+            //Add the msgId to a list of handlers to unregister should unsubscribe be fired.
+            self.subscriptions[channel] = self.subscriptions[channel] || {};
+            self.subscriptions[channel][packet.replyTo] = done;
+            if(self.participant.dd["hookReceive"+channel] &&
+                !self.participant.dd["hookReceive"+channel].call(self.participant.dd,packet.entity.newValue)) {
+                return;
+            }
 
-        // from shindig/pubsub_router.js:77
-        //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
-        gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, packet.entity.newValue.sender,
-            packet.entity.newValue.message);
-    });
+            // from shindig/pubsub_router.js:77
+            //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
+            gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, packet.entity.newValue.sender,
+                packet.entity.newValue.message);
+        });
 };
 
 /**

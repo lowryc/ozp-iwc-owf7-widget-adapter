@@ -46,8 +46,6 @@ ozpIwc.owf7ParticipantModules.Intents.prototype.onIntents=function(senderId,inte
             destIds: destIds,
             senderId: senderId
         }
-    },function(resp){
-        //@TODO
     });
 };
 
@@ -68,16 +66,17 @@ ozpIwc.owf7ParticipantModules.Intents.prototype.onIntentsReceive=function(intent
             'action': intent.action,
             'icon': this.participant.appData.icons.small || "about:blank",
             'label': this.participant.widgetParams.name || document.title
-        }
+        },
+        'contentType': 'application/vnd.ozp-iwc-intent-handler-v1+json'
     }, function (response) {
-            var ifie = response.entity || {};
-            var intent = response.intent || {};
-            var entity = ifie.entity;
-            var intentObj = {
-                'action': intent.action,
-                'dataType': intent.type
-            };
+        var ifie = response.entity || {};
+        var intent = response.intent || {};
+        var entity = ifie.entity;
+        var intentObj = {
+            'action': intent.action,
+            'dataType': intent.type
+        };
 
-            gadgets.rpc.call(destWidgetId, "_intents", null, entity.senderId, intentObj, entity.entity);
+        gadgets.rpc.call(destWidgetId, "_intents", null, entity.senderId, intentObj, entity.entity);
     });
 };

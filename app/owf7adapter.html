@@ -28,7 +28,7 @@
         <script type="text/javascript">
             var ozpIwc = ozpIwc || {};
             // No reason to accept client applications
-            ozpIwc.acceptPostMessageParticipants=false;
+//            ozpIwc.acceptPostMessageParticipants=false;
 
             // CONFIG: the OZP IWC api endpoints
             ozpIwc.apiRootUrl="api";
@@ -42,26 +42,27 @@
     <script type="text/javascript" src="js/ozpIwc-bus.js"></script>
     <script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>  
     <script type="text/javascript">
-                    
+
 
         (function() {
             var params=ozpIwc.util.parseQueryParams();
             var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
 
             var adapter=new ozpIwc.Owf7ParticipantListener();
+            adapter.client.connect().then(function(){
 
-            // Gather any hash-stashed data pertaining to the widget
-            var config = ozpIwc.util.parseQueryParams(window.location.hash.replace("#", ""));
+                // Gather any hash-stashed data pertaining to the widget
+                var config = ozpIwc.util.parseQueryParams(window.location.hash.replace("#", ""));
 
-            // Add any other config params
-            config.url = params.url;
-            config.launchDataResource = windowNameParams["ozpIwc.inFlightIntent"];
+                // Add any other config params
+                config.url = params.url;
+                config.launchData = adapter.client.launchParams;
 
-            // Use a fixed delay to prevent the IWC from being overloaded with messages if refresh is held down.
-            window.setTimeout(function(){
-            adapter.addWidget(config);
-            },500);
-
+                // Use a fixed delay to prevent the IWC from being overloaded with messages if refresh is held down.
+  //              window.setTimeout(function(){
+                    adapter.addWidget(config);
+    //            },500);
+            });
         //    console.log("Adapter: ",adapter.participants);
         })();
     </script>
