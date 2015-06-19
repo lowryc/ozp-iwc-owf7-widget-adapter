@@ -46,14 +46,14 @@ ozpIwc.Owf7Participant=function(config) {
     /**
      * A shorthand for system api access.
      * @property systemApi
-     * @type {Object}
+     * @type {Function}
      */
     this.systemApi = this.client.system();
 
     /**
      * A shorthand for intents api access
      * @property intentsApi
-     * @type {Object}
+     * @type {Function}
      */
     this.intentsApi = this.client.intents();
 
@@ -100,7 +100,7 @@ ozpIwc.Owf7Participant=function(config) {
      * @property launchData
      * @type {Object}
      */
-    this.launchData={};
+    this.launchData= config.launchData || {};
     /**
      * @property appData
      * @type {Object}
@@ -114,7 +114,7 @@ ozpIwc.Owf7Participant=function(config) {
     this._initModules();
 
     if(!config.externalInit) {
-        this.connect(config.launchDataResource);
+        this.connect(config.launchData);
     }
 };
 
@@ -172,25 +172,33 @@ ozpIwc.Owf7Participant.prototype._initModules = function(){
  * @method initIframe
  * @private
  */
-ozpIwc.Owf7Participant.prototype.connect=function(launchDataResource) {
+ozpIwc.Owf7Participant.prototype.connect=function() {
     if(!this.connectPromise) {
         var self = this;
+        var openWidget = function(appData){
+            self.appData = appData || {};
+            self.setWidgetTitle(self.appData.name);
+            self.iframe.setAttribute("name", JSON.stringify(self.widgetParams));
+            self.iframe.setAttribute("src", self.widgetParams.url + self.widgetQuery);
+            self.iframe.setAttribute("id", self.rpcId);
+            var iframe = document.body.appendChild(self.iframe);
+
+            var ddCalibrate = function(){
+                // cancel out the pointerEvents= none after first calculation.
+                iframe.style.pointerEvents = "auto";
+                iframe.removeEventListener("mousemove",ddCalibrate);
+            };
+
+            document.addEventListener("mousemove",ddCalibrate);
+            if (typeof self.onReady === "function") {
+                self.onReady();
+            }
+        };
         /**
          * @property connectPromise
          * @Type Promise
          */
         this.connectPromise = new Promise(function(resolve,reject) {
-            if(launchDataResource){
-                resolve(self.intentsApi.get(launchDataResource));
-            } else {
-                resolve({});
-            }
-        }).then(function (response) {
-            if (response.entity && response.entity.entity && response.entity.entity.launchData) {
-                self.launchData = response.entity.entity.launchData;
-            } else {
-                self.launchData = undefined;
-            }
             // these get turned into the iframes name attribute
             // Refer to js/eventing/container.js:272
             self.widgetParams = {
@@ -214,25 +222,9 @@ ozpIwc.Owf7Participant.prototype.connect=function(launchDataResource) {
                 "locked": false,
                 "data": self.launchData
             };
-            return self._getApplicationData();
+            resolve(self._getApplicationData());
         }).then(function (appData) {
-            self.appData = appData;
-            self.setWidgetTitle(self.appData.name);
-            self.iframe.setAttribute("name", JSON.stringify(self.widgetParams));
-            self.iframe.setAttribute("src", self.widgetParams.url + self.widgetQuery);
-            self.iframe.setAttribute("id", self.rpcId);
-            var iframe = document.body.appendChild(self.iframe);
-
-            var ddCalibrate = function(){
-                // cancel out the pointerEvents= none after first calculation.
-                iframe.style.pointerEvents = "auto";
-                iframe.removeEventListener("mousemove",ddCalibrate);
-            };
-
-            document.addEventListener("mousemove",ddCalibrate);
-            if (typeof self.onReady === "function") {
-                self.onReady();
-            }
+            openWidget(appData);
         });
     }
 
@@ -247,21 +239,24 @@ ozpIwc.Owf7Participant.prototype.connect=function(launchDataResource) {
  * @private
  */
 ozpIwc.Owf7Participant.prototype._getApplicationData = function(){
+    var fallbackData = {
+        icons: {
+            small: "about:blank",
+            large: "about:blank",
+            banner: "about:blank",
+            featuredBanner: "about:blank"
+        },
+        intents: [],
+        name: null
+    };
     return this.systemApi.get("/application/" + this.widgetGuid).then(function(reply){
         if(reply.entity && reply.entity.icons){
             return reply.entity;
         } else {
-            return {
-                icons: {
-                    small: "about:blank",
-                    large: "about:blank",
-                    banner: "about:blank",
-                    featuredBanner: "about:blank"
-                },
-                intents: [],
-                name: null
-            };
+            return fallbackData;
         }
+    }).catch(function(eror){
+        return fallbackData;
     });
 };
 

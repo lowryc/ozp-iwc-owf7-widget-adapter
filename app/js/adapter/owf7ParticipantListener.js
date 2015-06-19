@@ -168,8 +168,7 @@
 
         participantConfig.instanceId = config.instanceId || this.makeGuid();
         participantConfig.listener = self;
-        participantConfig.client = new ozpIwc.ClientParticipant();
-        participantConfig.intentsApi = participantConfig.client.intents();
+        participantConfig.client = this.client;
         participantConfig.rpcId = gadgets.json.stringify({id:participantConfig.instanceId});
 
 
@@ -194,7 +193,7 @@
 
             // After storing the hash, if the guid does not exist just set it as instanceId for OWF7 to not complain.
             cfg.guid = cfg.guid || cfg.instanceId;
-            cfg.listener.participants[cfg.instanceId] = new ozpIwc.Owf7Participant(cfg);
+           self.participants[cfg.instanceId] = new ozpIwc.Owf7Participant(cfg);
 
             // Add the _WIDGET_STATE_CHANNEL_<instanceId> RPC registration for the widget.
             // @see js\state\WidgetStateContainer.js:35
@@ -206,21 +205,17 @@
             return cfg.listener.participants[cfg.instanceId].connect().then(function(){
                 return cfg.listener.participants[cfg.instanceId];
             });
-        }
 
 
-        // If there was a IWC launch resource, go gather it
-        if (config.launchDataResource) {
-            participantConfig.intentsApi.get(config.launchDataResource).then(function (resp) {
-                // If the widget is refreshed, the launch resource data has been deleted.
-                if (resp && resp.entity && resp.entity.entity && typeof resp.entity.entity.id === "string") {
-                    participantConfig.guid = resp.entity.entity.id;
-                }
-                return init(participantConfig);
-            });
-        } else {
-            return init(participantConfig);
+            // If there was a IWC launch resource, go gather it
         }
+
+        console.log(JSON.stringify(config.launchData));
+        if (config.launchData) {
+            participantConfig.guid = config.launchData.id;
+            console.log(participantConfig.guid);
+        }
+        return init(participantConfig);
     };
 
     /**

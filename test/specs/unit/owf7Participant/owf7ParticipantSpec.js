@@ -18,7 +18,9 @@ describe("Owf7Participant", function() {
                                     resource: "fake"
                                 }
                             });
-                        }
+                        },
+                        'removeChild': function(){ return Promise.resolve({ action: "ok" }); },
+                        'set': function(){ return Promise.resolve({ action: "ok" }); } 
                     };
                 },
                 system: function(){

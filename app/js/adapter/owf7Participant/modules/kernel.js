@@ -114,6 +114,8 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.callEventResource = function(even
  */
 ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetReadyListener = function(){
     var self = this;
+    this.dataApi.set(this.widgetReadyResource(this.participant.instanceId),{'lifespan': "ephemeral"});
+
     this.dataApi.watch(this.widgetReadyResource(this.participant.instanceId),function(packet,done) {
         done();
         self.onWidgetReady(self.participant.instanceId);
@@ -134,7 +136,8 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetListing = function(
     });
 
     this.dataApi.addChild(this.listWidgetChannel,{
-        entity: gadgets.json.parse(this.participant.rpcId)
+        entity: gadgets.json.parse(this.participant.rpcId),
+        lifespan: "ephemeral"
     }).then(function(reply){
         self.widgetListing = reply.entity.resource;
     });
@@ -168,6 +171,10 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetWidgetReady = function(widge
                 self.onWidgetReady(widgetId);
             }
             rpc.callback(ready);
+        },function(error){
+            if(error.response === "noResource"){
+                rpc.callback(false);
+            }
         });
     }
 };
@@ -180,7 +187,8 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetWidgetReady = function(widge
 ozpIwc.owf7ParticipantModules.Kernel.prototype.onWidgetReady = function(widgetId){
     this.widgetReadyMap[widgetId] = true;
     this.dataApi.set(this.widgetReadyResource(widgetId),{
-        entity: this.widgetReadyMap[widgetId]
+        entity: this.widgetReadyMap[widgetId],
+        lifespan: "ephemeral"
     });
 
     //loop through any widgets that have reference to widgetId and send messages that widgetId widget is ready
@@ -190,7 +198,8 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onWidgetReady = function(widgetId
             var proxyHolder = proxyHolders[i];
             if (proxyHolder) {
                 this.dataApi.set(this.widgetReadyResource(proxyHolder),{
-                    entity: true
+                    entity: true,
+                    lifespan: "ephemeral"
                 });
             }
         }
@@ -207,16 +216,22 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onRegisterFunctions = function(if
     var widgetID = JSON.parse(iframeId).id;
     var self = this;
 
+
     this.dataApi.get(this.widgetProxyChannelPrefix + widgetID).then(function(reply){
-        var functionArray = Array.isArray(reply.entity) ? reply.entity : [];
+        return Array.isArray(reply.entity) ? reply.entity : [];
+    },function(error){
+        if(error.response === "noResource"){
+            return [];
+        }
+    }).then(function(functionArray){
         for(var j in functions){
             if(functionArray.indexOf(functions[j]) < 0){
                 functionArray.push(functions[j]);
             }
         }
-
         self.dataApi.set(self.widgetProxyChannelPrefix + widgetID,{
-            entity: functionArray
+            entity: functionArray,
+            lifespan: "ephemeral"
         });
     });
 };
@@ -237,10 +252,15 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetFunctions = function(widgetI
             self.proxyMap[widgetId] = [];
         }
         if (sourceWidgetId) {
-            self.proxyMap[widgetId].push(sourceWidgetId);
+            var id = JSON.parse(sourceWidgetId).id;
+            self.proxyMap[widgetId].push(id);
         }
 
         rpc.callback(reply.entity);
+    },function(error){
+        if(error.response === "noResource"){
+            rpc.callback([]);
+        }
     });
 };
 
@@ -260,7 +280,8 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCall = function(widgetI
             'functionName': functionName,
             'var_arg': var_args,
             'time': Date.now()  // slap a timestamp on to trigger change always
-        }
+        },
+        lifespan: "ephemeral"
     });
 };
 
@@ -304,7 +325,8 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallResult = function(w
             'functionName': functionName,
             'result': result,
             'time': Date.now()// slap a timestamp on to trigger change always
-        }
+        },
+        lifespan: "ephemeral"
     });
 };
 
@@ -376,7 +398,8 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onDirectMessage = function(widget
         entity:{
             message: dataToSend,
             ts: ozpIwc.util.now()
-        }
+        },
+        lifespan: "ephemeral"
     });
 };
 
@@ -439,6 +462,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onCallEvent = function(eventName,
         entity:{
             'message': payload,
             'ts': ozpIwc.util.now()
-        }
+        },
+        lifespan: "ephemeral"
     });
 };
