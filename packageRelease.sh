@@ -40,6 +40,9 @@ if [ -z "$GIT_BRANCH" ]; then
 else
 	BRANCH_NAME=${GIT_BRANCH#*/}
 fi
+# replace forward slashes with underscores
+BRANCH_NAME=`echo ${BRANCH_NAME}| sed 's,/,_,g'`
+echo "Using branch name: ${BRANCH_NAME}"
 
 # create tarfile
 if [ -z "$VERSION" ]
@@ -50,7 +53,19 @@ if [ -z "$VERSION" ]
   	eval $cmd
 
 else
-	cmd="tar -czf ${PREFIX}-${BRANCH_NAME}-${VERSION}.tar.gz ${DIR}/"
-	echo 'running cmd: ' $cmd
-	eval $cmd
+  # extract the version from the branch name and make sure it matches the
+  # version number passed in
+  BRANCH_VERSION=`echo ${BRANCH_NAME}| sed 's/tags_release_\([0-9]*\.[0-9]*\.[0-9]*\)/\1/'`
+  echo "BRANCH_VERSION: ${BRANCH_VERSION}"
+  if [ "${BRANCH_VERSION}" == "${VERSION}" ]
+  then
+    echo "Branch version and package.json version match - OK"
+    cmd="tar -czf ${PREFIX}-${BRANCH_NAME}.tar.gz ${DIR}/"
+    echo 'running cmd: ' $cmd
+    eval $cmd
+  else
+    echo "ERROR: Branch version does not match package.json version"
+    echo "Branch version: ${BRANCH_VERSION}, package.json version: ${VERSION}"
+    exit 1
+  fi
 fi
