@@ -90,6 +90,12 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromOthers=function(msg)
     var localizedEvent=this.convertToLocalCoordinates(msg);
     if(this.inIframeBounds(localizedEvent)) {
         //console.log("Received Fake mouse up at page("+localizedEvent.pageX+","+localizedEvent.pageY+")");
+	if (window.OWF) {
+	    var localId= document.getElementById(this.participant.iframe.id);
+	    var localClientRects = localId.getClientRects()[0];
+	    localizedEvent.pageX= localizedEvent.pageX + 5 - localClientRects.left; // 5 for widget border chrome
+	    localizedEvent.pageY= localizedEvent.pageY + 30 - localClientRects.top; // 30 for widget title bar chrome
+	}
         gadgets.rpc.call(this.participant.rpcId, '_fire_mouse_up', null,localizedEvent);
     } else {
         //console.log("out of page: Received Fake mouse up at page("
@@ -189,8 +195,25 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromClient=function(msg)
 ozpIwc.owf7ParticipantModules.Dd.prototype.inIframeBounds=function(location) {
     // since we normalized the coordinates, we can just check to see if they are
     // within the dimensions of the iframe.
-    return location.pageX >= 0 && location.pageX < this.participant.iframe.clientWidth &&
-        location.pageY >= 0 && location.pageY < this.participant.iframe.clientHeight;
+    if (window.OWF) {
+        // location parameter provides browser page coordinates, so convert to iframe coordinates here
+	var localEl = document.getElementById(this.participant.iframe.id);
+	var clientRect = localEl.getClientRects()[0];
+	var localX = location.pageX + 5 - clientRect.left;  // 5 for border chrome
+	var localY = location.pageY + 30 - clientRect.top;  // 30 for widget title bar chrome
+	//console.log("inIframeBounds " + localX+","+localY+"  within "+localEl.clientWidth+", "+localEl.clientHeight);
+
+	var immpb = 60;  // Iframe Mouse Move Pixel Buffer
+
+	return localX >= - immpb &&
+	    localX < localEl.clientWidth + 10 + immpb &&  // 20 for border chrome
+	    localY >= - immpb &&
+	    localY < localEl.clientHeight + 35 + immpb;  // 60 for border chrome
+    }
+    else {
+        return location.pageX >= 0 && location.pageX < this.participant.iframe.clientWidth &&
+            location.pageY >= 0 && location.pageY < this.participant.iframe.clientHeight;
+    }
 };
 
 /**
@@ -200,26 +223,39 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.inIframeBounds=function(location) {
  * @returns {Object}
  */
 ozpIwc.owf7ParticipantModules.Dd.prototype.convertToLocalCoordinates=function(msg) {
-    // translate to container coordinates
-    var rv=this.participant.listener.convertToLocalCoordinates(msg);
+    var rv={};
+    if (window.OWF) {
+        // New process reads directly off screen coordinates and the browser window position.
+	// This is much simpler than finding the page position by summing positions through
+	// the element heirarchy.
+	for(var k in msg) {
+	    rv[k]=msg[k];
+	}
+	rv.pageX = msg.screenX - this.participant.listener.xOffset;
+	rv.pageY = msg.screenY - this.participant.listener.yOffset;
+	rv.screenX = msg.screenX;
+	rv.screenY = msg.screenY;
+    } else {
+        // translate to container coordinates
+        rv=this.participant.listener.convertToLocalCoordinates(msg);
 
-    // this calculates the position of the iframe relative to the document,
-    // accounting for scrolling, padding, etc.  If we started at zero, this
-    // would be the iframe's coordinates inside the document.  Instead, we started
-    // at the mouse location relative to the adapter, which gives the location
-    // of the event inside the iframe content.
-    // http://www.kirupa.com/html5/get_element_position_using_javascript.htm
+        // this calculates the position of the iframe relative to the document,
+        // accounting for scrolling, padding, etc.  If we started at zero, this
+        // would be the iframe's coordinates inside the document.  Instead, we started
+        // at the mouse location relative to the adapter, which gives the location
+        // of the event inside the iframe content.
+        // http://www.kirupa.com/html5/get_element_position_using_javascript.htm
 
-    // should work in most browsers: http://www.quirksmode.org/dom/w3c_cssom.html#elementview
-    // IE < 7: will miscalculate by skipping ancestors that are "position:relative"
-    // IE, Opera: not work if there's a "position:fixed" in the ancestors
-    var element=this.participant.iframe;
-    while(element) {
-        rv.pageX += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-        rv.pageY += (element.offsetTop - element.scrollTop + element.clientTop);
-        element = element.offsetParent;
+        // should work in most browsers: http://www.quirksmode.org/dom/w3c_cssom.html#elementview
+        // IE < 7: will miscalculate by skipping ancestors that are "position:relative"
+        // IE, Opera: not work if there's a "position:fixed" in the ancestors
+        var element=this.participant.iframe;
+        while(element) {
+            rv.pageX += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+            rv.pageY += (element.offsetTop - element.scrollTop + element.clientTop);
+            element = element.offsetParent;
+        }
     }
-
     return rv;
 };
 

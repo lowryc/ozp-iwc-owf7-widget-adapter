@@ -130,8 +130,13 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, c
 
         // from shindig/pubsub_router.js:77
         //gadgets.rpc.call(subscriber, 'pubsub', null, channel, sender, message);
-        gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, packet.entity.newValue.sender,
-            packet.entity.newValue.message);
+        //console.log("onSubscribe entity= ", packet.entity);
+	if (packet.entity.newValue == null) {
+	    gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, null, null);
+	} else {
+	    gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, channel, packet.entity.newValue.sender,
+                packet.entity.newValue.message);
+	}
     });
 };
 
