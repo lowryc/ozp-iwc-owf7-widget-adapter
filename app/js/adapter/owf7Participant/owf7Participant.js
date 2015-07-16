@@ -216,23 +216,25 @@ ozpIwc.Owf7Participant.prototype.connect=function(launchDataResource) {
             };
             return self._getApplicationData();
         }).then(function (appData) {
-            self.appData = appData;
-            self.setWidgetTitle(self.appData.name);
-            self.iframe.setAttribute("name", JSON.stringify(self.widgetParams));
-            self.iframe.setAttribute("src", self.widgetParams.url + self.widgetQuery);
-            self.iframe.setAttribute("id", self.rpcId);
-            var iframe = document.body.appendChild(self.iframe);
+			if (!window.OWF) {
+				self.appData = appData;
+				self.setWidgetTitle(self.appData.name);
+				self.iframe.setAttribute("name", JSON.stringify(self.widgetParams));
+				self.iframe.setAttribute("src", self.widgetParams.url + self.widgetQuery);
+				self.iframe.setAttribute("id", self.rpcId);
+				var iframe = document.body.appendChild(self.iframe);
 
-            var ddCalibrate = function(){
-                // cancel out the pointerEvents= none after first calculation.
-                iframe.style.pointerEvents = "auto";
-                iframe.removeEventListener("mousemove",ddCalibrate);
-            };
+				var ddCalibrate = function(){
+					// cancel out the pointerEvents= none after first calculation.
+					iframe.style.pointerEvents = "auto";
+					iframe.removeEventListener("mousemove",ddCalibrate);
+				};
 
-            document.addEventListener("mousemove",ddCalibrate);
-            if (typeof self.onReady === "function") {
-                self.onReady();
-            }
+				document.addEventListener("mousemove",ddCalibrate);
+				if (typeof self.onReady === "function") {
+					self.onReady();
+				}
+			}
         });
     }
 
