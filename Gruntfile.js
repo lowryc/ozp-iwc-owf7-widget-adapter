@@ -166,6 +166,7 @@ module.exports = function(grunt) {
                     'git add -f dist',
                     'git commit -m "chore(release): <%= pkg.version %>"',
                     'git tag -a "<%= pkg.version %>" -m "chore(release): <%= pkg.version %>"',
+                    'git tag -a "release/<%= pkg.version %>" -m "chore(release): <%= pkg.version %>"',
                     'git push origin <% pkg.version %> --tags',
                     'git checkout master'
                 ].join('&&')
