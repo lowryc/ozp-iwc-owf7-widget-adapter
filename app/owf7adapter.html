@@ -31,10 +31,10 @@
 //            ozpIwc.acceptPostMessageParticipants=false;
 
             // CONFIG: the OZP IWC api endpoints
-            ozpIwc.apiRootUrl="api";
+            ozpIwc.apiRootUrl="/api";
             
             // CONFIG: the base for the OWF7 window.name endpoints
-            ozpIwc.owf7PrefsUrl="api/prefs";
+            ozpIwc.owf7PrefsUrl="/api/prefs";
 
         </script>
   </head>
@@ -42,7 +42,6 @@
     <script type="text/javascript" src="js/ozpIwc-bus.js"></script>
     <script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>  
     <script type="text/javascript">
-
 
         (function() {
             var params=ozpIwc.util.parseQueryParams();
@@ -57,13 +56,8 @@
                 // Add any other config params
                 config.url = params.url;
                 config.launchData = adapter.client.launchParams;
-
-                // Use a fixed delay to prevent the IWC from being overloaded with messages if refresh is held down.
-  //              window.setTimeout(function(){
-                    adapter.addWidget(config);
-    //            },500);
+                adapter.addWidget(config);
             });
-        //    console.log("Adapter: ",adapter.participants);
         })();
     </script>
   </body>

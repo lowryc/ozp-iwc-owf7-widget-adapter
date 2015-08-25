@@ -210,10 +210,8 @@
             // If there was a IWC launch resource, go gather it
         }
 
-        console.log(JSON.stringify(config.launchData));
         if (config.launchData) {
             participantConfig.guid = config.launchData.id;
-            console.log(participantConfig.guid);
         }
         return init(participantConfig);
     };
