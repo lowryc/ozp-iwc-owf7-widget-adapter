@@ -159,7 +159,7 @@ ozpIwc.Owf7Bridge.prototype._initHandlers = function(){
                 return "[service:" + rpc.s + ",from:" + rpc.f + "]:" + JSON.stringify(rpc.a);
             };
 
-            console.log("Unknown rpc " + rpcString(this));
+            ozpIwc.log.error("Unknown rpc " + rpcString(this));
         }
     };
 

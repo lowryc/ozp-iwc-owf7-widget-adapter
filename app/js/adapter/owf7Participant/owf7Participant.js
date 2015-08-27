@@ -100,7 +100,7 @@ ozpIwc.Owf7Participant=function(config) {
      * @property launchData
      * @type {Object}
      */
-    this.launchData= config.launchData || {};
+    this.launchData= config.launchData;
     /**
      * @property appData
      * @type {Object}
@@ -213,6 +213,7 @@ ozpIwc.Owf7Participant.prototype.connect=function() {
                 "containerVersion": "7.0.1-GA",
                 "owf": true,
                 "lang": "en_US",
+                "runningInOZP": true,
                 "currentTheme": {
                     "themeName": "a_default",
                     "themeContrast": "standard",

@@ -48,14 +48,27 @@
             var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
 
             var adapter=new ozpIwc.Owf7ParticipantListener();
-            adapter.client.connect().then(function(){
+            adapter.client.connect().then(function() {
 
                 // Gather any hash-stashed data pertaining to the widget
                 var config = ozpIwc.util.parseQueryParams(window.location.hash.replace("#", ""));
-
+                var tempData = params.data || {};
                 // Add any other config params
                 config.url = params.url;
-                config.launchData = adapter.client.launchParams;
+                config.launchData = windowNameParams.data || {};
+
+
+                if (typeof tempData === "string") {
+                    config.launchData = tempData;
+                } else if (Object.keys(tempData).length) {
+                    for (var i in tempData) {
+                        config.launchData[i] = tempData[i];
+                    }
+
+                } else {
+                    config.launchData = undefined;
+                }
+
                 adapter.addWidget(config);
             });
         })();

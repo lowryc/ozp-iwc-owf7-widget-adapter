@@ -256,7 +256,7 @@
             self.updateMouseCoordinates(e);
             //console.log("Adapter mousemove at ",e);
             if(self.inDrag && (e.button !== 0)) {
-                console.log("Canceling drag");
+                ozpIwc.log.info("Canceling drag");
                 self.cancelDrag();
             }
         },false);

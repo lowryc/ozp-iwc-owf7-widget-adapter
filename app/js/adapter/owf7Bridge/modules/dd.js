@@ -19,7 +19,7 @@ ozpIwc.owf7BridgeModules.dd = function(listener){
              * @param {Object} msg
              */
             '_fake_mouse_move': function (participant, msg) {
-                console.log(msg);
+                ozpIwc.log.info(msg);
                 participant.dd.onFakeMouseMoveFromClient(msg);
             },
             /**
