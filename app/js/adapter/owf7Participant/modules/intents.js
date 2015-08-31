@@ -77,6 +77,6 @@ ozpIwc.owf7ParticipantModules.Intents.prototype.onIntentsReceive=function(intent
             'dataType': intent.type
         };
 
-        gadgets.rpc.call(destWidgetId, "_intents", null, entity.senderId, intentObj, entity.entity);
+        gadgets.rpc.call(destWidgetId, "_intents", null, ifie.senderId, intentObj, entity);
     });
 };
