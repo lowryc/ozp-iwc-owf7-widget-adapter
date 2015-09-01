@@ -161,7 +161,9 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseMoveFromClient=function(ms
     //console.log("Sending mouse move", this.mouseOver, msg);
     this.lastMouseMove=now;
     this.dataApi.set(ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_fake_mouse_move"),{
-        entity: msg
+        entity: msg,
+        lifespan: "ephemeral"
+
     });
 };
 
@@ -176,7 +178,8 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromClient=function(msg)
     // do any modification
     //console.log("sending rpc msg to client: _fake_mouse_up");
     this.dataApi.set(ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_fake_mouse_up"),{
-        entity: msg
+        entity: msg,
+        lifespan: "ephemeral"
     });
 };
 

@@ -50,6 +50,7 @@ ozpIwc.owf7ParticipantModules.Util.prototype.onOzoneLog=function(msg) {
         entity: {
             message: msg,
             ts: ozpIwc.util.now() // to make every packet trigger "changed"
-        }
+        },
+        lifespan: "ephemeral"
     });
 };

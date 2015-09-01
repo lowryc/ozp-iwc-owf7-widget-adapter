@@ -223,7 +223,8 @@
     ozpIwc.Owf7ParticipantListener.prototype.cancelDrag=function() {
         this.inDrag=false;
         this.dataApi.set(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
-            "entity": Date.now()  // ignored, but changes the value to trigger watches
+            "entity": Date.now(),  // ignored, but changes the value to trigger watches
+            lifespan: "ephemeral"
         });
     };
 
