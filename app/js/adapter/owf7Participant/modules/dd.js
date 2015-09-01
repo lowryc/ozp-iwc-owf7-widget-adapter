@@ -326,7 +326,8 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInWidget=function
 ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragSendData=function(message) {
     //console.log("Setting drag data to ",message);
     this.dataApi.set(ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_dragSendData_value"),{
-            "entity":message
+            "entity":message,
+            "lifespan": "ephemeral"
         });
     return false;
 };
@@ -353,7 +354,8 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function
         window.setTimeout(function(){
             if(self.participant.listener.inDrag){
                 self.dataApi.set(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
-                    "entity": Date.now()  // ignored, but changes the value to trigger watches
+                    "entity": Date.now(),  // ignored, but changes the value to trigger watches
+                    "lifespan": "ephemeral"
                 });
             }
         },250);
@@ -369,7 +371,8 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function
         // is this duplicative of the same event in _fake_mouse_up?
 
         self.dataApi.set(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
-            "entity": Date.now()  // ignored, but changes the value to trigger watches
+            "entity": Date.now() , // ignored, but changes the value to trigger watches
+            "lifespan": "ephemeral"
         });
     });
 
