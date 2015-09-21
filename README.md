@@ -3,6 +3,13 @@ ozp-iwc-owf7-widget-adapter
 
 This allows an existing OWF 7 widget to "ride on top" of the OZP IWC bus.
 
+The recommended approach for migrating OWF applications to OZP/IWC is to refactor the application to use IWC directly and skip the legacy adapter entirely. There are only two scenarios that warrant use of the Legacy Adapter:
+
+1. You have an immediate need to shut down your existing OWF infrastructure (and replacing it with OZP infrastructure is an option)
+
+2. There are new OZP/IWC applications using (IWC) intents that your OWF application needs to communicate with as soon as possible (e.g. it will take several months to refactor your OWF application to use IWC and it needs to be working with existing IWC applications using Intents in the meantime)
+
+
 ## OWF 7 API support
 See IWC-Mapped Actions.xlsx for details.
 
