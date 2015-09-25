@@ -1,15 +1,16 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7BridgeModules = ozpIwc.owf7BridgeModules  || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.bridgeModules = ozpIwc.owf7.bridgeModules || {};
 
 /**
  * A Factory function for the owf7 'eventing' rpc handlers.
- * @namespace ozpIwc.owf7BridgeModules
+ * @namespace ozpIwc.owf7.bridgeModules
  * @method eventing
  * @param {Object} listener The listener to generate the functions for.
  * @returns {Object}
  */
-ozpIwc.owf7BridgeModules.eventing = function(listener){
-    if(!listener) { throw "Needs to have an Owf7ParticipantListener";}
+ozpIwc.owf7.bridgeModules.eventing = function(listener){
+    if(!listener) { throw "Needs to have an owf7 ParticipantListener";}
     return {
         'eventing': {
             /**
@@ -17,7 +18,7 @@ ozpIwc.owf7BridgeModules.eventing = function(listener){
              * @see js/eventing/Container.js:26 for the containerInit function that much of this is copied from
              * @see js/eventing/Container.js:104 for the actual rpc.register
              * @property container_init
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {String} sender
              * @param {String} message
              */
@@ -25,7 +26,7 @@ ozpIwc.owf7BridgeModules.eventing = function(listener){
                 participant.eventing.onContainerInit(sender, message);
             },
             /**
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {String} command - publish | subscribe | unsubscribe
              * @param {String} channel - the OWF7 channel
              * @param {String} message - the message being published

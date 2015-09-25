@@ -1,19 +1,20 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7ParticipantModules = ozpIwc.owf7ParticipantModules || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.participantModules = ozpIwc.owf7.participantModules || {};
 
 /**
  * A drag and drop module for the owf7Participant.
  * @class Dd
- * @namespace ozpIwc.owf7ParticipantModules
- * @param {ozpIwc.Owf7Participant} participant
+ * @namespace ozpIwc.owf7.participantModules
+ * @param {ozpIwc.owf7.Participant} participant
  * @constructor
  */
-ozpIwc.owf7ParticipantModules.Dd = function(participant){
+ozpIwc.owf7.participantModules.Dd = function(participant){
     if(!participant) { throw "Needs to have an Owf7Participant";}
 
     /**
      * @property participant
-     * @type {ozpIwc.Owf7Participant}
+     * @type {ozpIwc.owf7.Participant}
      */
     this.participant = participant;
 
@@ -62,7 +63,7 @@ ozpIwc.owf7ParticipantModules.Dd = function(participant){
  * @param {String} channel
  * @returns {String}
  */
-ozpIwc.owf7ParticipantModules.Dd.rpcChannel=function(channel) {
+ozpIwc.owf7.participantModules.Dd.rpcChannel=function(channel) {
     return "/owf-legacy/gadgetsRpc/"+channel;
 };
 
@@ -70,12 +71,12 @@ ozpIwc.owf7ParticipantModules.Dd.rpcChannel=function(channel) {
  * Uses the data.api watch capabilities to receive drag and drop events from other legacy widgets.
  * @method registerDragAndDrop
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.registerDragAndDrop=function() {
+ozpIwc.owf7.participantModules.Dd.prototype.registerDragAndDrop=function() {
     var self=this;
-    this.dataApi.watch(ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_fake_mouse_up"), function(packet) {
+    this.dataApi.watch(ozpIwc.owf7.participantModules.Dd.rpcChannel("_fake_mouse_up"), function(packet) {
         self.onFakeMouseUpFromOthers(packet.entity.newValue);
     });
-    this.dataApi.watch(ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_fake_mouse_move"), function(packet) {
+    this.dataApi.watch(ozpIwc.owf7.participantModules.Dd.rpcChannel("_fake_mouse_move"), function(packet) {
         self.onFakeMouseMoveFromOthers(packet.entity.newValue);
     });
 };
@@ -86,7 +87,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.registerDragAndDrop=function() {
  * @method onFakeMouseUpFromOthers
  * @param {MouseEvent} msg
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromOthers=function(msg) {
+ozpIwc.owf7.participantModules.Dd.prototype.onFakeMouseUpFromOthers=function(msg) {
     var localizedEvent=this.convertToLocalCoordinates(msg);
     if(this.inIframeBounds(localizedEvent)) {
         //console.log("Received Fake mouse up at page("+localizedEvent.pageX+","+localizedEvent.pageY+")");
@@ -100,7 +101,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromOthers=function(msg)
         // TODO: not sure if the cancel goes here
         //this.participant.client.send({
         //    "dst": "data.api",
-        //    "resource": ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
+        //    "resource": ozpIwc.owf7.participantModules.Eventing.pubsubChannel("_dragStopInContainer"),
         //    "action": "set",
         //    "entity": msg  // ignored, but changes the value to trigger watches
         //});
@@ -113,7 +114,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromOthers=function(msg)
  * @method onFakeMouseMoveFromOthers
  * @param {MouseEvent} msg
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseMoveFromOthers=function(msg) {
+ozpIwc.owf7.participantModules.Dd.prototype.onFakeMouseMoveFromOthers=function(msg) {
     if(!("screenX" in msg && "screenY" in msg)) {
         return;
     }
@@ -143,7 +144,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseMoveFromOthers=function(ms
  * @method onFakeMouseMoveFromClient
  * @param {MouseEvent} msg
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseMoveFromClient=function(msg) {
+ozpIwc.owf7.participantModules.Dd.prototype.onFakeMouseMoveFromClient=function(msg) {
     // originally translated the pageX/pageY to container coordinates.  With
     // the adapter, we're translating from screen coordinates so don't need to
     // do any modification
@@ -160,7 +161,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseMoveFromClient=function(ms
 
     //console.log("Sending mouse move", this.mouseOver, msg);
     this.lastMouseMove=now;
-    this.dataApi.set(ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_fake_mouse_move"),{
+    this.dataApi.set(ozpIwc.owf7.participantModules.Dd.rpcChannel("_fake_mouse_move"),{
         entity: msg,
         lifespan: "ephemeral"
 
@@ -172,12 +173,12 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseMoveFromClient=function(ms
  * @method onFakeMouseUpFromClient
  * @param {MouseEvent} msg
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromClient=function(msg) {
+ozpIwc.owf7.participantModules.Dd.prototype.onFakeMouseUpFromClient=function(msg) {
     // originally translated the pageX/pageY to container coordinates.  With
     // the adapter, we're translating from screen coordinates so don't need to
     // do any modification
     //console.log("sending rpc msg to client: _fake_mouse_up");
-    this.dataApi.set(ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_fake_mouse_up"),{
+    this.dataApi.set(ozpIwc.owf7.participantModules.Dd.rpcChannel("_fake_mouse_up"),{
         entity: msg,
         lifespan: "ephemeral"
     });
@@ -189,7 +190,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.onFakeMouseUpFromClient=function(msg)
  * @param {MouseEvent} location
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.inIframeBounds=function(location) {
+ozpIwc.owf7.participantModules.Dd.prototype.inIframeBounds=function(location) {
     // since we normalized the coordinates, we can just check to see if they are
     // within the dimensions of the iframe.
     return location.pageX >= 0 && location.pageX < this.participant.iframe.clientWidth &&
@@ -202,7 +203,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.inIframeBounds=function(location) {
  * @param {Object} msg A drag and drop message.
  * @returns {Object}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.convertToLocalCoordinates=function(msg) {
+ozpIwc.owf7.participantModules.Dd.prototype.convertToLocalCoordinates=function(msg) {
     // translate to container coordinates
     var rv=this.participant.listener.convertToLocalCoordinates(msg);
 
@@ -240,35 +241,35 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.convertToLocalCoordinates=function(ms
  * @method hookPublish_dragOutName
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragOutName=function() {return false;};
+ozpIwc.owf7.participantModules.Dd.prototype.hookPublish_dragOutName=function() {return false;};
 
 /**
  * Cancels the publish, since these should originate from the container, not widgets
  * @method hookPublish_dropReceiveData
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dropReceiveData=function() { return false; };
+ozpIwc.owf7.participantModules.Dd.prototype.hookPublish_dropReceiveData=function() { return false; };
 
 /**
  * Cancels the receive, since these should not originate from outside the adapter
  * @method hookReceive_dragSendData
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragSendData=function() { return false;};
+ozpIwc.owf7.participantModules.Dd.prototype.hookReceive_dragSendData=function() { return false;};
 
 /**
  * Cancels the receive, since these should not originate from outside the adapter
  * @method hookReceive_dragOutName
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragOutName=function() { return false;};
+ozpIwc.owf7.participantModules.Dd.prototype.hookReceive_dragOutName=function() { return false;};
 
 /**
  * Cancels the receive, since these should not originate from outside the adapter
  * @method hookReceive_dropReceiveData
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dropReceiveData=function() { return false; };
+ozpIwc.owf7.participantModules.Dd.prototype.hookReceive_dropReceiveData=function() { return false; };
 
 
 /**
@@ -277,7 +278,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dropReceiveData=function(
  * @param {Object} message
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStart=function(message) {
+ozpIwc.owf7.participantModules.Dd.prototype.hookReceive_dragStart=function(message) {
     //console.log("Starting external drag on ",message);
     this.participant.listener.inDrag=true;
     return true;
@@ -289,7 +290,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStart=function(messag
  * @param {Object} message
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStart=function(message) {
+ozpIwc.owf7.participantModules.Dd.prototype.hookPublish_dragStart=function(message) {
     //console.log("Starting internal drag on ",message);
     this.participant.listener.inDrag=true;
     return true;
@@ -300,7 +301,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStart=function(messag
  * @method hookReceive_dragStopInContainer
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInContainer=function(msg) {
+ozpIwc.owf7.participantModules.Dd.prototype.hookReceive_dragStopInContainer=function(msg) {
     //console.log("Stopping drag in container",msg);
     this.participant.listener.inDrag=false;
     return true;
@@ -311,7 +312,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInContainer=funct
  * @method hookReceive_dragStopInWidget
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInWidget=function() {
+ozpIwc.owf7.participantModules.Dd.prototype.hookReceive_dragStopInWidget=function() {
     //console.log("Stopping drag in widget");
     this.participant.listener.inDrag=false;
     return true;
@@ -323,9 +324,9 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookReceive_dragStopInWidget=function
  * @param {Object} message
  * @returns {Boolean}
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragSendData=function(message) {
+ozpIwc.owf7.participantModules.Dd.prototype.hookPublish_dragSendData=function(message) {
     //console.log("Setting drag data to ",message);
-    this.dataApi.set(ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_dragSendData_value"),{
+    this.dataApi.set(ozpIwc.owf7.participantModules.Dd.rpcChannel("_dragSendData_value"),{
             "entity":message,
             "lifespan": "ephemeral"
         });
@@ -338,7 +339,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragSendData=function(mes
  * @param {Object} message
  * @returns {Boolean} true if stopped in this widget, false if not.
  */
-ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function(message) {
+ozpIwc.owf7.participantModules.Dd.prototype.hookPublish_dragStopInWidget=function(message) {
     // this always published from the widget that initiated the drag
     // so we need to figure out who to send it to
 
@@ -353,7 +354,7 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function
         //wait 1/4 second, see if someone canceled/handled the drag if not cancel it
         window.setTimeout(function(){
             if(self.participant.listener.inDrag){
-                self.dataApi.set(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
+                self.dataApi.set(ozpIwc.owf7.participantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
                     "entity": Date.now(),  // ignored, but changes the value to trigger watches
                     "lifespan": "ephemeral"
                 });
@@ -363,14 +364,14 @@ ozpIwc.owf7ParticipantModules.Dd.prototype.hookPublish_dragStopInWidget=function
         return false;
     }
     // this widget claims the drag, give it the drag data
-    this.dataApi.get(ozpIwc.owf7ParticipantModules.Dd.rpcChannel("_dragSendData_value")).then(function(packet) {
+    this.dataApi.get(ozpIwc.owf7.participantModules.Dd.rpcChannel("_dragSendData_value")).then(function(packet) {
         gadgets.rpc.call(self.participant.rpcId, 'pubsub', null, "_dropReceiveData", "..", packet.entity);
         // tell everyone else that the container took over the drag
         // also handles the case where the we couldn't get the dragData for some reason by
         // canceling the whole drag operation
         // is this duplicative of the same event in _fake_mouse_up?
 
-        self.dataApi.set(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
+        self.dataApi.set(ozpIwc.owf7.participantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
             "entity": Date.now() , // ignored, but changes the value to trigger watches
             "lifespan": "ephemeral"
         });

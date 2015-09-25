@@ -11,7 +11,7 @@ describe("Listener Eventing Bridging", function() {
     }
 
     beforeEach(function(){
-        listener = new ozpIwc.Owf7ParticipantListener();
+        listener = new ozpIwc.owf7.ParticipantListener();
         listenerHandlers = listener.bridge.funcs.eventing;
 
         //Stub a fake participant to spy on bridged handlers
@@ -24,15 +24,15 @@ describe("Listener Eventing Bridging", function() {
         fakeParticipantHandlers = fakeParticipant.eventing;
     });
 
-    it("Requires an Owf7ParticipantListener",function(){
+    it("Requires an owf7 ParticipantListener",function(){
         try{
-            ozpIwc.owf7BridgeModules.eventing();
+            ozpIwc.owf7.bridgeModules.eventing();
         } catch (e){
-            expect(e).toEqual("Needs to have an Owf7ParticipantListener");
+            expect(e).toEqual("Needs to have an owf7 ParticipantListener");
         }
 
         try {
-            ozpIwc.owf7BridgeModules.eventing(listener);
+            ozpIwc.owf7.bridgeModules.eventing(listener);
         } catch(e){
             expect("not to happen").toEqual("true");
         }

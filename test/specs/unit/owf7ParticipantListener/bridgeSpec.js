@@ -7,26 +7,26 @@ describe("Bridge", function() {
             outObj[name] = fn;
         };
 
-        ozpIwc.Owf7Bridge.functionsInObjects({
+        ozpIwc.owf7.Bridge.functionsInObjects({
             'inObj': object,
             'outObj': this.funcs,
             'onFn':onFunction
         });
     };
     var init = function (){
-        listener = new ozpIwc.Owf7ParticipantListener({
+        listener = new ozpIwc.owf7.ParticipantListener({
             xOffset: 1,
             yOffset: 1,
             bridge: {}    // don't instantiate the bridge for test purposes.
         });
 
-        bridge = new ozpIwc.Owf7Bridge({listener: listener});
+        bridge = new ozpIwc.owf7.Bridge({listener: listener});
 
         // assign the bridge to the listener
         listener.bridge = bridge;
 
         functions = listener.bridge.funcs;
-        spyOn(ozpIwc.Owf7Bridge.prototype,"_registerFunctions").and.callFake(fakedRegistration);
+        spyOn(ozpIwc.owf7.Bridge.prototype,"_registerFunctions").and.callFake(fakedRegistration);
     };
 
     var destruct = function(){
@@ -66,7 +66,7 @@ describe("Bridge", function() {
                var onFn = function(outObj,fn,name){
                   fnArray.push(name);
                };
-               ozpIwc.Owf7Bridge.functionsInObjects({
+               ozpIwc.owf7.Bridge.functionsInObjects({
                    'inObj':obj,
                    'onFn': onFn
                });
@@ -81,7 +81,7 @@ describe("Bridge", function() {
                    outObj[name] = fn;
                };
 
-               ozpIwc.Owf7Bridge.functionsInObjects({
+               ozpIwc.owf7.Bridge.functionsInObjects({
                    'inObj':obj,
                    'outObj': foo,
                    'onFn': onFn
@@ -113,7 +113,7 @@ describe("Bridge", function() {
                    delete outObj[name];
                };
 
-               ozpIwc.Owf7Bridge.functionsInObjects({
+               ozpIwc.owf7.Bridge.functionsInObjects({
                    'inObj':obj,
                    'outObj': foo,
                    'onFn': onFn
@@ -132,7 +132,7 @@ describe("Bridge", function() {
                    outObj[name] = fn;
                };
 
-               var buzz = ozpIwc.Owf7Bridge.functionsInObjects({
+               var buzz = ozpIwc.owf7.Bridge.functionsInObjects({
                    'inObj':obj,
                    'outObj': foo,
                    'onFn': onFn
@@ -149,7 +149,7 @@ describe("Bridge", function() {
                 }
             };
             it("places any root-level functions in uncategorized",function(){
-                var out = ozpIwc.Owf7Bridge.objectCategoryFormat(obj);
+                var out = ozpIwc.owf7.Bridge.objectCategoryFormat(obj);
                 expect(out.func1).not.toBeDefined();
                 expect(out.uncategorized.func1).toBeDefined();
                 expect(out.a.func2).toBeDefined();
@@ -157,7 +157,7 @@ describe("Bridge", function() {
             });
 
             it("does not manipulate the original object",function(){
-                ozpIwc.Owf7Bridge.objectCategoryFormat(obj);
+                ozpIwc.owf7.Bridge.objectCategoryFormat(obj);
                 expect(obj.func1).toBeDefined();
             });
 
@@ -168,9 +168,9 @@ describe("Bridge", function() {
     describe("instantiation",function(){
         it("requires a listener when instantiating",function(){
             try{
-                new ozpIwc.Owf7Bridge();
+                new ozpIwc.owf7.Bridge();
             } catch (e) {
-                expect(e).toEqual(ozpIwc.Owf7Bridge.prototype._noListener_err);
+                expect(e).toEqual(ozpIwc.owf7.Bridge.prototype._noListener_err);
             }
         });
 
@@ -194,7 +194,7 @@ describe("Bridge", function() {
                 }
             };
 
-            bridge = new ozpIwc.Owf7Bridge({
+            bridge = new ozpIwc.owf7.Bridge({
                 listener: listener,
                 funcs: funcs
             });

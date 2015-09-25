@@ -1,19 +1,20 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7ParticipantModules = ozpIwc.owf7ParticipantModules || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.participantModules = ozpIwc.owf7.participantModules || {};
 
 /**
  * An Intents module for the owf7Participant.
- * @namespace ozpIwc.owf7ParticipantModules
+ * @namespace ozpIwc.owf7.participantModules
  * @class Intents
- * @param {ozpIwc.Owf7Participant} participant
+ * @param {ozpIwc.owf7.Participant} participant
  * @constructor
  */
-ozpIwc.owf7ParticipantModules.Intents = function(participant){
+ozpIwc.owf7.participantModules.Intents = function(participant){
     if(!participant) { throw "Needs to have an Owf7Participant";}
 
     /**
      * @property participant
-     * @type {ozpIwc.Owf7Participant}
+     * @type {ozpIwc.owf7.Participant}
      */
     this.participant = participant;
 
@@ -35,7 +36,7 @@ ozpIwc.owf7ParticipantModules.Intents = function(participant){
  * @param {String[]} destIds
  * @param {Object} rpc
  */
-ozpIwc.owf7ParticipantModules.Intents.prototype.onIntents=function(senderId,intent,data,destIds,rpc){
+ozpIwc.owf7.participantModules.Intents.prototype.onIntents=function(senderId,intent,data,destIds,rpc){
     intent = intent || {};
     if(!intent.dataType) { throw "A legacy intent registration requires a dataType.";}
     if(!intent.action) { throw "A legacy intent registration requires an action.";}
@@ -55,7 +56,7 @@ ozpIwc.owf7ParticipantModules.Intents.prototype.onIntents=function(senderId,inte
  * @param {Object} intent
  * @param {String} destWidgetId
  */
-ozpIwc.owf7ParticipantModules.Intents.prototype.onIntentsReceive=function(intent,destWidgetId) {
+ozpIwc.owf7.participantModules.Intents.prototype.onIntentsReceive=function(intent,destWidgetId) {
     intent = intent || {};
     if(!intent.dataType) { throw "A legacy intent registration requires a dataType.";}
     if(!intent.action) { throw "A legacy intent registration requires an action.";}

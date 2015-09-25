@@ -1,21 +1,22 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7BridgeModules = ozpIwc.owf7BridgeModules  || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.bridgeModules = ozpIwc.owf7.bridgeModules || {};
 
 /**
  * A Factory function for the owf7 'drag and drop' rpc handlers.
- * @namespace ozpIwc.owf7BridgeModules
+ * @namespace ozpIwc.owf7.bridgeModules
  * @method dd
  * @param {Object} listener The listener to generate the functions for.
  * @returns {Object}
  */
-ozpIwc.owf7BridgeModules.dd = function(listener){
-    if(!listener) { throw "Needs to have an Owf7ParticipantListener";}
+ozpIwc.owf7.bridgeModules.dd = function(listener){
+    if(!listener) { throw "Needs to have an owf7 ParticipantListener";}
     return {
         'dd': {
             /**
              * _fake_mouse_move is needed for drag and drop.  The container code is at
              * @see reference\js\dd\WidgetDragAndDropContainer.js:52
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {Object} msg
              */
             '_fake_mouse_move': function (participant, msg) {
@@ -24,7 +25,7 @@ ozpIwc.owf7BridgeModules.dd = function(listener){
             },
             /**
              * @see reference\js\dd\WidgetDragAndDropContainer.js:52
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {Object} msg
              */
             '_fake_mouse_up': function (participant, msg) {

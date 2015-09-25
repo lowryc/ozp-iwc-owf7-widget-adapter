@@ -1,21 +1,22 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7BridgeModules = ozpIwc.owf7BridgeModules  || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.bridgeModules = ozpIwc.owf7.bridgeModules || {};
 
 /**
  * A Factory function for the owf7 'components' rpc handlers.
- * @namespace ozpIwc.owf7BridgeModules
+ * @namespace ozpIwc.owf7.bridgeModules
  * @method components
  * @param {Object} listener The listener to generate the functions for.
  * @returns {Object}
  */
-ozpIwc.owf7BridgeModules.components = function(listener){
-    if(!listener) { throw "Needs to have an Owf7ParticipantListener";}
+ozpIwc.owf7.bridgeModules.components = function(listener){
+    if(!listener) { throw "Needs to have an owf7 ParticipantListener";}
     return {
         'components': {
             'keys': {
                 /**
                  * @see reference/js/components/keys/KeyEventing.js
-                 * @param {ozpIwc.Owf7Participant} participant
+                 * @param {ozpIwc.owf7.Participant} participant
                  */
                 '_widget_iframe_ready': function (participant) {
 
@@ -41,7 +42,7 @@ ozpIwc.owf7BridgeModules.components = function(listener){
                  *  @see js/components/dashboard/Dashboard.js:318
                  *  @see js\eventing\Container.js:237 for getIframeProperties()
                  * @see js\components\widget\WidgetIframeComponent.js:15
-                 * @param {ozpIwc.Owf7Participant} participant
+                 * @param {ozpIwc.owf7.Participant} participant
                  * @param {String} sender
                  * @param {String} msg
                  */

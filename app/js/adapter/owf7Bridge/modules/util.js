@@ -1,12 +1,13 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7BridgeModules = ozpIwc.owf7BridgeModules  || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.bridgeModules = ozpIwc.owf7.bridgeModules || {};
 
-ozpIwc.owf7BridgeModules.util = function(listener){
-    if(!listener) { throw "Needs to have an Owf7ParticipantListener";}
+ozpIwc.owf7.bridgeModules.util = function(listener){
+    if(!listener) { throw "Needs to have an owf7 ParticipantListener";}
     return {
         'util': {
             /**
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {*} msg
              */
             'Ozone.log': function(participant,msg) {
