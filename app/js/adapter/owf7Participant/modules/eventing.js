@@ -1,19 +1,20 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7ParticipantModules = ozpIwc.owf7ParticipantModules || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.participantModules = ozpIwc.owf7.participantModules || {};
 
 /**
  * An Eventing module for the owf7Participant. Retains knowledge of pubsub subscriptions.
- * @namespace ozpIwc.owf7ParticipantModules
+ * @namespace ozpIwc.owf7.participantModules
  * @class Eventing
- * @param {ozpIwc.Owf7Participant} participant
- * @param {ozpIwc.owf7ParticipantModules.Dd} participant.dd
+ * @param {ozpIwc.owf7.Participant} participant
+ * @param {ozpIwc.owf7.participantModules.Dd} participant.dd
  * @constructor
  */
-ozpIwc.owf7ParticipantModules.Eventing = function(participant){
+ozpIwc.owf7.participantModules.Eventing = function(participant){
     if(!participant) { throw "Needs to have an OWF7Participant";}
     /**
      * @property participant
-     * @type {ozpIwc.Owf7Participant}
+     * @type {ozpIwc.owf7.Participant}
      */
     this.participant = participant;
     this.participant.dd = this.participant.dd || {};
@@ -39,7 +40,7 @@ ozpIwc.owf7ParticipantModules.Eventing = function(participant){
  * @param {String} channel
  * @returns {String}
  */
-ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel=function(channel) {
+ozpIwc.owf7.participantModules.Eventing.pubsubChannel=function(channel) {
     return "/owf-legacy/eventing/"+channel;
 };
 
@@ -49,7 +50,7 @@ ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel=function(channel) {
  * @param {String} sender
  * @param {String} message
  */
-ozpIwc.owf7ParticipantModules.Eventing.prototype.onContainerInit=function(sender,message) {
+ozpIwc.owf7.participantModules.Eventing.prototype.onContainerInit=function(sender,message) {
     // The container sends params, but the widget JS ignores them
     if ((window.name === "undefined") || (window.name === "")) {
         window.name = "ContainerWindowName" + Math.random();
@@ -72,7 +73,7 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onContainerInit=function(sender
  * @param {String} message
  * @param {String} dest
  */
-ozpIwc.owf7ParticipantModules.Eventing.prototype.onPubsub = function(command,channel,message,dest,sender){
+ozpIwc.owf7.participantModules.Eventing.prototype.onPubsub = function(command,channel,message,dest,sender){
     switch (command) {
         case 'publish':
             this.onPublish(command, channel, message, dest, sender);
@@ -94,11 +95,11 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onPubsub = function(command,cha
  * @param {String} message
  * @param {String} dest
  */
-ozpIwc.owf7ParticipantModules.Eventing.prototype.onPublish=function(command, channel, message, dest, sender) {
+ozpIwc.owf7.participantModules.Eventing.prototype.onPublish=function(command, channel, message, dest, sender) {
     if(this.participant.dd["hookPublish"+channel] && !this.participant.dd["hookPublish"+channel].call(this.participant.dd,message)) {
         return;
     }
-    this.dataApi.set(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel(channel),{
+    this.dataApi.set(ozpIwc.owf7.participantModules.Eventing.pubsubChannel(channel),{
         "entity": {
             "message": message,
             "sender": sender
@@ -115,12 +116,12 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onPublish=function(command, cha
  * @param {String} message
  * @param {String} dest
  */
-ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, channel, message, dest) {
+ozpIwc.owf7.participantModules.Eventing.prototype.onSubscribe=function(command, channel, message, dest) {
     this.subscriptions[channel]=this.subscriptions[channel] || {};
 
     var self = this;
 
-    this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel(channel),{"lifespan": "ephemeral"},
+    this.dataApi.watch(ozpIwc.owf7.participantModules.Eventing.pubsubChannel(channel),{"lifespan": "ephemeral"},
         function(packet,done) {
             //Add the msgId to a list of handlers to unregister should unsubscribe be fired.
             self.subscriptions[channel] = self.subscriptions[channel] || {};
@@ -145,7 +146,7 @@ ozpIwc.owf7ParticipantModules.Eventing.prototype.onSubscribe=function(command, c
  * @param {String} message
  * @param {String} dest
  */
-ozpIwc.owf7ParticipantModules.Eventing.prototype.onUnsubscribe=function(command, channel, message, dest) {
+ozpIwc.owf7.participantModules.Eventing.prototype.onUnsubscribe=function(command, channel, message, dest) {
     this.subscriptions[channel] = this.subscriptions[channel] || [];
     //itterate over all the done flags and cancel the callbacks.
     for(var i in this.subscriptions[channel]) {

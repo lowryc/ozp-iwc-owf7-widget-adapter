@@ -66,7 +66,7 @@ var participantCallTest = function(config){
     });
 };
 var initTestListener = function (){
-    var listener = new ozpIwc.Owf7ParticipantListener({
+    var listener = new ozpIwc.owf7.ParticipantListener({
         xOffset: 1,
         yOffset: 1
     });

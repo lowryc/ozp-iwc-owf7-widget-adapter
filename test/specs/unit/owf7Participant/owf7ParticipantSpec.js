@@ -3,7 +3,7 @@ describe("Owf7Participant", function() {
 
     beforeEach(function(done){
 
-        participant = new ozpIwc.Owf7Participant({
+        participant = new ozpIwc.owf7.Participant({
             url: "http://www.testhost.com/test/path/name.html",
             rpcId: "fake",
             instanceId: "fake",

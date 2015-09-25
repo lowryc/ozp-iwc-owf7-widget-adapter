@@ -1,10 +1,13 @@
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+
 /**
- * @class Owf7Participant
+ * @class Participant
  * @constructor
- * @namespace ozpIwc
+ * @namespace ozpIwc.owf7
  * @param {Object} config
  * @param {Object} config.iframe The iframe that contains the widget for this participant
- * @param {Object} config.listener The parent OWF7ParticipantListener
+ * @param {Object} config.listener The parent owf7 ParticipantListener
  * @param {Object} config.client The InternalParticipant for this widget.
  * @param {String} config.guid The GUID for the widget that this is an instance of.
  * @param {String} config.instanceId The GUID for the widget instance.
@@ -13,9 +16,9 @@
  * @param {String} [config.launchDataResource=undefined] The intents.api resource that contains the launch data for the widget, or null for no launch data.
  * @param {Boolean} [config.externalInit=false] Set to true if the iframe has been initialized elsewhere, such as when embedded in OWF 7.
  */
-ozpIwc.Owf7Participant=function(config) {
+ozpIwc.owf7.Participant=function(config) {
     config = config || {};
-    if(!config.listener) { throw "Needs to have an OWF7ParticipantListener";}
+    if(!config.listener) { throw "Needs to have an owf7 ParticipantListener";}
     if(!config.client) {throw "Needs an IWC Client";}
     if(!config.guid) { throw "Must be assigned a guid for this widget";}
     if(!config.instanceId) { throw "Needs an widget instance id";}
@@ -32,14 +35,14 @@ ozpIwc.Owf7Participant=function(config) {
     /**
      * The listener this participant is connected to.
      * @property listener
-     * @type {ozpIwc.Owf7ParticipantListener}
+     * @type {ozpIwc.owf7.ParticipantListener}
      */
     this.listener=config.listener;
 
     /**
      * The client participant this uses to communicate on the bus.
      * @property client
-     * @type {ozpIwc.ClientParticipant}
+     * @type {ozpIwc.transport.participant.Client}
      */
     this.client=config.client;
 
@@ -123,48 +126,48 @@ ozpIwc.Owf7Participant=function(config) {
  * @method initModules
  * @private
  */
-ozpIwc.Owf7Participant.prototype._initModules = function(){
+ozpIwc.owf7.Participant.prototype._initModules = function(){
     /**
      * Drag and Drop module of the participant.
      * @property dd
-     * @type {ozpIwc.owf7ParticipantModules.Dd}
+     * @type {ozpIwc.owf7.participantModules.Dd}
      */
-    this.dd = new ozpIwc.owf7ParticipantModules.Dd(this);
+    this.dd = new ozpIwc.owf7.participantModules.Dd(this);
 
     /**
      * Eventing module of the participant.
      * @property eventing
-     * @type {ozpIwc.owf7ParticipantModules.Eventing}
+     * @type {ozpIwc.owf7.participantModules.Eventing}
      */
-    this.eventing = new ozpIwc.owf7ParticipantModules.Eventing(this);
+    this.eventing = new ozpIwc.owf7.participantModules.Eventing(this);
 
     /**
      * Kernel module of the participant.
      * @property kernel
-     * @type {ozpIwc.owf7ParticipantModules.Kernel}
+     * @type {ozpIwc.owf7.participantModules.Kernel}
      */
-    this.kernel = new ozpIwc.owf7ParticipantModules.Kernel(this);
+    this.kernel = new ozpIwc.owf7.participantModules.Kernel(this);
 
     /**
      * Components module of the participant.
      * @property components
-     * @type {ozpIwc.owf7ParticipantModules.Components}
+     * @type {ozpIwc.owf7.participantModules.Components}
      */
-    this.components = new ozpIwc.owf7ParticipantModules.Components(this);
+    this.components = new ozpIwc.owf7.participantModules.Components(this);
 
     /**
      * Intents module of the participant.
      * @property intents
-     * @type {ozpIwc.owf7ParticipantModules.Intents}
+     * @type {ozpIwc.owf7.participantModules.Intents}
      */
-    this.intents = new ozpIwc.owf7ParticipantModules.Intents(this);
+    this.intents = new ozpIwc.owf7.participantModules.Intents(this);
 
     /**
      * Util module of the participant.
      * @property util
-     * @type {ozpIwc.owf7ParticipantModules.Intents}
+     * @type {ozpIwc.owf7.participantModules.Intents}
      */
-    this.util = new ozpIwc.owf7ParticipantModules.Util(this);
+    this.util = new ozpIwc.owf7.participantModules.Util(this);
 };
 
 /**
@@ -172,7 +175,7 @@ ozpIwc.Owf7Participant.prototype._initModules = function(){
  * @method initIframe
  * @private
  */
-ozpIwc.Owf7Participant.prototype.connect=function() {
+ozpIwc.owf7.Participant.prototype.connect=function() {
     if(!this.connectPromise) {
         var self = this;
         var openWidget = function(appData){
@@ -239,7 +242,7 @@ ozpIwc.Owf7Participant.prototype.connect=function() {
  * @returns {Promise}
  * @private
  */
-ozpIwc.Owf7Participant.prototype._getApplicationData = function(){
+ozpIwc.owf7.Participant.prototype._getApplicationData = function(){
     var fallbackData = {
         icons: {
             small: "about:blank",
@@ -267,7 +270,7 @@ ozpIwc.Owf7Participant.prototype._getApplicationData = function(){
  * @method setWidgetTitle
  * @param {String} name.
  */
-ozpIwc.Owf7Participant.prototype.setWidgetTitle = function(name){
+ozpIwc.owf7.Participant.prototype.setWidgetTitle = function(name){
     if(!name){
         var a=document.createElement("a");
         a.href = this.widgetParams.url;

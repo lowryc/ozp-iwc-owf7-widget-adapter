@@ -1,19 +1,20 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7ParticipantModules = ozpIwc.owf7ParticipantModules || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.participantModules = ozpIwc.owf7.participantModules || {};
 
 /**
- * An Util module for the owf7Participant.
- * @namespace ozpIwc.owf7ParticipantModules
+ * An Util module for the owf7 Participant.
+ * @namespace ozpIwc.owf7.participantModules
  * @class Components
- * @param {ozpIwc.Owf7Participant} participant
+ * @param {ozpIwc.owf7.Participant} participant
  * @constructor
  */
-ozpIwc.owf7ParticipantModules.Util = function(participant){
-    if(!participant) { throw "Needs to have an Owf7Participant";}
+ozpIwc.owf7.participantModules.Util = function(participant){
+    if(!participant) { throw "Needs to have an Owf7 Participant";}
 
     /**
      * @property participant
-     * @type {ozpIwc.Owf7Participant}
+     * @type {ozpIwc.owf7.Participant}
      */
     this.participant = participant;
 
@@ -31,8 +32,8 @@ ozpIwc.owf7ParticipantModules.Util = function(participant){
  * Watch registrations for Ozone.log data.
  * @method registerUtils
  */
-ozpIwc.owf7ParticipantModules.Util.prototype.registerLogging = function(){
-    this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("Ozone.log"),function(response){
+ozpIwc.owf7.participantModules.Util.prototype.registerLogging = function(){
+    this.dataApi.watch(ozpIwc.owf7.participantModules.Eventing.pubsubChannel("Ozone.log"),function(response){
         var msg = response.entity.newValue.message;
         gadgets.rpc.call('..',"Ozone.log",null,msg);
         ozpIwc.log.debug("[Legacy]",msg);
@@ -45,8 +46,8 @@ ozpIwc.owf7ParticipantModules.Util.prototype.registerLogging = function(){
  * @method onOzoneLog
  * @param {*} msg
  */
-ozpIwc.owf7ParticipantModules.Util.prototype.onOzoneLog=function(msg) {
-    this.dataApi.set(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("Ozone.log"), {
+ozpIwc.owf7.participantModules.Util.prototype.onOzoneLog=function(msg) {
+    this.dataApi.set(ozpIwc.owf7.participantModules.Eventing.pubsubChannel("Ozone.log"), {
         entity: {
             message: msg,
             ts: ozpIwc.util.now() // to make every packet trigger "changed"

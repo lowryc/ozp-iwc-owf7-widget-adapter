@@ -1,19 +1,20 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7ParticipantModules = ozpIwc.owf7ParticipantModules || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.participantModules = ozpIwc.owf7.participantModules || {};
 
 /**
  * A Kernel module for the owf7Participant.
  * @class Kernel
- * @namespace ozpIwc.owf7ParticipantModules
- * @param {ozpIwc.Owf7Participant} participant
+ * @namespace ozpIwc.owf7.participantModules
+ * @param {ozpIwc.owf7.Participant} participant
  * @constructor
  */
-ozpIwc.owf7ParticipantModules.Kernel = function(participant){
+ozpIwc.owf7.participantModules.Kernel = function(participant){
     if(!participant) { throw "Needs to have an Owf7Participant";}
 
     /**
      * @property participant
-     * @type {ozpIwc.Owf7Participant}
+     * @type {ozpIwc.owf7.Participant}
      */
     this.participant = participant;
 
@@ -48,14 +49,14 @@ ozpIwc.owf7ParticipantModules.Kernel = function(participant){
  * @property listWidgetChannel
  * @type {String}
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.listWidgetChannel = "/owf-legacy/kernel/_list_widgets";
+ozpIwc.owf7.participantModules.Kernel.prototype.listWidgetChannel = "/owf-legacy/kernel/_list_widgets";
 
 /**
  * IWC data.api resource path prefix for any proxy related messaging
  * @property listWidgetChannel
  * @type {String}
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.widgetProxyChannelPrefix = "/owf-legacy/kernel/proxy/";
+ozpIwc.owf7.participantModules.Kernel.prototype.widgetProxyChannelPrefix = "/owf-legacy/kernel/proxy/";
 
 /**
  * Returns the IWC Data.api resource path for the given widget's _widgetReady event.
@@ -63,7 +64,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.widgetProxyChannelPrefix = "/owf-
  * @param {String} widgetId
  * @returns {String}
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.widgetReadyResource = function(widgetId){
+ozpIwc.owf7.participantModules.Kernel.prototype.widgetReadyResource = function(widgetId){
     return this.widgetProxyChannelPrefix + widgetId + "/_widgetReady";
 };
 
@@ -73,7 +74,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.widgetReadyResource = function(wi
  * @param {String} widgetId
  * @returns {String}
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResource = function(widgetId){
+ozpIwc.owf7.participantModules.Kernel.prototype.functionCallResource = function(widgetId){
     return this.widgetProxyChannelPrefix + widgetId + "/FUNCTION_CALL_CLIENT";
 };
 
@@ -83,7 +84,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResource = function(w
  * @param {String} widgetId
  * @returns {String}
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResultResource = function(widgetId){
+ozpIwc.owf7.participantModules.Kernel.prototype.functionCallResultResource = function(widgetId){
     return this.widgetProxyChannelPrefix + widgetId + "/FUNCTION_CALL_RESULT_CLIENT";
 };
 
@@ -93,7 +94,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResultResource = func
  * @param {String} widgetId
  * @returns {String}
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.directMessageResource = function(widgetId){
+ozpIwc.owf7.participantModules.Kernel.prototype.directMessageResource = function(widgetId){
     return this.widgetProxyChannelPrefix + widgetId + "/DIRECT_MESSAGE";
 };
 /**
@@ -102,7 +103,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.directMessageResource = function(
  * @param {String} eventName
  * @returns {String}
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.callEventResource = function(eventName) {
+ozpIwc.owf7.participantModules.Kernel.prototype.callEventResource = function(eventName) {
     return this.widgetProxyChannelPrefix + "/CALL_EVENT/" + eventName;
 };
 
@@ -112,7 +113,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.callEventResource = function(even
  * @param {String} widgetId
  * @returns {String}
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetReadyListener = function(){
+ozpIwc.owf7.participantModules.Kernel.prototype.registerWidgetReadyListener = function(){
     var self = this;
     this.dataApi.set(this.widgetReadyResource(this.participant.instanceId),{'lifespan': "ephemeral"});
 
@@ -128,7 +129,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetReadyListener = fun
  *
  * @method registerWidgetListing
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetListing = function() {
+ozpIwc.owf7.participantModules.Kernel.prototype.registerWidgetListing = function() {
     var self = this;
 
     window.addEventListener("beforeunload",function(){
@@ -147,7 +148,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerWidgetListing = function(
  * Updates the IWC's data.api resource specified by listWidgetChannel by removing this widget's GUID.
  * @method unregisterWidgetListing
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.unregisterWidgetListing = function() {
+ozpIwc.owf7.participantModules.Kernel.prototype.unregisterWidgetListing = function() {
     this.dataApi.removeChild(this.listWidgetChannel,{
         entity: {resource: this.widgetListing}
     });
@@ -160,7 +161,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.unregisterWidgetListing = functio
  * @param {String} widgetId
  * @param {Object} rpc
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetWidgetReady = function(widgetId,rpc){
+ozpIwc.owf7.participantModules.Kernel.prototype.onGetWidgetReady = function(widgetId,rpc){
     if(this.widgetReadyMap.hasOwnProperty(widgetId)) {
         rpc.callback(this.widgetReadyMap[widgetId] === true);
     } else {
@@ -184,7 +185,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetWidgetReady = function(widge
  * @method onWidgetReady
  * @param {String} widgetId
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onWidgetReady = function(widgetId){
+ozpIwc.owf7.participantModules.Kernel.prototype.onWidgetReady = function(widgetId){
     this.widgetReadyMap[widgetId] = true;
     this.dataApi.set(this.widgetReadyResource(widgetId),{
         entity: this.widgetReadyMap[widgetId],
@@ -212,7 +213,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onWidgetReady = function(widgetId
  * @param {String} iframeId
  * @param {String[]} functions
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onRegisterFunctions = function(iframeId, functions){
+ozpIwc.owf7.participantModules.Kernel.prototype.onRegisterFunctions = function(iframeId, functions){
     var widgetID = JSON.parse(iframeId).id;
     var self = this;
 
@@ -243,7 +244,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onRegisterFunctions = function(if
  * @param {String} sourceWidgetId
  * @param {Object} rpc
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetFunctions = function(widgetId, sourceWidgetId, rpc){
+ozpIwc.owf7.participantModules.Kernel.prototype.onGetFunctions = function(widgetId, sourceWidgetId, rpc){
     var self = this;
     this.dataApi.get(this.widgetProxyChannelPrefix + widgetId).then(function(reply){
 
@@ -272,7 +273,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onGetFunctions = function(widgetI
  * @param {String} functionName
  * @param {Array} var_args
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCall = function(widgetId, widgetIdCaller, functionName, var_args){
+ozpIwc.owf7.participantModules.Kernel.prototype.onFunctionCall = function(widgetId, widgetIdCaller, functionName, var_args){
     this.dataApi.set(this.functionCallResource(widgetId),{
         entity: {
             'widgetId': widgetId,
@@ -293,7 +294,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCall = function(widgetI
  * @param {String} functionName
  * @param {Array} var_args
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallClient = function(widgetId, widgetIdCaller, functionName, var_args){
+ozpIwc.owf7.participantModules.Kernel.prototype.functionCallClient = function(widgetId, widgetIdCaller, functionName, var_args){
     gadgets.rpc.call(this.participant.rpcId, 'FUNCTION_CALL_CLIENT', null, widgetId, widgetIdCaller, functionName, var_args);
 };
 
@@ -305,7 +306,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallClient = function(wid
 * @param {String} functionName
 * @param {String} result
 */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResultClient = function(widgetId, widgetIdCaller, functionName, result){
+ozpIwc.owf7.participantModules.Kernel.prototype.functionCallResultClient = function(widgetId, widgetIdCaller, functionName, result){
     gadgets.rpc.call(this.participant.rpcId, 'FUNCTION_CALL_RESULT_CLIENT', null, widgetId, functionName, result);
 };
 
@@ -317,7 +318,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.functionCallResultClient = functi
  * @param {String} functionName
  * @param {Object} result
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallResult = function(widgetId, widgetIdCaller, functionName, result){
+ozpIwc.owf7.participantModules.Kernel.prototype.onFunctionCallResult = function(widgetId, widgetIdCaller, functionName, result){
     this.dataApi.set(this.functionCallResultResource(widgetIdCaller),{
         entity: {
             'widgetId': widgetId, //NOTE swapping
@@ -334,7 +335,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onFunctionCallResult = function(w
 * Watches for other legacy widgets to try and make a function call.
 * @method registerFunctionCallHandler
 */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallListener = function(){
+ozpIwc.owf7.participantModules.Kernel.prototype.registerFunctionCallListener = function(){
     var self = this;
     this.dataApi.watch(this.functionCallResource(this.participant.instanceId),function(packet) {
         var widgetId = packet.entity.newValue.widgetId || "";
@@ -350,7 +351,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallListener = fu
 * Watches for other legacy widgets to return a function call result.
 * @method registerFunctionCallHandler
 */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallResultListener = function(){
+ozpIwc.owf7.participantModules.Kernel.prototype.registerFunctionCallResultListener = function(){
     var self = this;
     this.dataApi.watch(this.functionCallResultResource(this.participant.instanceId), function(packet) {
         var widgetId = packet.entity.newValue.widgetId || "";
@@ -367,7 +368,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerFunctionCallResultListene
  * @method onListWidgets
  * @param {Object} rpc
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onListWidgets = function(rpc){
+ozpIwc.owf7.participantModules.Kernel.prototype.onListWidgets = function(rpc){
     var self = this;
     this.dataApi.list(this.listWidgetChannel).then(function(reply){
         var widgets = [];
@@ -393,7 +394,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onListWidgets = function(rpc){
  * @param {String} widgetId
  * @param {Object} dataToSend
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onDirectMessage = function(widgetId, dataToSend){
+ozpIwc.owf7.participantModules.Kernel.prototype.onDirectMessage = function(widgetId, dataToSend){
     this.dataApi.set(this.directMessageResource(widgetId),{
         entity:{
             message: dataToSend,
@@ -407,7 +408,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onDirectMessage = function(widget
  * Watches for other legacy widgets to send a DIRECT_MESSAGE through the iwc.
  * @method registerDirectMessageListener
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.registerDirectMessageListener = function(){
+ozpIwc.owf7.participantModules.Kernel.prototype.registerDirectMessageListener = function(){
     var self = this;
     this.dataApi.watch(this.directMessageResource(this.participant.instanceId), function(packet) {
         if(packet.entity && packet.entity.newValue && packet.entity.newValue.message) {
@@ -422,7 +423,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.registerDirectMessageListener = f
  * @method directMessageClient
  * @param {*} payload
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.directMessageClient = function(payload){
+ozpIwc.owf7.participantModules.Kernel.prototype.directMessageClient = function(payload){
     gadgets.rpc.call(this.participant.rpcId, 'DIRECT_MESSAGEL_CLIENT', null, payload);
 };
 
@@ -432,7 +433,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.directMessageClient = function(pa
  * @param {String} widgetId
  * @param {String} eventName
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onAddEvent = function(widgetId, eventName){
+ozpIwc.owf7.participantModules.Kernel.prototype.onAddEvent = function(widgetId, eventName){
     var self = this;
     this.dataApi.watch(this.callEventResource(eventName), function(packet) {
         if(packet.entity && packet.entity.newValue && packet.entity.newValue.message) {
@@ -447,7 +448,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.onAddEvent = function(widgetId, e
  * @param {String} eventName
  * @param {*} payload
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.eventClient = function(eventName,payload){
+ozpIwc.owf7.participantModules.Kernel.prototype.eventClient = function(eventName,payload){
     gadgets.rpc.call(this.participant.rpcId, "EVENT_CLIENT", null, eventName, payload);
 };
 
@@ -457,7 +458,7 @@ ozpIwc.owf7ParticipantModules.Kernel.prototype.eventClient = function(eventName,
  * @param {String} eventName
  * @param {*} payload
  */
-ozpIwc.owf7ParticipantModules.Kernel.prototype.onCallEvent = function(eventName, payload){
+ozpIwc.owf7.participantModules.Kernel.prototype.onCallEvent = function(eventName, payload){
     this.dataApi.set(this.callEventResource(eventName), {
         entity:{
             'message': payload,

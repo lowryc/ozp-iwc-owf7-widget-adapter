@@ -1,19 +1,20 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7ParticipantModules = ozpIwc.owf7ParticipantModules || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.participantModules = ozpIwc.owf7.participantModules || {};
 
 /**
  * A Components module for the owf7Participant.
- * @namespace ozpIwc.owf7ParticipantModules
+ * @namespace ozpIwc.owf7.participantModules
  * @class Components
- * @param {ozpIwc.Owf7Participant} participant
+ * @param {ozpIwc.owf7.Participant} participant
  * @constructor
  */
-ozpIwc.owf7ParticipantModules.Components = function(participant){
+ozpIwc.owf7.participantModules.Components = function(participant){
     if(!participant) { throw "Needs to have an Owf7Participant";}
 
     /**
      * @property participant
-     * @type {ozpIwc.Owf7Participant}
+     * @type {ozpIwc.owf7.Participant}
      */
     this.participant = participant;
 
@@ -33,7 +34,7 @@ ozpIwc.owf7ParticipantModules.Components = function(participant){
  * @param {String} msg
  * @param {Object} rpc
  */
-ozpIwc.owf7ParticipantModules.Components.prototype.onLaunchWidget=function(sender,msg,rpc) {
+ozpIwc.owf7.participantModules.Components.prototype.onLaunchWidget=function(sender,msg,rpc) {
     msg=JSON.parse(msg);
     // ignore title, titleRegex, and launchOnlyIfClosed
     this.systemApi.launch("/application/" + msg.guid,{

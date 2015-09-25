@@ -1,20 +1,21 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7BridgeModules = ozpIwc.owf7BridgeModules  || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.bridgeModules = ozpIwc.owf7.bridgeModules || {};
 
 /**
  * A Factory function for the owf7 'kernel' rpc handlers.
- * @namespace ozpIwc.owf7BridgeModules
+ * @namespace ozpIwc.owf7.bridgeModules
  * @method kernel
  * @param {Object} listener The listener to generate the functions for.
  * @returns {Object}
  */
-ozpIwc.owf7BridgeModules.kernel = function(listener){
-    if(!listener) { throw "Needs to have an Owf7ParticipantListener";}
+ozpIwc.owf7.bridgeModules.kernel = function(listener){
+    if(!listener) { throw "Needs to have an owf7 ParticipantListener";}
     return {
         'kernel': {
             /**
              * @see js/kernel/kernel-rpc-base.js:147
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param widgetId
              * @param srcWidgetId
              * @returns {boolean}
@@ -24,7 +25,7 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
             },
             /**
              * @see reference/js/kernel/kernel-rpc-base.js:130
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param widgetId
              */
             '_widgetReady': function(participant, widgetId){
@@ -32,8 +33,7 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
             },
             /**
              * @see js/kernel/kernel-rpc-base.js:124
-             * @param {ozpIwc.Owf7Participant} participant
-             * @param {String} iframeId
+             owf7.Participant             * @param {String} iframeId
              * @param {String[]} functions
              */
             'register_functions': function (participant, iframeId, functions) {
@@ -42,7 +42,7 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
             },
             /**
              * @see js/kernel/kernel-rpc-base.js:88
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {String} widgetID
              * @param {String} sourceWidgetId
              * @returns {*}
@@ -52,7 +52,7 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
             },
 
             /**
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {String} widgetId
              * @param {String} widgetIdCaller
              * @param {String} functionName
@@ -63,7 +63,7 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
             },
 
             /**
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {String} widgetId
              * @param {String} widgetIdCaller
              * @param {String} functionName
@@ -75,7 +75,7 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
 
             /**
              * @see js/kernel/kernel-container.js:204
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @returns {String[]}
              */
             'LIST_WIDGETS': function (participant) {
@@ -84,7 +84,7 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
 
             /**
              * @see js/
-             * @param {ozpIwc.Owf7Participant}participant
+             * @param {ozpIwc.owf7.Participant}participant
              * @param {String} widgetId
              * @param {*} dataToSend
              */
@@ -93,7 +93,7 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
             },
 
             /**
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {String} widgetId
              * @param {String} eventName
              */
@@ -102,7 +102,7 @@ ozpIwc.owf7BridgeModules.kernel = function(listener){
             },
 
             /**
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {String} eventName
              * @param {*} payload
              */

@@ -1,21 +1,22 @@
-ozpIwc = ozpIwc || {};
-ozpIwc.owf7BridgeModules = ozpIwc.owf7BridgeModules  || {};
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+ozpIwc.owf7.bridgeModules = ozpIwc.owf7.bridgeModules || {};
 
 /**
  * A Factory function for the owf7 'intents' rpc handlers.
- * @namespace ozpIwc.owf7BridgeModules
+ * @namespace ozpIwc.owf7.bridgeModules
  * @method intents
  * @param {Object} listener The listener to generate the functions for.
  * @returns {Object}
  */
-ozpIwc.owf7BridgeModules.intents = function(listener){
-    if(!listener) { throw "Needs to have an Owf7ParticipantListener";}
+ozpIwc.owf7.bridgeModules.intents = function(listener){
+    if(!listener) { throw "Needs to have an owf7 ParticipantListener";}
     return {
         'intents': {
             /**
              * used for both handling and invoking intents
              * @see js/intents/WidgetIntentsContainer.js:32 for reference
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {String} senderId
              * @param {Object} intent
              * @param {OBject} data
@@ -27,7 +28,7 @@ ozpIwc.owf7BridgeModules.intents = function(listener){
             /**
              * used by widgets to register an intent
              * @see js/intents/WidgetIntentsContainer.js:85 for reference
-             * @param {ozpIwc.Owf7Participant} participant
+             * @param {ozpIwc.owf7.Participant} participant
              * @param {Object} intent
              * @param {String} destWidgetId
              */

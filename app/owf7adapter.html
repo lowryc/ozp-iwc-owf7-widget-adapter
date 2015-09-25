@@ -25,20 +25,10 @@
 
             }
 		</style>
-        <script type="text/javascript">
-            var ozpIwc = ozpIwc || {};
-            // No reason to accept client applications
-//            ozpIwc.acceptPostMessageParticipants=false;
 
-            // CONFIG: the OZP IWC api endpoints
-            ozpIwc.apiRootUrl="/api";
-            
-            // CONFIG: the base for the OWF7 window.name endpoints
-            ozpIwc.owf7PrefsUrl="/api/prefs";
-
-        </script>
   </head>
   <body>
+    <script type="text/javascript" src="js/ozpIwc.conf.js"></script>
     <script type="text/javascript" src="js/ozpIwc-bus.js"></script>
     <script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>  
     <script type="text/javascript">
@@ -47,7 +37,7 @@
             var params=ozpIwc.util.parseQueryParams();
             var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
 
-            var adapter=new ozpIwc.Owf7ParticipantListener();
+            var adapter=new ozpIwc.owf7.ParticipantListener();
             adapter.client.connect().then(function() {
 
                 // Gather any hash-stashed data pertaining to the widget

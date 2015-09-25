@@ -1,16 +1,18 @@
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
 /**
  * A bridging module for an IWC Participant Listener. Default use is for bridging an RPC handler interface to IWC
  * Participant handlers.
  *
- * @class Owf7Bridge
- * @namespace ozpIwc
+ * @class Bridge
+ * @namespace ozpIwc.owf7
  * @param {Object} config
  * @param {Object} config.listener The listener this is bridging for.
  * @param {Object} [funcs] Handlers to register upon instantiation of the bridge.
- * @param {Function} [config.defaultHandler=ozpIwc.Owf7Bridge._defaultHandler] The default handler for the bridge.
+ * @param {Function} [config.defaultHandler=ozpIwc.owf7.Bridge._defaultHandler] The default handler for the bridge.
  * @constructor
  */
-ozpIwc.Owf7Bridge=function(config) {
+ozpIwc.owf7.Bridge=function(config) {
     config = config || {};
     if(!config.listener) {throw this._noListener_err;}
 
@@ -30,7 +32,7 @@ ozpIwc.Owf7Bridge=function(config) {
  * @property getParticipant_err
  * @type {string}
  */
-ozpIwc.Owf7Bridge.prototype._noListener_err = "An Owf7ParticipantListener is required to bridge RPC to IWC";
+ozpIwc.owf7.Bridge.prototype._noListener_err = "An owf7 ParticipantListener is required to bridge RPC to IWC";
 
 //
 // Public Properties
@@ -43,8 +45,8 @@ ozpIwc.Owf7Bridge.prototype._noListener_err = "An Owf7ParticipantListener is req
  * @method addHandlers
  * @param {Object} object
  */
-ozpIwc.Owf7Bridge.prototype.addHandlers = function(object){
-    var formattedObj =  ozpIwc.Owf7Bridge.objectCategoryFormat(object);
+ozpIwc.owf7.Bridge.prototype.addHandlers = function(object){
+    var formattedObj =  ozpIwc.owf7.Bridge.objectCategoryFormat(object);
     this._registerFunctions(formattedObj);
 };
 
@@ -54,8 +56,8 @@ ozpIwc.Owf7Bridge.prototype.addHandlers = function(object){
  * @method removeHandlers
  * @param {Object} object
  */
-ozpIwc.Owf7Bridge.prototype.removeHandlers = function(object){
-    var formattedObj =  ozpIwc.Owf7Bridge.objectCategoryFormat(object);
+ozpIwc.owf7.Bridge.prototype.removeHandlers = function(object){
+    var formattedObj =  ozpIwc.owf7.Bridge.objectCategoryFormat(object);
     this._unregisterFunctions(formattedObj);
 };
 
@@ -66,7 +68,7 @@ ozpIwc.Owf7Bridge.prototype.removeHandlers = function(object){
  * @param {Object} oldObject
  * @param {Object} newObject
  */
-ozpIwc.Owf7Bridge.prototype.updateHandlers = function(oldObject,newObject){
+ozpIwc.owf7.Bridge.prototype.updateHandlers = function(oldObject,newObject){
     this.removeHandlers(oldObject);
     this.addHandlers(newObject);
 };
@@ -76,9 +78,9 @@ ozpIwc.Owf7Bridge.prototype.updateHandlers = function(oldObject,newObject){
  * @method registerDefaultHandler
  * @param {Function} fn
  */
-ozpIwc.Owf7Bridge.prototype.registerDefaultHandler = function(fn){
+ozpIwc.owf7.Bridge.prototype.registerDefaultHandler = function(fn){
     if(typeof fn !== "function"){
-        throw "Owf7Bridge default handler must be a function.";
+        throw "Bridge default handler must be a function.";
     }
     gadgets.rpc.registerDefault(fn);
 };
@@ -93,7 +95,7 @@ ozpIwc.Owf7Bridge.prototype.registerDefaultHandler = function(fn){
  * @param {Object} object
  * @private
  */
-ozpIwc.Owf7Bridge.prototype._registerFunctions = function(object){
+ozpIwc.owf7.Bridge.prototype._registerFunctions = function(object){
     var self = this;
     var onFunction = function(outObj,fn, name){
 
@@ -111,7 +113,7 @@ ozpIwc.Owf7Bridge.prototype._registerFunctions = function(object){
         outObj[name] = func;
     };
 
-    ozpIwc.Owf7Bridge.functionsInObjects({
+    ozpIwc.owf7.Bridge.functionsInObjects({
         'inObj': object,
         'outObj': this.funcs,
         'onFn':onFunction
@@ -125,13 +127,13 @@ ozpIwc.Owf7Bridge.prototype._registerFunctions = function(object){
  * @param {Object} object
  * @private
  */
-ozpIwc.Owf7Bridge.prototype._unregisterFunctions = function(object){
+ozpIwc.owf7.Bridge.prototype._unregisterFunctions = function(object){
     var onFunction = function(outObj,fn, name){
         gadgets.rpc.unregister(name,fn);
         delete outObj[name];
     };
 
-    ozpIwc.Owf7Bridge.functionsInObjects({
+    ozpIwc.owf7.Bridge.functionsInObjects({
         'inObj': object,
         'outObj': this.funcs,
         'onFn':onFunction
@@ -139,13 +141,13 @@ ozpIwc.Owf7Bridge.prototype._unregisterFunctions = function(object){
 };
 
 /**
- * Initializes the static handler registrations. Handler registrations gathered from ozpIwc.owf7BridgeModules.
+ * Initializes the static handler registrations. Handler registrations gathered from ozpIwc.owf7.bridgeModules.
  * Runtime determined handlers should be added with addHandlers.
  * @method _initHandlers
  * @returns {Object}
  * @private
  */
-ozpIwc.Owf7Bridge.prototype._initHandlers = function(){
+ozpIwc.owf7.Bridge.prototype._initHandlers = function(){
     var self = this;
     /**
      * Default handler function to call if no registered function found.
@@ -165,9 +167,9 @@ ozpIwc.Owf7Bridge.prototype._initHandlers = function(){
 
     this.registerDefaultHandler(this._defaultHandler);
 
-    for(var i in ozpIwc.owf7BridgeModules){
-        var module = ozpIwc.owf7BridgeModules[i];
-        if(ozpIwc.owf7BridgeModules.hasOwnProperty(i) && typeof module === "function") {
+    for(var i in ozpIwc.owf7.bridgeModules){
+        var module = ozpIwc.owf7.bridgeModules[i];
+        if(ozpIwc.owf7.bridgeModules.hasOwnProperty(i) && typeof module === "function") {
             this.addHandlers(module(this.listener));
         }
     }
@@ -179,13 +181,13 @@ ozpIwc.Owf7Bridge.prototype._initHandlers = function(){
 //
 
 /**
- * Formats the given object for the Owf7Bridge function storage format.
+ * Formats the given object for the Bridge function storage format.
  * @method objectCategoryFormat
  * @param {Object} object
  * @static
  * @returns {Object}
  */
-ozpIwc.Owf7Bridge.objectCategoryFormat = function(object){
+ozpIwc.owf7.Bridge.objectCategoryFormat = function(object){
     var obj = { 'uncategorized' : {} };
 
     for (var i in object){
@@ -209,7 +211,7 @@ ozpIwc.Owf7Bridge.objectCategoryFormat = function(object){
  * @params {Function} config.onFn  A registration function to pass (name,fn) to.
  * @static
  */
-ozpIwc.Owf7Bridge.functionsInObjects = function(config){
+ozpIwc.owf7.Bridge.functionsInObjects = function(config){
     config.inObj = config.inObj || {};
     config.outObj = config.outObj || {};
     config.onFn = config.onFn || function(){};

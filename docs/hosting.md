@@ -47,14 +47,5 @@ cp -r * <Hosted IWC Directory>/
 ```
 
 #### Modifications
-The adapter html, `owf7adapter.html`, contains two variable definitions that are commonly altered to match the IWC
-deployment. If the default value of these are not correct, alter them for deployment:
-
- * `ozpIwc.apiRootUrl="api";` : line 32
- * `ozpIwc.owf7PrefsUrl="/owf/prefs";` : line 35
-
-Property | Type | Default Value | Definition
----------|------|----------------|-----------
-ozpIwc.apiRootUrl | String| "/api" | The location of Api backend root hal data index.json (relative or absolute)
-ozpIwc.owf7PrefsUrl | String| "/owf/prefs" | The location of the legacy preferences backend root (relative or absolute)
-
+The adapter html, `owf7adapter.html`, loads in the `ozpIwc.conf.js` file from the IWC. ensure this path points to the
+configuration file that your `iframe_peer.html` file points to for matching configurations.

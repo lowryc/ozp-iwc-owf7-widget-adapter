@@ -1,3 +1,6 @@
+var ozpIwc = ozpIwc || {};
+ozpIwc.owf7 = ozpIwc.owf7 || {};
+
 (function() {
 
     var absolutePath = function(href) {
@@ -8,8 +11,8 @@
 
     /**
      *
-     * @class Owf7ParticipantListener
-     * @namespace ozpIwc
+     * @class ParticipantListener
+     * @namespace ozpIwc.owf7
      * @param {Object} config
      * @param {String} config.rpcRelay
      * @param {String} config.prefsUrl
@@ -17,7 +20,7 @@
      * @param {Number} config.yOffset
      * @constructor
      */
-    ozpIwc.Owf7ParticipantListener=function(config) {
+    ozpIwc.owf7.ParticipantListener=function(config) {
         config = config || {};
 
         /**
@@ -41,9 +44,12 @@
 
         /**
          * @property client
-         * @type {ozpIwc.ClientParticipant}
+         * @type {ozpIwc.transport.participant.Client}
          */
-        this.client=new ozpIwc.ClientParticipant();
+        this.client=new ozpIwc.transport.participant.Client({
+            authorization: ozpIwc.wiring.authorization,
+            router: ozpIwc.wiring.router
+        });
         this.client.connect();
 
         /**
@@ -55,9 +61,9 @@
 
         /**
          * @property bridge
-         * @type {ozpIwc.Owf7Bridge}
+         * @type {ozpIwc.owf7.Bridge}
          */
-        this.bridge = config.bridge || new ozpIwc.Owf7Bridge({listener: this});
+        this.bridge = config.bridge || new ozpIwc.owf7.Bridge({listener: this});
 
 
         if ((window.name === "undefined") || (window.name === "")) {
@@ -89,7 +95,7 @@
      * @method makeGuid
      * @returns {string}
      */
-    ozpIwc.Owf7ParticipantListener.prototype.makeGuid=function() {
+    ozpIwc.owf7.ParticipantListener.prototype.makeGuid=function() {
         /*jshint bitwise: false*/
         // not a real guid, but it's the way OWF 7 does it
         var S4=function(){
@@ -103,7 +109,7 @@
      * @method updateMouseCoordinates
      * @param {MouseEvent} e
      */
-    ozpIwc.Owf7ParticipantListener.prototype.updateMouseCoordinates=function(e) {
+    ozpIwc.owf7.ParticipantListener.prototype.updateMouseCoordinates=function(e) {
         //console.log("Updating coords from("+this.xOffset+","+this.yOffset+")");
         this.xOffset=e.screenX-e.clientX;
         this.yOffset=e.screenY-e.clientY;
@@ -117,7 +123,7 @@
      * @param {Object} element
      * @returns {Object}
      */
-    ozpIwc.Owf7ParticipantListener.prototype.convertToLocalCoordinates=function(msg,element) {
+    ozpIwc.owf7.ParticipantListener.prototype.convertToLocalCoordinates=function(msg,element) {
         // copy the message
         var rv={};
         for(var k in msg) {
@@ -148,7 +154,7 @@
     };
 
     /**
-     * Creates a Owf7Participant for the given widget and registers its widget state channel.
+     * Creates a owf7.Participant for the given widget and registers its widget state channel.
      * @method addWidget
      * @param {Object} config
      * @param {String} [config.instanceId] a id is assigned if not given.
@@ -157,7 +163,7 @@
      * @param {String} [config.launchDataResource] a resource path of data to be used for the launch of the widget.
      * @returns {*}
      */
-    ozpIwc.Owf7ParticipantListener.prototype.addWidget=function(config) {
+    ozpIwc.owf7.ParticipantListener.prototype.addWidget=function(config) {
         config = config || {};
         var self = this;
         var participantConfig = {};
@@ -193,7 +199,7 @@
 
             // After storing the hash, if the guid does not exist just set it as instanceId for OWF7 to not complain.
             cfg.guid = cfg.guid || cfg.instanceId;
-           self.participants[cfg.instanceId] = new ozpIwc.Owf7Participant(cfg);
+           self.participants[cfg.instanceId] = new ozpIwc.owf7.Participant(cfg);
 
             // Add the _WIDGET_STATE_CHANNEL_<instanceId> RPC registration for the widget.
             // @see js\state\WidgetStateContainer.js:35
@@ -220,9 +226,9 @@
      * Notifies the IWC that a legacy widget has canceled dragging.
      * @method cancelDrag
      */
-    ozpIwc.Owf7ParticipantListener.prototype.cancelDrag=function() {
+    ozpIwc.owf7.ParticipantListener.prototype.cancelDrag=function() {
         this.inDrag=false;
-        this.dataApi.set(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
+        this.dataApi.set(ozpIwc.owf7.participantModules.Eventing.pubsubChannel("_dragStopInContainer"),{
             "entity": Date.now(),  // ignored, but changes the value to trigger watches
             lifespan: "ephemeral"
         });
@@ -232,7 +238,7 @@
      * Adds the capability of drag and drop to the container.
      * @method installDragAndDrop
      */
-    ozpIwc.Owf7ParticipantListener.prototype.installDragAndDrop=function() {
+    ozpIwc.owf7.ParticipantListener.prototype.installDragAndDrop=function() {
         var self=this;
 
         /**
@@ -245,10 +251,10 @@
         document.addEventListener("mouseenter",updateMouse);
         document.addEventListener("mouseout",updateMouse);
 
-        this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStart"), function(reply) {
+        this.dataApi.watch(ozpIwc.owf7.participantModules.Eventing.pubsubChannel("_dragStart"), function(reply) {
             self.inDrag=true;
         });
-        this.dataApi.watch(ozpIwc.owf7ParticipantModules.Eventing.pubsubChannel("_dragStopInContainer"),
+        this.dataApi.watch(ozpIwc.owf7.participantModules.Eventing.pubsubChannel("_dragStopInContainer"),
             function(reply) {
                 self.inDrag=false;
             });
@@ -269,7 +275,7 @@
      * @param id
      * @returns {Object}
      */
-    ozpIwc.Owf7ParticipantListener.prototype.getParticipant = function(id){
+    ozpIwc.owf7.ParticipantListener.prototype.getParticipant = function(id){
         //If this is from someone else using rpc we don't care.
         var formattedId;
         try {
