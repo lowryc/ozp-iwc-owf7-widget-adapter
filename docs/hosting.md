@@ -49,3 +49,6 @@ cp -r * <Hosted IWC Directory>/
 #### Modifications
 The adapter html, `owf7adapter.html`, loads in the `ozpIwc.conf.js` file from the IWC. ensure this path points to the
 configuration file that your `iframe_peer.html` file points to for matching configurations.
+
+To modify the preference path for owf7 widgets, set the path in the `ozpIwc.conf.js` file in property 
+`ozpIwc.config.owf7PrefsUrl`.

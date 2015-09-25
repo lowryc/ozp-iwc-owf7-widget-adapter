@@ -33,7 +33,7 @@ ozpIwc.owf7 = ozpIwc.owf7 || {};
          * @property prefsUrl
          * @type {String}
          */
-        this.prefsUrl=absolutePath(config.prefsUrl || ozpIwc.owf7PrefsUrl || "/owf/prefs");
+        this.prefsUrl=absolutePath(config.prefsUrl || ozpIwc.config.owf7PrefsUrl || "/owf/prefs");
 
         /**
          * @property participants
