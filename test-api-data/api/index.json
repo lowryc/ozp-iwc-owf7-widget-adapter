@@ -11,21 +11,5 @@
         "ozp:application": { "href":"/api/profile/v1/exampleUser/application"},
         "ozp:user": { "href":"/api/profile/v1/exampleUser"},
         "ozp:system": { "href":"/api/system/v1"}
-    },
-    "_embedded": {
-        "ozp:user": {
-            "name": "Jon Doe",
-            "userName": "jon.doe",
-            "_links" : {
-                "self": { "href":"/api/profile/v1/exampleUser"}
-            }
-        },
-        "ozp:system": {
-            "version": "1.0",
-            "name": "IWC Mock Data",
-            "_links" : {
-                "self": { "href":"/api/system/v1"}
-            }
-        }
     }
 }

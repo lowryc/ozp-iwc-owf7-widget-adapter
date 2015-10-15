@@ -15,6 +15,7 @@ describe("Bridge", function() {
     };
     var init = function (){
         listener = new ozpIwc.owf7.ParticipantListener({
+            peerUrl: window.location.origin,
             xOffset: 1,
             yOffset: 1,
             bridge: {}    // don't instantiate the bridge for test purposes.
