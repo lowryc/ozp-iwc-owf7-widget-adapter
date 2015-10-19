@@ -1,12 +1,16 @@
 describe("Eventing", function() {
     var client;
     beforeEach(function(done) {
-        client=new ozpIwc.Client({peerUrl:"http://localhost:16000"});
+        client=new ozpIwc.Client({peerUrl:"http://localhost:13000"});
         client.connect().then(done);
+    });
+
+    afterEach(function(){
+        client.disconnect();
     });
     
     it("OWF.Eventing.publish()",function(done) {
-        client.api("data.api").watch("/owf-legacy/eventing/test.channel",function(e,unregister) {
+        client.data().watch("/owf-legacy/eventing/test.channel",function(e,unregister) {
                 expect(e.entity.newValue.message).toEqual({'foo':1});
                 expect(e.entity.newValue.sender).toBeDefined();
                 unregister();
@@ -34,6 +38,7 @@ describe("Eventing", function() {
             });
         },10);
     });
+
     it("OWF.Eventing.unsubscribe()",function(done) {
         OWF.Eventing.subscribe("test.channel", function(sender,msg,channel) {
             OWF.Eventing.unsubscribe("test.channel");

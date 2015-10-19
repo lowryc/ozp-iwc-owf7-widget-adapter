@@ -1,0 +1,25 @@
+{
+  "_links": {
+    "self": {
+      "href": "/api/profile/v1/exampleUser/application/94c734b0-cbbb-4caf-9cb8-29a3d45afc84"
+    },
+    "ozp:iwcSelf": {
+      "href": "/application/94c734b0-cbbb-4caf-9cb8-29a3d45afc84"
+    }
+  },
+  "description": "A fake widget.",
+  "descriptionShort": "A fake widget",
+  "title": "Fake Widget",
+  "icons": {
+    "small": "",
+    "large": ""
+  },
+  "launchUrls": {
+    "default":"http://localhost:13000/owf7adapter.html?url=http%3A%2F%2Flocalhost%3A16001%2Flaunched.html"
+  },
+  "uiHints": {
+    "width": null,
+    "height": null
+  },
+  "id": "94c734b0-cbbb-4caf-9cb8-29a3d45afc84"
+}

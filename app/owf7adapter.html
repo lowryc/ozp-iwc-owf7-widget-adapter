@@ -28,16 +28,15 @@
 
   </head>
   <body>
-    <script type="text/javascript" src="js/ozpIwc.conf.js"></script>
-    <script type="text/javascript" src="js/ozpIwc-bus.js"></script>
-    <script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>  
+    <script type="text/javascript" src="js/ozpIwc-client.js"></script>
+    <script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>
     <script type="text/javascript">
 
         (function() {
             var params=ozpIwc.util.parseQueryParams();
             var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
-
-            var adapter=new ozpIwc.owf7.ParticipantListener();
+            var peerUrl = params.peerUrl || window.location.origin;
+            var adapter=new ozpIwc.owf7.ParticipantListener({peerUrl: peerUrl});
             adapter.client.connect().then(function() {
 
                 // Gather any hash-stashed data pertaining to the widget
@@ -45,7 +44,7 @@
                 var tempData = params.data || {};
                 // Add any other config params
                 config.url = params.url;
-                config.launchData = windowNameParams.data || {};
+                config.launchData = adapter.client.launchParams.launchData || {};
 
 
                 if (typeof tempData === "string") {
@@ -55,8 +54,8 @@
                         config.launchData[i] = tempData[i];
                     }
 
-                } else {
-                    config.launchData = undefined;
+//                } else {
+//                    config.launchData = undefined;
                 }
 
                 adapter.addWidget(config);

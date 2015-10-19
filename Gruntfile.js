@@ -28,7 +28,7 @@ module.exports = function(grunt) {
             adapterJs: 'dist/js/<%= pkg.name %>.js',
             adapterJsMin: 'dist/js/<%= pkg.name %>.min.js',
             test: [
-                'bower_components/ozp-iwc/dist/js/ozpIwc-bus.js',
+                'bower_components/ozp-iwc/dist/js/ozpIwc-client.js',
                 'test/karma/globals.js',
                 'test/lib/adapterTools.js',
                 '<%= output.adapterJs %>'
@@ -39,8 +39,12 @@ module.exports = function(grunt) {
             ],
             testIntegration: [
                 '<%= output.test %>',
-                'test/specs/integration/owf7ParticipantListener/**/*.js',
-                'test/specs/integration/owf7Participant/**/*.js'
+                'test/specs/integration/owf7ParticipantListener/modules/eventingSpec.js'
+            ],
+            testOWF: [
+                '<%= output.test %>',
+                'test/lib/owf7/owf-widget-debug.js',
+                'test/specs/owf/**/*.js'
             ]
         },
         concat_sourcemap: {
@@ -111,14 +115,14 @@ module.exports = function(grunt) {
             test: {
                 files: ['Gruntfile.js', 'dist/**/*', '<%= src.testSrc %>'],
                 options: {
-                    livereload: true,
+                    livereload: false,
                     spawn: false
                 }
             }
         },
         connect: {
             bus: {
-                options: {port: 16000, base: [
+                options: {port: 13000, base: [
                     {
                         "path":"test-api-data",
                         options: {
@@ -129,10 +133,23 @@ module.exports = function(grunt) {
                     'dist',
                     'bower_components/ozp-iwc/dist'
 
-                ]}
+                ],
+                middleware: function (connect, options, middlewares) {
+                    // inject a custom middleware into the array of default middlewares
+                    middlewares.unshift(function (req, res, next) {
+
+                        if (req.method !== 'PUT' && req.method !== 'POST' && req.method !== 'DELETE') {
+                            return next();
+                        }
+                        res.end('The ozp-iwc test backend drops all write actions.');
+                    });
+
+                    return middlewares;
+                }
+                }
             },
             tests: {
-                options: {port: 16001, base: ['dist','test','bower_components/ozp-iwc/dist','node_modules/jasmine-core/lib']}
+                options: {port: 16001, base: ['dist','bower_components/ozp-iwc/dist','node_modules/jasmine-core/lib','test']}
             }
         },
         bump: {
@@ -189,8 +206,7 @@ module.exports = function(grunt) {
             },
             build: {
                 files: {src: [
-                    '<%= output.testUnit %>',
-                    '<%= output.testIntegration %>'
+                    '<%= output.testUnit %>'
                 ]}
             },
             CI: {
@@ -199,8 +215,7 @@ module.exports = function(grunt) {
                     browsers: ['Firefox']
                 },
                 files: { src: [
-                    '<%= output.testUnit %>',
-                    '<%= output.testIntegration %>'
+                    '<%= output.testUnit %>'
                 ]}
             }
         }
@@ -216,7 +231,7 @@ module.exports = function(grunt) {
 
     // Default task(s).
     grunt.registerTask('build', ['jshint', 'concat_sourcemap', 'uglify', 'copy:dist']);
-    grunt.registerTask('test', ['build', 'karma:build', 'connect','watch']);
+    grunt.registerTask('test', ['build', 'connect','watch']);
     grunt.registerTask('releasePatch', ['bump:patch','readpkg','shell:releaseGit']);
     grunt.registerTask('releaseMinor', ['bump:minor','readpkg', 'shell:releaseGit']);
     grunt.registerTask('releaseMajor', ['bump:major','readpkg', 'shell:releaseGit']);

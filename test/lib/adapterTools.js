@@ -67,6 +67,7 @@ var participantCallTest = function(config){
 };
 var initTestListener = function (){
     var listener = new ozpIwc.owf7.ParticipantListener({
+        peerUrl: window.location.origin,
         xOffset: 1,
         yOffset: 1
     });

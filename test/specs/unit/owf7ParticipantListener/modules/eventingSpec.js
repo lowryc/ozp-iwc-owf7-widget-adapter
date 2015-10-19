@@ -11,7 +11,9 @@ describe("Listener Eventing Bridging", function() {
     }
 
     beforeEach(function(){
-        listener = new ozpIwc.owf7.ParticipantListener();
+        listener = new ozpIwc.owf7.ParticipantListener({
+            peerUrl: window.location.origin
+        });
         listenerHandlers = listener.bridge.funcs.eventing;
 
         //Stub a fake participant to spy on bridged handlers

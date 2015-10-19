@@ -1,23 +1,16 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width">
-        <script type="text/javascript">
-            var redirectTo = window.location.protocol + "//" + window.location.hostname 
-                + ":16000/owf7adapter.html?url=" 
-                + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/tests.html");
-            document.write("Redirecting to " +redirectTo+"<br><hr>");
-            location.replace(redirectTo);
-        </script>
-    </head>
-    <body>
-        Redirecting to run the tests inside the adapter...
-    </body>
+<head>
+    <title>Adapter Tests</title>
+</head>
+<body>
+<a href="http://localhost:16001/unit-tests.html">Unit Tests</a>
+<a href="http://localhost:16001/integration-tests.html">Integration Tests</a>
+<a href="http://localhost:13000/owf7adapter.html?url=http%3A%2F%2Flocalhost%3A16001%2Fowf-wrapped-tests.html">OWF7 using Adapter Tests</a>
+<a href="http://localhost:13000/owf7adapter.html?url=http%3A%2F%2Flocalhost%3A16001%2Fdrag.html">Drag Test Widget</a>
+<a href="http://localhost:13000/owf7adapter.html?url=http%3A%2F%2Flocalhost%3A16001%2Fdrop.html">Drop Test Widget</a>
+
+<br>
+<script src="//localhost:35729/livereload.js"></script>
+</body>
 </html>
