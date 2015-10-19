@@ -3,7 +3,7 @@
   "main": [
     "dist/owf7adapter.html"
   ],
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/ozone-development/ozp-iwc-owf7-widget-adapter",
   "authors": [
     "Ozone Developers"
