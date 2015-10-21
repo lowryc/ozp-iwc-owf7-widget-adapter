@@ -213,6 +213,21 @@ ozpIwc.owf7.Participant = (function(participantModules){
              * @Type Promise
              */
             this.connectPromise = new Promise(function(resolve,reject) {
+
+                var datastr;
+
+                switch(typeof self.launchData){
+                    case "object":
+                        //if its an empty object, drop it.
+                        if(Object.keys(self.launchData)){
+                            datastr = JSON.stringify(self.launchData);
+                        }
+                        break;
+                    case "string":
+                        datastr = self.launchData;
+                        break;
+                }
+
                 // these get turned into the iframes name attribute
                 // Refer to js/eventing/container.js:272
                 self.widgetParams = {
@@ -235,7 +250,7 @@ ozpIwc.owf7.Participant = (function(participantModules){
                     },
                     "version": 1,
                     "locked": false,
-                    "data": self.launchData
+                    "data": datastr
                 };
                 resolve(self._getApplicationData());
             }).then(function (appData) {

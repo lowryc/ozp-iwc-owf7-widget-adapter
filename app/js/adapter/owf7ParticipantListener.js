@@ -209,6 +209,7 @@ ozpIwc.owf7.ParticipantListener = (function(Client, log, ozpConfig, owf7){
 
             // After storing the hash, if the guid does not exist just set it as instanceId for OWF7 to not complain.
             cfg.guid = cfg.guid || cfg.instanceId;
+            cfg.launchData = cfg.client.launchParams.launchData;
             self.participants[cfg.instanceId] = new owf7.Participant(cfg);
 
             // Add the _WIDGET_STATE_CHANNEL_<instanceId> RPC registration for the widget.
