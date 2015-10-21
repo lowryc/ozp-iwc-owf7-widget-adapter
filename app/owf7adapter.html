@@ -41,23 +41,37 @@
 
                 // Gather any hash-stashed data pertaining to the widget
                 var config = ozpIwc.util.parseQueryParams(window.location.hash.replace("#", ""));
-                var tempData = params.data || {};
+                var tempData = params.data;
                 // Add any other config params
                 config.url = params.url;
-                config.launchData = adapter.client.launchParams.launchData || {};
-
-
-                if (typeof tempData === "string") {
-                    config.launchData = tempData;
-                } else if (Object.keys(tempData).length) {
-                    for (var i in tempData) {
-                        config.launchData[i] = tempData[i];
+                var tempData2 = adapter.client.launchParams.launchData;
+                var merge = function(data){
+                    if(data && Object.keys(data)) {
+                        config.launchData = config.launchData || {};
+                        for (var i in data) {
+                            config.launchData[i] = data[i];
+                        }
                     }
+                };
 
-//                } else {
-//                    config.launchData = undefined;
-                }
+                var fillLaunchData = function(data){
+                    switch(typeof data){
+                        case "string":
+                            try{
+                                merge(JSON.parse(data));
+                            }catch(e){
+                                console.error("failed to add params to legacy launch: ", data);
+                            }
+                            break;
+                        case "object":
+                            merge(data);
+                            break;
+                    }
+                };
 
+
+                fillLaunchData(tempData);
+                fillLaunchData(tempData2);
                 adapter.addWidget(config);
             });
         })();
