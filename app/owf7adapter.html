@@ -35,7 +35,9 @@
         (function() {
             var params=ozpIwc.util.parseQueryParams();
             var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
-            var peerUrl = params.peerUrl || window.location.origin;
+
+            var path = window.location.href.replace(window.location.hash,"");
+            var peerUrl = params.peerUrl || path.substr(0,path.lastIndexOf('/'));
             var adapter=new ozpIwc.owf7.ParticipantListener({peerUrl: peerUrl});
             adapter.client.connect().then(function() {
 
