@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OWF7 Adapter</title>
+		<style media="screen" type="text/css">
+            html,body,iframe {
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+				/*min-height: 100%;*/
+                height: 100%;
+				/*min-width: 100%;*/
+                width: 100%;
+				border: 0px;
+				margin: 0px;
+				padding: 0px;
+                overflow: hidden;
+                line-height: 0;
+            }
+            iframe {
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+				padding: 5px;
+                overflow:auto;
+                pointer-events: none; // this is cleared when a mouse over without drag occurs
+
+            }
+		</style>
+
+  </head>
+  <body>
+    <script type="text/javascript" src="js/ozpIwc-client.js"></script>
+    <script type="text/javascript" src="js/ozp-iwc-owf7-widget-adapter.js"></script>
+    <script type="text/javascript">
+
+        (function() {
+            var params=ozpIwc.util.parseQueryParams();
+            var windowNameParams=ozpIwc.util.parseQueryParams(window.name);
+
+            var path = window.location.href.replace(window.location.hash,"");
+            var peerUrl = params.peerUrl || path.substr(0,path.lastIndexOf('/'));
+            var adapter=new ozpIwc.owf7.ParticipantListener({peerUrl: peerUrl});
+            adapter.client.connect().then(function() {
+
+                // Gather any hash-stashed data pertaining to the widget
+                var config = ozpIwc.util.parseQueryParams(window.location.hash.replace("#", ""));
+                var tempData = params.data;
+                // Add any other config params
+                config.url = params.url;
+                var tempData2 = adapter.client.launchParams.launchData;
+                var merge = function(data){
+                    if(data && Object.keys(data)) {
+                        config.launchData = config.launchData || {};
+                        for (var i in data) {
+                            config.launchData[i] = data[i];
+                        }
+                    }
+                };
+
+                var fillLaunchData = function(data){
+                    switch(typeof data){
+                        case "string":
+                            try{
+                                merge(JSON.parse(data));
+                            }catch(e){
+                                console.error("failed to add params to legacy launch: ", data);
+                            }
+                            break;
+                        case "object":
+                            merge(data);
+                            break;
+                    }
+                };
+
+
+                fillLaunchData(tempData);
+                fillLaunchData(tempData2);
+                adapter.addWidget(config);
+            });
+        })();
+    </script>
+  </body>
+</html>
