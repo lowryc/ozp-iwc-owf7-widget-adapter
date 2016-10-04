@@ -38,7 +38,7 @@ ozpIwc.owf7.participantModules.Components = (function(){
     Components.prototype.onLaunchWidget=function(sender,msg,rpc) {
         msg=JSON.parse(msg);
         // Allow launching by the widget's universal name or by the guid
-        var launchKey = msg.universalName || ms.guid;
+        var launchKey = msg.universalName || msg.guid;
         // ignore title, titleRegex, and launchOnlyIfClosed
         this.systemApi.launch("/application/" + launchKey,{
             contentType: "text/plain",
